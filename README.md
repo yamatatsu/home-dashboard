@@ -1,14 +1,14 @@
-# Welcome to your CDK TypeScript project!
+# Home Dashboard
 
-This is a blank project for TypeScript development with CDK.
+## TODO
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+- [ ] Dynamodb stream to normalize remo data
+- [ ] create dash board base
+- [ ] authn
+- [ ] fetch remo data
 
-## Useful commands
+##### refactoring
 
- * `npm run build`   compile typescript to js
- * `npm run watch`   watch for changes and compile
- * `npm run test`    perform the jest unit tests
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk synth`       emits the synthesized CloudFormation template
+- [ ] make lambda log to json
+- [ ] make fetching remo api to SepFunctions
+- [ ] lambda's code
