@@ -1,0 +1,227 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree"
+      },
+      "FetchRemoApi": {
+        "id": "FetchRemoApi",
+        "path": "FetchRemoApi",
+        "children": {
+          "Function": {
+            "id": "Function",
+            "path": "FetchRemoApi/Function",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "FetchRemoApi/Function/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "FetchRemoApi/Function/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "FetchRemoApi/Function/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "FetchRemoApi/Function/Code/Stage"
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "FetchRemoApi/Function/Code/AssetBucket"
+                  }
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "FetchRemoApi/Function/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Ref": "AssetParameters674600e3342df73bed789d518f89e86641443e3e24201e816367f2a79c9bf82dS3BucketB125003E"
+                      },
+                      "s3Key": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            {
+                              "Fn::Select": [
+                                0,
+                                {
+                                  "Fn::Split": [
+                                    "||",
+                                    {
+                                      "Ref": "AssetParameters674600e3342df73bed789d518f89e86641443e3e24201e816367f2a79c9bf82dS3VersionKeyB54C209C"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "Fn::Select": [
+                                1,
+                                {
+                                  "Fn::Split": [
+                                    "||",
+                                    {
+                                      "Ref": "AssetParameters674600e3342df73bed789d518f89e86641443e3e24201e816367f2a79c9bf82dS3VersionKeyB54C209C"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    },
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "FunctionServiceRole675BB04A",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs12.x",
+                    "functionName": "FetchRemoApi",
+                    "memorySize": 128,
+                    "timeout": 3
+                  }
+                }
+              }
+            }
+          },
+          "AssetParameters": {
+            "id": "AssetParameters",
+            "path": "FetchRemoApi/AssetParameters",
+            "children": {
+              "674600e3342df73bed789d518f89e86641443e3e24201e816367f2a79c9bf82d": {
+                "id": "674600e3342df73bed789d518f89e86641443e3e24201e816367f2a79c9bf82d",
+                "path": "FetchRemoApi/AssetParameters/674600e3342df73bed789d518f89e86641443e3e24201e816367f2a79c9bf82d",
+                "children": {
+                  "S3Bucket": {
+                    "id": "S3Bucket",
+                    "path": "FetchRemoApi/AssetParameters/674600e3342df73bed789d518f89e86641443e3e24201e816367f2a79c9bf82d/S3Bucket"
+                  },
+                  "S3VersionKey": {
+                    "id": "S3VersionKey",
+                    "path": "FetchRemoApi/AssetParameters/674600e3342df73bed789d518f89e86641443e3e24201e816367f2a79c9bf82d/S3VersionKey"
+                  },
+                  "ArtifactHash": {
+                    "id": "ArtifactHash",
+                    "path": "FetchRemoApi/AssetParameters/674600e3342df73bed789d518f89e86641443e3e24201e816367f2a79c9bf82d/ArtifactHash"
+                  }
+                }
+              }
+            }
+          },
+          "Rule": {
+            "id": "Rule",
+            "path": "FetchRemoApi/Rule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "FetchRemoApi/Rule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "scheduleExpression": "rate(10 minutes)",
+                    "state": "ENABLED",
+                    "targets": [
+                      {
+                        "id": "Target0",
+                        "arn": {
+                          "Fn::GetAtt": [
+                            "Function76856677",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "AllowEventRuleFetchRemoApiRuleFA5198C2": {
+                "id": "AllowEventRuleFetchRemoApiRuleFA5198C2",
+                "path": "FetchRemoApi/Rule/AllowEventRuleFetchRemoApiRuleFA5198C2",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "Function76856677",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "events.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::GetAtt": [
+                        "Rule4C995B7F",
+                        "Arn"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "CDKMetadata": {
+            "id": "CDKMetadata",
+            "path": "FetchRemoApi/CDKMetadata",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "FetchRemoApi/CDKMetadata/Default"
+              },
+              "Condition": {
+                "id": "Condition",
+                "path": "FetchRemoApi/CDKMetadata/Condition"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

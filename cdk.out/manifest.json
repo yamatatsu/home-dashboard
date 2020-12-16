@@ -1,0 +1,309 @@
+{
+  "version": "7.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "FetchRemoApi": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "FetchRemoApi.template.json"
+      },
+      "metadata": {
+        "/FetchRemoApi": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.674600e3342df73bed789d518f89e86641443e3e24201e816367f2a79c9bf82d",
+              "id": "674600e3342df73bed789d518f89e86641443e3e24201e816367f2a79c9bf82d",
+              "packaging": "zip",
+              "sourceHash": "674600e3342df73bed789d518f89e86641443e3e24201e816367f2a79c9bf82d",
+              "s3BucketParameter": "AssetParameters674600e3342df73bed789d518f89e86641443e3e24201e816367f2a79c9bf82dS3BucketB125003E",
+              "s3KeyParameter": "AssetParameters674600e3342df73bed789d518f89e86641443e3e24201e816367f2a79c9bf82dS3VersionKeyB54C209C",
+              "artifactHashParameter": "AssetParameters674600e3342df73bed789d518f89e86641443e3e24201e816367f2a79c9bf82dArtifactHash27D5AD5B"
+            },
+            "trace": [
+              "ConstructNode.addMetadata (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/construct-compat.ts:431:92)",
+              "LegacyStackSynthesizer.doAddFileAsset (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.ts:163:23)",
+              "LegacyStackSynthesizer.addFileAsset (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.ts:74:19)",
+              "FetchRemoApi.addFileAsset (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/stack.ts:653:29)",
+              "LegacyStackSynthesizer.addFileAsset (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.ts:78:25)",
+              "new Asset (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/aws-s3-assets/lib/asset.ts:147:40)",
+              "AssetCode.bind (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/aws-lambda/lib/code.ts:247:20)",
+              "new Function (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/aws-lambda/lib/function.ts:564:29)",
+              "new FetchRemoApi (/Users/yamamototatsuya/Projects/nature-remo-metrics/stacks/FetchRemoApi.ts:16:16)",
+              "Object.<anonymous> (/Users/yamamototatsuya/Projects/nature-remo-metrics/stacks/index.ts:7:1)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Module.m._compile (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/index.ts:1056:23)",
+              "Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Object.require.extensions.<computed> [as .ts] (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/index.ts:1059:12)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "main (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/bin.ts:198:14)",
+              "Object.<anonymous> (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/bin.ts:288:3)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "/usr/local/lib/node_modules/npm/node_modules/libnpx/index.js:268:14"
+            ]
+          }
+        ],
+        "/FetchRemoApi/Function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FunctionServiceRole675BB04A",
+            "trace": [
+              "new Role (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/aws-iam/lib/role.ts:327:18)",
+              "new Function (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/aws-lambda/lib/function.ts:544:31)",
+              "new FetchRemoApi (/Users/yamamototatsuya/Projects/nature-remo-metrics/stacks/FetchRemoApi.ts:16:16)",
+              "Object.<anonymous> (/Users/yamamototatsuya/Projects/nature-remo-metrics/stacks/index.ts:7:1)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Module.m._compile (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/index.ts:1056:23)",
+              "Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Object.require.extensions.<computed> [as .ts] (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/index.ts:1059:12)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "main (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/bin.ts:198:14)",
+              "Object.<anonymous> (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/bin.ts:288:3)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "/usr/local/lib/node_modules/npm/node_modules/libnpx/index.js:268:14"
+            ]
+          }
+        ],
+        "/FetchRemoApi/Function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Function76856677",
+            "trace": [
+              "new Function (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/aws-lambda/lib/function.ts:600:35)",
+              "new FetchRemoApi (/Users/yamamototatsuya/Projects/nature-remo-metrics/stacks/FetchRemoApi.ts:16:16)",
+              "Object.<anonymous> (/Users/yamamototatsuya/Projects/nature-remo-metrics/stacks/index.ts:7:1)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Module.m._compile (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/index.ts:1056:23)",
+              "Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Object.require.extensions.<computed> [as .ts] (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/index.ts:1059:12)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "main (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/bin.ts:198:14)",
+              "Object.<anonymous> (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/bin.ts:288:3)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "/usr/local/lib/node_modules/npm/node_modules/libnpx/index.js:268:14"
+            ]
+          }
+        ],
+        "/FetchRemoApi/AssetParameters/674600e3342df73bed789d518f89e86641443e3e24201e816367f2a79c9bf82d/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters674600e3342df73bed789d518f89e86641443e3e24201e816367f2a79c9bf82dS3BucketB125003E",
+            "trace": [
+              "new FileAssetParameters (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/private/asset-parameters.ts:16:32)",
+              "LegacyStackSynthesizer.doAddFileAsset (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.ts:150:16)",
+              "LegacyStackSynthesizer.addFileAsset (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.ts:74:19)",
+              "FetchRemoApi.addFileAsset (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/stack.ts:653:29)",
+              "LegacyStackSynthesizer.addFileAsset (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.ts:78:25)",
+              "new Asset (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/aws-s3-assets/lib/asset.ts:147:40)",
+              "AssetCode.bind (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/aws-lambda/lib/code.ts:247:20)",
+              "new Function (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/aws-lambda/lib/function.ts:564:29)",
+              "new FetchRemoApi (/Users/yamamototatsuya/Projects/nature-remo-metrics/stacks/FetchRemoApi.ts:16:16)",
+              "Object.<anonymous> (/Users/yamamototatsuya/Projects/nature-remo-metrics/stacks/index.ts:7:1)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Module.m._compile (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/index.ts:1056:23)",
+              "Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Object.require.extensions.<computed> [as .ts] (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/index.ts:1059:12)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "main (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/bin.ts:198:14)",
+              "Object.<anonymous> (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/bin.ts:288:3)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "/usr/local/lib/node_modules/npm/node_modules/libnpx/index.js:268:14"
+            ]
+          }
+        ],
+        "/FetchRemoApi/AssetParameters/674600e3342df73bed789d518f89e86641443e3e24201e816367f2a79c9bf82d/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters674600e3342df73bed789d518f89e86641443e3e24201e816367f2a79c9bf82dS3VersionKeyB54C209C",
+            "trace": [
+              "new FileAssetParameters (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/private/asset-parameters.ts:21:31)",
+              "LegacyStackSynthesizer.doAddFileAsset (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.ts:150:16)",
+              "LegacyStackSynthesizer.addFileAsset (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.ts:74:19)",
+              "FetchRemoApi.addFileAsset (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/stack.ts:653:29)",
+              "LegacyStackSynthesizer.addFileAsset (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.ts:78:25)",
+              "new Asset (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/aws-s3-assets/lib/asset.ts:147:40)",
+              "AssetCode.bind (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/aws-lambda/lib/code.ts:247:20)",
+              "new Function (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/aws-lambda/lib/function.ts:564:29)",
+              "new FetchRemoApi (/Users/yamamototatsuya/Projects/nature-remo-metrics/stacks/FetchRemoApi.ts:16:16)",
+              "Object.<anonymous> (/Users/yamamototatsuya/Projects/nature-remo-metrics/stacks/index.ts:7:1)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Module.m._compile (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/index.ts:1056:23)",
+              "Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Object.require.extensions.<computed> [as .ts] (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/index.ts:1059:12)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "main (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/bin.ts:198:14)",
+              "Object.<anonymous> (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/bin.ts:288:3)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "/usr/local/lib/node_modules/npm/node_modules/libnpx/index.js:268:14"
+            ]
+          }
+        ],
+        "/FetchRemoApi/AssetParameters/674600e3342df73bed789d518f89e86641443e3e24201e816367f2a79c9bf82d/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters674600e3342df73bed789d518f89e86641443e3e24201e816367f2a79c9bf82dArtifactHash27D5AD5B",
+            "trace": [
+              "new FileAssetParameters (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/private/asset-parameters.ts:26:34)",
+              "LegacyStackSynthesizer.doAddFileAsset (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.ts:150:16)",
+              "LegacyStackSynthesizer.addFileAsset (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.ts:74:19)",
+              "FetchRemoApi.addFileAsset (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/stack.ts:653:29)",
+              "LegacyStackSynthesizer.addFileAsset (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.ts:78:25)",
+              "new Asset (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/aws-s3-assets/lib/asset.ts:147:40)",
+              "AssetCode.bind (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/aws-lambda/lib/code.ts:247:20)",
+              "new Function (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/aws-lambda/lib/function.ts:564:29)",
+              "new FetchRemoApi (/Users/yamamototatsuya/Projects/nature-remo-metrics/stacks/FetchRemoApi.ts:16:16)",
+              "Object.<anonymous> (/Users/yamamototatsuya/Projects/nature-remo-metrics/stacks/index.ts:7:1)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Module.m._compile (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/index.ts:1056:23)",
+              "Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Object.require.extensions.<computed> [as .ts] (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/index.ts:1059:12)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "main (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/bin.ts:198:14)",
+              "Object.<anonymous> (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/bin.ts:288:3)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "/usr/local/lib/node_modules/npm/node_modules/libnpx/index.js:268:14"
+            ]
+          }
+        ],
+        "/FetchRemoApi/Rule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Rule4C995B7F",
+            "trace": [
+              "new Rule (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/aws-events/lib/rule.ts:130:22)",
+              "new FetchRemoApi (/Users/yamamototatsuya/Projects/nature-remo-metrics/stacks/FetchRemoApi.ts:25:5)",
+              "Object.<anonymous> (/Users/yamamototatsuya/Projects/nature-remo-metrics/stacks/index.ts:7:1)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Module.m._compile (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/index.ts:1056:23)",
+              "Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Object.require.extensions.<computed> [as .ts] (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/index.ts:1059:12)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "main (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/bin.ts:198:14)",
+              "Object.<anonymous> (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/bin.ts:288:3)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "/usr/local/lib/node_modules/npm/node_modules/libnpx/index.js:268:14"
+            ]
+          }
+        ],
+        "/FetchRemoApi/Rule/AllowEventRuleFetchRemoApiRuleFA5198C2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RuleAllowEventRuleFetchRemoApiRuleFA5198C232797029",
+            "trace": [
+              "Function.addPermission (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/aws-lambda/lib/function-base.ts:245:5)",
+              "Object.addLambdaPermission (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/aws-events-targets/lib/util.ts:40:13)",
+              "LambdaFunction.bind (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/aws-events-targets/lib/lambda.ts:33:5)",
+              "Rule.addTarget (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/aws-events/lib/rule.ts:166:32)",
+              "new Rule (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/aws-events/lib/rule.ts:150:12)",
+              "new FetchRemoApi (/Users/yamamototatsuya/Projects/nature-remo-metrics/stacks/FetchRemoApi.ts:25:5)",
+              "Object.<anonymous> (/Users/yamamototatsuya/Projects/nature-remo-metrics/stacks/index.ts:7:1)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Module.m._compile (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/index.ts:1056:23)",
+              "Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Object.require.extensions.<computed> [as .ts] (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/index.ts:1059:12)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "main (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/bin.ts:198:14)",
+              "Object.<anonymous> (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/ts-node/src/bin.ts:288:3)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "/usr/local/lib/node_modules/npm/node_modules/libnpx/index.js:268:14"
+            ]
+          }
+        ],
+        "/FetchRemoApi/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata",
+            "trace": [
+              "new MetadataResource (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/private/metadata-resource.ts:51:24)",
+              "/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/private/synthesis.ts:140:5",
+              "visit (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/private/synthesis.ts:200:5)",
+              "visit (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/private/synthesis.ts:196:5)",
+              "injectMetadataResources (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/private/synthesis.ts:131:3)",
+              "Object.synthesize (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/private/synthesis.ts:18:3)",
+              "App.synth (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/stage.ts:188:23)",
+              "process.<anonymous> (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/app.ts:123:45)",
+              "Object.onceWrapper (events.js:422:26)",
+              "process.emit (events.js:315:20)",
+              "process.EventEmitter.emit (domain.js:486:12)",
+              "process.emit (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/source-map-support/source-map-support.js:495:21)"
+            ]
+          }
+        ],
+        "/FetchRemoApi/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable",
+            "trace": [
+              "new MetadataResource (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/private/metadata-resource.ts:60:27)",
+              "/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/private/synthesis.ts:140:5",
+              "visit (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/private/synthesis.ts:200:5)",
+              "visit (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/private/synthesis.ts:196:5)",
+              "injectMetadataResources (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/private/synthesis.ts:131:3)",
+              "Object.synthesize (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/private/synthesis.ts:18:3)",
+              "App.synth (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/stage.ts:188:23)",
+              "process.<anonymous> (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/@aws-cdk/core/lib/app.ts:123:45)",
+              "Object.onceWrapper (events.js:422:26)",
+              "process.emit (events.js:315:20)",
+              "process.EventEmitter.emit (domain.js:486:12)",
+              "process.emit (/Users/yamamototatsuya/Projects/nature-remo-metrics/node_modules/source-map-support/source-map-support.js:495:21)"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}
