@@ -44,7 +44,7 @@ describe("putRemoData", () => {
   // TODO: name of tests
 
   const date = new Date("2020/12/17 00:00:00Z");
-  test("", async () => {
+  test("throw error if message is empty.", async () => {
     await expect(putRemoData("", date)).rejects.toThrow(
       "Unexpected end of JSON input"
     );
@@ -59,7 +59,7 @@ describe("putRemoData", () => {
 
   // TODO: validation test
 
-  test("throw error that env is needed.", async () => {
+  test("throw error if env is needed.", async () => {
     await expect(putRemoData(testMessage, date)).rejects.toThrow(
       "Enviroment variable `TABLE_NAME` is required."
     );

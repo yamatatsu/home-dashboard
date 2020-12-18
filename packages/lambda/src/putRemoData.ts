@@ -1,6 +1,10 @@
-import * as yup from "yup";
 import * as AWS from "aws-sdk";
-import { RemoEvent } from "./schema";
+import {
+  RemoEvent,
+  sqsMessageSchema,
+  eventSchema,
+  remoDataSchema,
+} from "./schema";
 import { DocumentClient } from "./awsSdk";
 
 type RemoData = {
@@ -42,29 +46,6 @@ export default async function putRemoData(
   console.info("it will be saved as %o", params);
   await DocumentClient.batchWrite(params);
 }
-
-const sqsMessageSchema = yup
-  .object()
-  .shape({ Message: yup.string().required() });
-
-const eventSchema = yup.object({
-  val: yup.number().required(),
-  created_at: yup.string().required(),
-});
-const remoDataSchema = yup
-  .array(
-    yup.object().shape({
-      name: yup.string().required(),
-      id: yup.string().required(),
-      newest_events: yup.object().required().shape({
-        hu: yup.object(),
-        il: yup.object(),
-        mo: yup.object(),
-        te: yup.object(),
-      }),
-    })
-  )
-  .required();
 
 const getTtl = (date: Date, hour: number) =>
   Math.floor(date.getTime() / 1000) + hour * 60 * 60;

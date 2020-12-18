@@ -3,6 +3,11 @@
 exports[`FetchRemoApi Stack 1`] = `
 Object {
   "Resources": Object {
+    "Bucket83908E77": Object {
+      "DeletionPolicy": "Delete",
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Delete",
+    },
     "ScheduleRuleAllowEventRuleTargetScheduleRule0C75E08003FCA383": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
@@ -42,6 +47,187 @@ Object {
     },
     "TopicBFC7AF6E": Object {
       "Type": "AWS::SNS::Topic",
+    },
+    "backupRemoData0B14B053": Object {
+      "DependsOn": Array [
+        "backupRemoDataServiceRoleDefaultPolicy110BBD88",
+        "backupRemoDataServiceRole989C5AF2",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "ZipFile": "xxx",
+        },
+        "Environment": Object {
+          "Variables": Object {
+            "BUCKET_NAME": Object {
+              "Ref": "Bucket83908E77",
+            },
+          },
+        },
+        "FunctionName": "BackupRemoData",
+        "Handler": "index.backupRemoData",
+        "MemorySize": 128,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "backupRemoDataServiceRole989C5AF2",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs12.x",
+        "Timeout": 3,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "backupRemoDataQueue9B88AD37": Object {
+      "Type": "AWS::SQS::Queue",
+    },
+    "backupRemoDataQueuePolicyA682245C": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sqs:SendMessage",
+              "Condition": Object {
+                "ArnEquals": Object {
+                  "aws:SourceArn": Object {
+                    "Ref": "TopicBFC7AF6E",
+                  },
+                },
+              },
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "sns.amazonaws.com",
+              },
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "backupRemoDataQueue9B88AD37",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Queues": Array [
+          Object {
+            "Ref": "backupRemoDataQueue9B88AD37",
+          },
+        ],
+      },
+      "Type": "AWS::SQS::QueuePolicy",
+    },
+    "backupRemoDataQueueTargetTopicAD1B2EBD10C999CD": Object {
+      "Properties": Object {
+        "Endpoint": Object {
+          "Fn::GetAtt": Array [
+            "backupRemoDataQueue9B88AD37",
+            "Arn",
+          ],
+        },
+        "Protocol": "sqs",
+        "TopicArn": Object {
+          "Ref": "TopicBFC7AF6E",
+        },
+      },
+      "Type": "AWS::SNS::Subscription",
+    },
+    "backupRemoDataServiceRole989C5AF2": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "backupRemoDataServiceRoleDefaultPolicy110BBD88": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "sqs:ReceiveMessage",
+                "sqs:ChangeMessageVisibility",
+                "sqs:GetQueueUrl",
+                "sqs:DeleteMessage",
+                "sqs:GetQueueAttributes",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "backupRemoDataQueue9B88AD37",
+                  "Arn",
+                ],
+              },
+            },
+            Object {
+              "Action": Array [
+                "s3:PutObject*",
+                "s3:Abort*",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "Bucket83908E77",
+                        "Arn",
+                      ],
+                    },
+                    "/*",
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "backupRemoDataServiceRoleDefaultPolicy110BBD88",
+        "Roles": Array [
+          Object {
+            "Ref": "backupRemoDataServiceRole989C5AF2",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "backupRemoDataSqsEventSourceTargetbackupRemoDataQueue5000FF85DE45F0B5": Object {
+      "Properties": Object {
+        "EventSourceArn": Object {
+          "Fn::GetAtt": Array [
+            "backupRemoDataQueue9B88AD37",
+            "Arn",
+          ],
+        },
+        "FunctionName": Object {
+          "Ref": "backupRemoData0B14B053",
+        },
+      },
+      "Type": "AWS::Lambda::EventSourceMapping",
     },
     "fetchRemoApi3831C897": Object {
       "DependsOn": Array [
