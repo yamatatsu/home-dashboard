@@ -3,10 +3,50 @@
 exports[`FetchRemoApi Stack 1`] = `
 Object {
   "Resources": Object {
-    "Function76856677": Object {
+    "ScheduleRuleAllowEventRuleTargetScheduleRule0C75E08003FCA383": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "fetchRemoApi3831C897",
+            "Arn",
+          ],
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::GetAtt": Array [
+            "ScheduleRuleDA5BD877",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "ScheduleRuleDA5BD877": Object {
+      "Properties": Object {
+        "ScheduleExpression": "rate(10 minutes)",
+        "State": "ENABLED",
+        "Targets": Array [
+          Object {
+            "Arn": Object {
+              "Fn::GetAtt": Array [
+                "fetchRemoApi3831C897",
+                "Arn",
+              ],
+            },
+            "Id": "Target0",
+          },
+        ],
+      },
+      "Type": "AWS::Events::Rule",
+    },
+    "TopicBFC7AF6E": Object {
+      "Type": "AWS::SNS::Topic",
+    },
+    "fetchRemoApi3831C897": Object {
       "DependsOn": Array [
-        "FunctionServiceRoleDefaultPolicy2F49994A",
-        "FunctionServiceRole675BB04A",
+        "fetchRemoApiServiceRoleDefaultPolicy0A2B9AC4",
+        "fetchRemoApiServiceRole01CA419F",
       ],
       "Properties": Object {
         "Code": Object {
@@ -15,17 +55,17 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "REMO_TOKEN": "xxx",
-            "TABLE_NAME": Object {
-              "Fn::ImportValue": "test-stack:ExportsOutputReftesttableB6F02C7740211428",
+            "TOPIC_ARN": Object {
+              "Ref": "TopicBFC7AF6E",
             },
           },
         },
         "FunctionName": "FetchRemoApi",
-        "Handler": "index.handler",
+        "Handler": "index.fetchRemoApi",
         "MemorySize": 128,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "FunctionServiceRole675BB04A",
+            "fetchRemoApiServiceRole01CA419F",
             "Arn",
           ],
         },
@@ -34,7 +74,7 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "FunctionServiceRole675BB04A": Object {
+    "fetchRemoApiServiceRole01CA419F": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -65,10 +105,163 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "FunctionServiceRoleDefaultPolicy2F49994A": Object {
+    "fetchRemoApiServiceRoleDefaultPolicy0A2B9AC4": Object {
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
+            Object {
+              "Action": "sns:Publish",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Ref": "TopicBFC7AF6E",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "fetchRemoApiServiceRoleDefaultPolicy0A2B9AC4",
+        "Roles": Array [
+          Object {
+            "Ref": "fetchRemoApiServiceRole01CA419F",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "putRemoData73055A1E": Object {
+      "DependsOn": Array [
+        "putRemoDataServiceRoleDefaultPolicy147EFD9F",
+        "putRemoDataServiceRoleB14A0DAE",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "ZipFile": "xxx",
+        },
+        "Environment": Object {
+          "Variables": Object {
+            "TABLE_NAME": Object {
+              "Fn::ImportValue": "test-stack:ExportsOutputReftesttableB6F02C7740211428",
+            },
+          },
+        },
+        "FunctionName": "PutRemoData",
+        "Handler": "index.putRemoData",
+        "MemorySize": 128,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "putRemoDataServiceRoleB14A0DAE",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs12.x",
+        "Timeout": 3,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "putRemoDataQueueCC2E67D5": Object {
+      "Type": "AWS::SQS::Queue",
+    },
+    "putRemoDataQueuePolicyCEB7E013": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sqs:SendMessage",
+              "Condition": Object {
+                "ArnEquals": Object {
+                  "aws:SourceArn": Object {
+                    "Ref": "TopicBFC7AF6E",
+                  },
+                },
+              },
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "sns.amazonaws.com",
+              },
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "putRemoDataQueueCC2E67D5",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Queues": Array [
+          Object {
+            "Ref": "putRemoDataQueueCC2E67D5",
+          },
+        ],
+      },
+      "Type": "AWS::SQS::QueuePolicy",
+    },
+    "putRemoDataQueueTargetTopicAD1B2EBDBF7F1442": Object {
+      "Properties": Object {
+        "Endpoint": Object {
+          "Fn::GetAtt": Array [
+            "putRemoDataQueueCC2E67D5",
+            "Arn",
+          ],
+        },
+        "Protocol": "sqs",
+        "TopicArn": Object {
+          "Ref": "TopicBFC7AF6E",
+        },
+      },
+      "Type": "AWS::SNS::Subscription",
+    },
+    "putRemoDataServiceRoleB14A0DAE": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "putRemoDataServiceRoleDefaultPolicy147EFD9F": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "sqs:ReceiveMessage",
+                "sqs:ChangeMessageVisibility",
+                "sqs:GetQueueUrl",
+                "sqs:DeleteMessage",
+                "sqs:GetQueueAttributes",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "putRemoDataQueueCC2E67D5",
+                  "Arn",
+                ],
+              },
+            },
             Object {
               "Action": Array [
                 "dynamodb:BatchWriteItem",
@@ -89,51 +282,28 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": "FunctionServiceRoleDefaultPolicy2F49994A",
+        "PolicyName": "putRemoDataServiceRoleDefaultPolicy147EFD9F",
         "Roles": Array [
           Object {
-            "Ref": "FunctionServiceRole675BB04A",
+            "Ref": "putRemoDataServiceRoleB14A0DAE",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "Rule4C995B7F": Object {
+    "putRemoDataSqsEventSourceTargetputRemoDataQueue75D9F93D513CE4DF": Object {
       "Properties": Object {
-        "ScheduleExpression": "rate(10 minutes)",
-        "State": "ENABLED",
-        "Targets": Array [
-          Object {
-            "Arn": Object {
-              "Fn::GetAtt": Array [
-                "Function76856677",
-                "Arn",
-              ],
-            },
-            "Id": "Target0",
-          },
-        ],
-      },
-      "Type": "AWS::Events::Rule",
-    },
-    "RuleAllowEventRuleMyTestStackRule0FDD01B97E2073C3": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
+        "EventSourceArn": Object {
+          "Fn::GetAtt": Array [
+            "putRemoDataQueueCC2E67D5",
+            "Arn",
+          ],
+        },
         "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "Function76856677",
-            "Arn",
-          ],
-        },
-        "Principal": "events.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::GetAtt": Array [
-            "Rule4C995B7F",
-            "Arn",
-          ],
+          "Ref": "putRemoData73055A1E",
         },
       },
-      "Type": "AWS::Lambda::Permission",
+      "Type": "AWS::Lambda::EventSourceMapping",
     },
   },
 }

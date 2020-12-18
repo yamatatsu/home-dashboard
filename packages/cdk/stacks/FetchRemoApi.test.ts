@@ -12,10 +12,10 @@ test("FetchRemoApi Stack", () => {
     partitionKey: { name: "hoge", type: dynamodb.AttributeType.STRING },
   });
 
-  const target = new FetchRemoApi(app, "MyTestStack", {
+  const target = new FetchRemoApi(app, "Target", {
     code: lambda.Code.fromInline("xxx"),
     remoToken: "xxx",
-    remoRawEventsTable: table,
+    homeDataTable: table,
   });
 
   expect(SynthUtils.toCloudFormation(target)).toMatchSnapshot();

@@ -15,8 +15,10 @@ const app = new cdk.App();
 
 const dynamodb = new DynamodbStack(app, "DynamodbStack");
 
-new FetchRemoApi(app, "FetchRemoApi", {
-  code: lambda.Code.fromAsset(`${__dirname}/../../lambda/dist`),
+const lambdaCode = lambda.Code.fromAsset(`${__dirname}/../../lambda/dist`);
+
+const fetchRemoApi = new FetchRemoApi(app, "FetchRemoApi", {
+  code: lambdaCode,
   remoToken: REMO_TOKEN,
-  remoRawEventsTable: dynamodb.remoRawEventsTable,
+  homeDataTable: dynamodb.homeDataTable,
 });

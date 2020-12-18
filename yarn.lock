@@ -157,7 +157,7 @@
     "@aws-cdk/core" "1.78.0"
     constructs "^3.2.0"
 
-"@aws-cdk/aws-cloudwatch@1.78.0", "@aws-cdk/aws-cloudwatch@^1.78.0":
+"@aws-cdk/aws-cloudwatch@1.78.0":
   version "1.78.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-cloudwatch/-/aws-cloudwatch-1.78.0.tgz#a0ff41a662e7a04375ff68e061c2749b96013316"
   integrity sha512-sSWI9Lwlbe6zBlePvfkAYsMt9tVq9kQkf3U9KooQqQim3RCPW8vkR+NvmyJFc3w6LwIKWB3wj1B0ksUmVYobJw==
@@ -232,7 +232,7 @@
     constructs "^3.2.0"
     punycode "^2.1.1"
 
-"@aws-cdk/aws-dynamodb@^1.78.0":
+"@aws-cdk/aws-dynamodb@1.78.0":
   version "1.78.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-dynamodb/-/aws-dynamodb-1.78.0.tgz#d55d69ae8d4c35f37391d9f56b08e710b32b5a4f"
   integrity sha512-k9qAlQhxlp3rT7hDCNlDwHejxnMuWBGPFKT6gq70JK++mCqL5Rg4K4JCPvUkJcUm1NrVMPDQ1u4uhb6t4Aan3Q==
@@ -358,7 +358,7 @@
     "@aws-cdk/region-info" "1.78.0"
     constructs "^3.2.0"
 
-"@aws-cdk/aws-events-targets@^1.78.0":
+"@aws-cdk/aws-events-targets@1.78.0":
   version "1.78.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-events-targets/-/aws-events-targets-1.78.0.tgz#a4453804f3261c56e94d681eb2a923fc42780069"
   integrity sha512-ELyqJnsttYxAAYTmHnNkV0uGMI60X9qQe9+4ExW3Lw6PCuLR8o2Gv8k8b4VA7GeArZqHgZx7FJlJ/iEeXdBuAg==
@@ -382,7 +382,7 @@
     "@aws-cdk/custom-resources" "1.78.0"
     constructs "^3.2.0"
 
-"@aws-cdk/aws-events@1.78.0", "@aws-cdk/aws-events@^1.78.0":
+"@aws-cdk/aws-events@1.78.0":
   version "1.78.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-events/-/aws-events-1.78.0.tgz#3ff4c4f03fc448ff62c7cd1013a8201ee6da4d37"
   integrity sha512-3+lLPK1E4vA03Mhgb10pcssvb61WtRqIBE/HC50bShAFlA5wbcquz5OPcEB1VfCdW3y6/kAK6cIGuWHwhef1Iw==
@@ -429,7 +429,26 @@
     "@aws-cdk/cx-api" "1.78.0"
     constructs "^3.2.0"
 
-"@aws-cdk/aws-lambda@1.78.0", "@aws-cdk/aws-lambda@^1.78.0":
+"@aws-cdk/aws-lambda-event-sources@1.78.0":
+  version "1.78.0"
+  resolved "https://registry.yarnpkg.com/@aws-cdk/aws-lambda-event-sources/-/aws-lambda-event-sources-1.78.0.tgz#4147f6fcee2308acf33669f1604f2b0d9fcc1052"
+  integrity sha512-rnPMzuBDLRtTVsGKRHQIkb9DBvs2/ntTkf3rwzsBF7l/0dX8e1UrtM98BEjZTPyy6pewgb5gMT5bLdwcjnLMTQ==
+  dependencies:
+    "@aws-cdk/aws-apigateway" "1.78.0"
+    "@aws-cdk/aws-dynamodb" "1.78.0"
+    "@aws-cdk/aws-events" "1.78.0"
+    "@aws-cdk/aws-iam" "1.78.0"
+    "@aws-cdk/aws-kinesis" "1.78.0"
+    "@aws-cdk/aws-lambda" "1.78.0"
+    "@aws-cdk/aws-s3" "1.78.0"
+    "@aws-cdk/aws-s3-notifications" "1.78.0"
+    "@aws-cdk/aws-sns" "1.78.0"
+    "@aws-cdk/aws-sns-subscriptions" "1.78.0"
+    "@aws-cdk/aws-sqs" "1.78.0"
+    "@aws-cdk/core" "1.78.0"
+    constructs "^3.2.0"
+
+"@aws-cdk/aws-lambda@1.78.0":
   version "1.78.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-lambda/-/aws-lambda-1.78.0.tgz#68bf25345a0416d3a4bf850c5c945b83c55e6a88"
   integrity sha512-NoyGfq1n3AdwgSKrTKF18JQNvcNRBA5WWu7Sib84M8lNamzLb5bpYorZVR078Za2sgwI9jMcrDTtbMp04iLlYA==
@@ -451,7 +470,7 @@
     "@aws-cdk/cx-api" "1.78.0"
     constructs "^3.2.0"
 
-"@aws-cdk/aws-logs@1.78.0", "@aws-cdk/aws-logs@^1.78.0":
+"@aws-cdk/aws-logs@1.78.0":
   version "1.78.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-logs/-/aws-logs-1.78.0.tgz#8fa1ea0ea633a4612868bcf8a1f329a58b67aebd"
   integrity sha512-LhxTH0ANKjf/6vG+rFHsga6iuBXNTwpeoUjU9B842zDbqza9j9mCWu4Fjsrls+ZT3uwo16DVrNjnhyVGVc02ag==
@@ -504,6 +523,19 @@
     "@aws-cdk/aws-s3" "1.78.0"
     "@aws-cdk/core" "1.78.0"
     "@aws-cdk/cx-api" "1.78.0"
+    constructs "^3.2.0"
+
+"@aws-cdk/aws-s3-notifications@1.78.0":
+  version "1.78.0"
+  resolved "https://registry.yarnpkg.com/@aws-cdk/aws-s3-notifications/-/aws-s3-notifications-1.78.0.tgz#0eae9578f84307661f34aec10c15b54e78a6c772"
+  integrity sha512-5DhtSE2fq2+H5af/TcFnOjtiXtFfPFKKaSk0SSgKwfsBQtDk8MQ2PKh7mUqFlsurIu6B4eAG0filzZYedWNV6g==
+  dependencies:
+    "@aws-cdk/aws-iam" "1.78.0"
+    "@aws-cdk/aws-lambda" "1.78.0"
+    "@aws-cdk/aws-s3" "1.78.0"
+    "@aws-cdk/aws-sns" "1.78.0"
+    "@aws-cdk/aws-sqs" "1.78.0"
+    "@aws-cdk/core" "1.78.0"
     constructs "^3.2.0"
 
 "@aws-cdk/aws-s3@1.78.0":

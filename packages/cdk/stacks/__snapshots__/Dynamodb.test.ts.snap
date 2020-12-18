@@ -3,19 +3,27 @@
 exports[`DynamodbStack Stack 1`] = `
 Object {
   "Resources": Object {
-    "RemoRawEventsTableFFB3FE4E": Object {
+    "HomeDataTable592412A1": Object {
       "DeletionPolicy": "Delete",
       "Properties": Object {
         "AttributeDefinitions": Array [
           Object {
-            "AttributeName": "time",
+            "AttributeName": "partitionKey",
+            "AttributeType": "S",
+          },
+          Object {
+            "AttributeName": "sortKey",
             "AttributeType": "S",
           },
         ],
         "KeySchema": Array [
           Object {
-            "AttributeName": "time",
+            "AttributeName": "partitionKey",
             "KeyType": "HASH",
+          },
+          Object {
+            "AttributeName": "sortKey",
+            "KeyType": "RANGE",
           },
         ],
         "ProvisionedThroughput": Object {
