@@ -2,7 +2,7 @@
 
 ## TODO
 
-- [ ] backup remo row data
+- [x] backup remo row data
 - [ ] create dash board base
 - [ ] authn
 - [ ] fetch remo data
