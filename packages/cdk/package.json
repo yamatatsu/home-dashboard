@@ -6,7 +6,8 @@
     "build": "cd ../lambda; yarn build",
     "predeploy": "yarn build",
     "deploy": "cdk deploy --progress=events",
-    "test": "jest"
+    "test": "jest",
+    "type-check": "tsc --noEmit"
   },
   "devDependencies": {
     "@aws-cdk/assert": "1.78.0",
