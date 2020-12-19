@@ -9,7 +9,8 @@
   ],
   "private": true,
   "scripts": {
-    "test": "lerna run --stream test"
+    "test": "lerna run --stream test",
+    "type-check": "lerna run --stream type-check"
   },
   "devDependencies": {
     "lerna": "^3.22.1",

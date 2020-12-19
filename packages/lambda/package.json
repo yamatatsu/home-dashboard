@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "build": "rm -rf ./dist && ncc build -t --external aws-sdk src/index.ts",
-    "test": "jest"
+    "test": "jest",
+    "type-check": "tsc --noEmit"
   },
   "devDependencies": {
     "@types/aws-lambda": "8.10.66",
