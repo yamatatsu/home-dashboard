@@ -1,0 +1,14 @@
+name: PR-to-main
+on: pull_request
+
+jobs:
+  test:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: ./.github/actions/setup
+      - run: yarn test
+  type-check:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: ./.github/actions/setup
+      - run: yarn type-check
