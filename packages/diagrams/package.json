@@ -12,7 +12,7 @@
     "@rediagram/tsconfig": "0.1.1",
     "@ts-graphviz/react": "0.7.0",
     "@types/node": "14.14.14",
-    "@types/react": "16.14.2",
+    "@types/react": "17.0.0",
     "react": "16.14.0",
     "rediagram": "0.2.4",
     "ts-graphviz": "0.13.2",
