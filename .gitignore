@@ -7,3 +7,4 @@ cdk.out
 *.log
 dist
 .env
+.cache
