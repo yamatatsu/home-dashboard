@@ -5,7 +5,6 @@ test("response shape", async () => {
   expect(result).toStrictEqual({
     statusCode: 201,
     body: expect.any(String),
-    headers: { "Access-Control-Allow-Origin": "http://localhost:1234" },
   });
 });
 

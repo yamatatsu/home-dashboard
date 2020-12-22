@@ -12,6 +12,5 @@ export default async function getAuthChallenge(): Promise<APIGatewayProxyStructu
   return {
     statusCode: 201,
     body: JSON.stringify({ challenge }),
-    headers: { "Access-Control-Allow-Origin": "http://localhost:1234" },
   };
 }
