@@ -1,4 +1,7 @@
-import { object, array, string, number } from "yup/es";
+import { create as object } from "yup/lib/object";
+import { create as array } from "yup/lib/array";
+import { create as string } from "yup/lib/string";
+import { create as number } from "yup/lib/number";
 
 export type RemoEvent = {
   partitionKey: string;
