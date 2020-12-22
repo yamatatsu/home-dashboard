@@ -6,6 +6,10 @@ import { S3 } from "./awsSdk";
 describe("backupRemoData", () => {
   const date = new Date("2020/12/17 00:00:00Z");
 
+  beforeEach(() => {
+    console.info = jest.fn();
+  });
+
   test("throw error if message is empty.", async () => {
     await expect(backupRemoData("", date)).rejects.toThrow(
       "Unexpected end of JSON input"
@@ -32,6 +36,8 @@ describe("backupRemoData", () => {
     S3.putObject = putObjectSpy;
     await expect(backupRemoData(message, date)).resolves.toBeUndefined();
 
+    expect(console.info).toHaveBeenCalledTimes(1);
+    expect(console.info).toHaveBeenCalledWith("messageBody: %s", message);
     expect(putObjectSpy).toHaveBeenCalledTimes(1);
     expect(putObjectSpy).toHaveBeenCalledWith({
       Bucket: "test-BUCKET_NAME",

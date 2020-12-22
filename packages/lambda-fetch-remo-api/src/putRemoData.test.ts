@@ -41,7 +41,10 @@ const Message = JSON.stringify([
 const testMessage = JSON.stringify({ MessageId: "test-MessageId", Message });
 
 describe("putRemoData", () => {
-  // TODO: name of tests
+  beforeEach(() => {
+    console.info = jest.fn();
+    console.warn = jest.fn();
+  });
 
   const date = new Date("2020/12/17 00:00:00Z");
   test("throw error if message is empty.", async () => {
@@ -55,6 +58,9 @@ describe("putRemoData", () => {
       Message: "[]",
     });
     await expect(putRemoData(message, date)).resolves.toBeUndefined();
+
+    expect(console.warn).toHaveBeenCalledTimes(1);
+    expect(console.warn).toHaveBeenCalledWith("SQS Message is empty array.");
   });
 
   // TODO: validation test
@@ -67,90 +73,98 @@ describe("putRemoData", () => {
 
   test("RemoData is saved.", async () => {
     process.env = { ...process.env, TABLE_NAME: "test-table-name" };
-    const batchWriteSpy = jest.fn();
-    DocumentClient.batchWrite = batchWriteSpy;
     await expect(putRemoData(testMessage, date)).resolves.toBeUndefined();
 
-    // TODO: use snapshot test
-    expect(batchWriteSpy.mock.calls).toEqual([
-      [
-        {
-          RequestItems: {
-            "test-table-name": [
-              {
-                PutRequest: {
-                  Item: {
-                    createdAt: "2020-12-17T15:01:54Z",
-                    deviceId: "test-device-id-1",
-                    deviceName: "Room1",
-                    partitionKey: "remoEvent:test-device-id-1_te",
-                    sortKey: "2020-12-17T15:01:54Z",
-                    ttl: 1608184800,
-                    type: "te",
-                    value: 13.1,
-                  },
-                },
+    const expected = {
+      RequestItems: {
+        "test-table-name": [
+          {
+            PutRequest: {
+              Item: {
+                createdAt: "2020-12-17T15:01:54Z",
+                deviceId: "test-device-id-1",
+                deviceName: "Room1",
+                partitionKey: "remoEvent:test-device-id-1_te",
+                sortKey: "2020-12-17T15:01:54Z",
+                ttl: 1608184800,
+                type: "te",
+                value: 13.1,
               },
-              {
-                PutRequest: {
-                  Item: {
-                    createdAt: "2020-12-17T15:13:48Z",
-                    deviceId: "test-device-id-2",
-                    deviceName: "Room2",
-                    partitionKey: "remoEvent:test-device-id-2_hu",
-                    sortKey: "2020-12-17T15:13:48Z",
-                    ttl: 1608184800,
-                    type: "hu",
-                    value: 36,
-                  },
-                },
-              },
-              {
-                PutRequest: {
-                  Item: {
-                    createdAt: "2020-12-17T11:08:21Z",
-                    deviceId: "test-device-id-2",
-                    deviceName: "Room2",
-                    partitionKey: "remoEvent:test-device-id-2_il",
-                    sortKey: "2020-12-17T11:08:21Z",
-                    ttl: 1608184800,
-                    type: "il",
-                    value: 21,
-                  },
-                },
-              },
-              {
-                PutRequest: {
-                  Item: {
-                    createdAt: "2020-12-17T15:25:58Z",
-                    deviceId: "test-device-id-2",
-                    deviceName: "Room2",
-                    partitionKey: "remoEvent:test-device-id-2_mo",
-                    sortKey: "2020-12-17T15:25:58Z",
-                    ttl: 1608184800,
-                    type: "mo",
-                    value: 1,
-                  },
-                },
-              },
-              {
-                PutRequest: {
-                  Item: {
-                    createdAt: "2020-12-17T15:13:08Z",
-                    deviceId: "test-device-id-2",
-                    deviceName: "Room2",
-                    partitionKey: "remoEvent:test-device-id-2_te",
-                    sortKey: "2020-12-17T15:13:08Z",
-                    ttl: 1608184800,
-                    type: "te",
-                    value: 17.4,
-                  },
-                },
-              },
-            ],
+            },
           },
-        },
-      ],
-    ]);
+          {
+            PutRequest: {
+              Item: {
+                createdAt: "2020-12-17T15:13:48Z",
+                deviceId: "test-device-id-2",
+                deviceName: "Room2",
+                partitionKey: "remoEvent:test-device-id-2_hu",
+                sortKey: "2020-12-17T15:13:48Z",
+                ttl: 1608184800,
+                type: "hu",
+                value: 36,
+              },
+            },
+          },
+          {
+            PutRequest: {
+              Item: {
+                createdAt: "2020-12-17T11:08:21Z",
+                deviceId: "test-device-id-2",
+                deviceName: "Room2",
+                partitionKey: "remoEvent:test-device-id-2_il",
+                sortKey: "2020-12-17T11:08:21Z",
+                ttl: 1608184800,
+                type: "il",
+                value: 21,
+              },
+            },
+          },
+          {
+            PutRequest: {
+              Item: {
+                createdAt: "2020-12-17T15:25:58Z",
+                deviceId: "test-device-id-2",
+                deviceName: "Room2",
+                partitionKey: "remoEvent:test-device-id-2_mo",
+                sortKey: "2020-12-17T15:25:58Z",
+                ttl: 1608184800,
+                type: "mo",
+                value: 1,
+              },
+            },
+          },
+          {
+            PutRequest: {
+              Item: {
+                createdAt: "2020-12-17T15:13:08Z",
+                deviceId: "test-device-id-2",
+                deviceName: "Room2",
+                partitionKey: "remoEvent:test-device-id-2_te",
+                sortKey: "2020-12-17T15:13:08Z",
+                ttl: 1608184800,
+                type: "te",
+                value: 17.4,
+              },
+            },
+          },
+        ],
+      },
+    };
+
+    expect(console.info).toHaveBeenCalledTimes(2);
+    expect(console.info).toHaveBeenNthCalledWith(
+      1,
+      "messageBody: %s",
+      testMessage
+    );
+    expect(console.info).toHaveBeenNthCalledWith(
+      2,
+      "it will be saved as %o",
+      expected
+    );
+    // TODO: use snapshot test
+    expect(DocumentClient.batchWrite).toHaveBeenCalledTimes(1);
+    expect(DocumentClient.batchWrite).toHaveBeenCalledWith(expected);
   });
 });

@@ -2,8 +2,6 @@ import fetch from "node-fetch";
 import { SNS } from "./awsSdk";
 
 export default async function fetchRemoApi(): Promise<void> {
-  console.info("invoked!!!");
-
   const { REMO_TOKEN, TOPIC_ARN } = process.env;
   if (!REMO_TOKEN)
     throw new Error("Enviroment variable `REMO_TOKEN` is required.");

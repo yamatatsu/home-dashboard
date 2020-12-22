@@ -8,13 +8,12 @@ import { SNS } from "./awsSdk";
 const { Response } = jest.requireActual("node-fetch");
 
 describe("fetchRemoApi", () => {
-  let publishSpy: jest.Mock;
+  beforeEach(() => {
+    console.info = jest.fn();
+    console.timeEnd = jest.fn();
 
-  beforeAll(() => {
     // @ts-ignore
     fetch.mockReturnValue(Promise.resolve(new Response("test-Response")));
-    publishSpy = jest.fn();
-    SNS.publish = publishSpy;
   });
 
   // TODO: name of tests
@@ -42,8 +41,13 @@ describe("fetchRemoApi", () => {
 
     await expect(fetchRemoApi()).resolves.toBeUndefined();
 
-    expect(publishSpy).toHaveBeenCalledTimes(1);
-    expect(publishSpy).toHaveBeenCalledWith({
+    expect(console.info).toHaveBeenCalledTimes(1);
+    expect(console.info).toHaveBeenCalledWith(
+      "A SQS message will send as `%s`",
+      "test-Response"
+    );
+    expect(SNS.publish).toHaveBeenCalledTimes(1);
+    expect(SNS.publish).toHaveBeenCalledWith({
       TopicArn: "test-TOPIC_ARN",
       Message: "test-Response",
     });

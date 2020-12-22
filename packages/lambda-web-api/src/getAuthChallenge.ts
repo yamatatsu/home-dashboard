@@ -1,8 +1,6 @@
 import { APIGatewayProxyStructuredResultV2 } from "aws-lambda";
 import * as crypto from "crypto";
 
-console.info("Loading function");
-
 export default async function getAuthChallenge(): Promise<APIGatewayProxyStructuredResultV2> {
   const challenge = crypto
     .randomBytes(128)
