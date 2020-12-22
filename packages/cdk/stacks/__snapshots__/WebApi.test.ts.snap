@@ -1,0 +1,156 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`WebApi Stack 1`] = `
+Object {
+  "Resources": Object {
+    "HttpApiDefaultStage3EEB07D6": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "HttpApiF5A9A8A7",
+        },
+        "AutoDeploy": true,
+        "StageName": "$default",
+      },
+      "Type": "AWS::ApiGatewayV2::Stage",
+    },
+    "HttpApiF5A9A8A7": Object {
+      "Properties": Object {
+        "CorsConfiguration": Object {
+          "AllowOrigins": Array [
+            "test-allowOrigins",
+          ],
+        },
+        "Name": "HomeDashboardApi",
+        "ProtocolType": "HTTP",
+      },
+      "Type": "AWS::ApiGatewayV2::Api",
+    },
+    "HttpApiGETauthchallenge573B056E": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "HttpApiF5A9A8A7",
+        },
+        "RouteKey": "GET /auth/challenge",
+        "Target": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "integrations/",
+              Object {
+                "Ref": "HttpApiGETauthchallengeGETauthchallengeIntegrationBDA6710B",
+              },
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::ApiGatewayV2::Route",
+    },
+    "HttpApiGETauthchallengeGETauthchallengeIntegrationBDA6710B": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "HttpApiF5A9A8A7",
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": Object {
+          "Fn::GetAtt": Array [
+            "getAuthChallenge3B9F2065",
+            "Arn",
+          ],
+        },
+        "PayloadFormatVersion": "2.0",
+      },
+      "Type": "AWS::ApiGatewayV2::Integration",
+    },
+    "HttpApiGETauthchallengeTargetHttpApiGETauthchallenge682056F5PermissionA2BFF7DC": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "getAuthChallenge3B9F2065",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "HttpApiF5A9A8A7",
+              },
+              "/*/*/auth/challenge",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "getAuthChallenge3B9F2065": Object {
+      "DependsOn": Array [
+        "getAuthChallengeServiceRoleCA47EE4D",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "ZipFile": "xxx",
+        },
+        "FunctionName": "HomeDashboard-WebApi",
+        "Handler": "index.getAuthChallenge",
+        "MemorySize": 128,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "getAuthChallengeServiceRoleCA47EE4D",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs12.x",
+        "Timeout": 3,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "getAuthChallengeServiceRoleCA47EE4D": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+  },
+}
+`;

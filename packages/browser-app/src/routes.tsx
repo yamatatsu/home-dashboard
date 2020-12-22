@@ -1,6 +1,12 @@
-import React, { FC } from "react";
-import { Path, useRoutes, useNavigate, Link } from "rocon/react";
-import { Redirect } from "rocon/lib/react/components/Redirect";
+import React, { FC, useLayoutEffect } from "react";
+import {
+  Path,
+  useRoutes,
+  useNavigate,
+  Link,
+  ReactRouteRecord,
+} from "rocon/react";
+// import { Redirect } from "rocon/lib/react/components/Redirect";
 import { Top } from "./pages/Top";
 import { SignIn } from "./pages/SignIn";
 import { SignUp } from "./pages/SignUp";
@@ -37,4 +43,14 @@ export const RedirectTop: FC = () => {
 };
 export const RedirectSignIn: FC = () => {
   return <Redirect route={toplevelRoutes._.signIn} />;
+};
+
+const Redirect: FC<{
+  route: ReactRouteRecord<{}>;
+}> = (props) => {
+  const navigate = useNavigate();
+  useLayoutEffect(() => {
+    navigate.replace(props.route);
+  });
+  return null;
 };

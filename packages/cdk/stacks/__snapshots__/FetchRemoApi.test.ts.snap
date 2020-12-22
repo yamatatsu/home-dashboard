@@ -64,7 +64,7 @@ Object {
             },
           },
         },
-        "FunctionName": "BackupRemoData",
+        "FunctionName": "HomeDashboard-BackupRemoData",
         "Handler": "index.backupRemoData",
         "MemorySize": 128,
         "Role": Object {
@@ -246,7 +246,7 @@ Object {
             },
           },
         },
-        "FunctionName": "FetchRemoApi",
+        "FunctionName": "HomeDashboard-FetchRemoApi",
         "Handler": "index.fetchRemoApi",
         "MemorySize": 128,
         "Role": Object {
@@ -330,7 +330,7 @@ Object {
             },
           },
         },
-        "FunctionName": "PutRemoData",
+        "FunctionName": "HomeDashboard-PutRemoData",
         "Handler": "index.putRemoData",
         "MemorySize": 128,
         "Role": Object {

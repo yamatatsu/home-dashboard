@@ -1,5 +1,5 @@
 {
-  "name": "home-dashboard-lambda",
+  "name": "home-dashboard-lambda-fetch-remo-api",
   "version": "0.1.0",
   "private": true,
   "scripts": {

@@ -2,6 +2,9 @@
   "name": "home-dashboard-browser-app",
   "version": "1.0.0",
   "private": true,
+  "browserslist": [
+    "last 1 Chrome version"
+  ],
   "scripts": {
     "start": "parcel index.html",
     "build": "parcel build index.html",

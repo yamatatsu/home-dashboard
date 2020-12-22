@@ -4,6 +4,7 @@
 
 - [x] backup remo row data
 - [x] create dash board base
+- [ ] test lambda log(https://stackoverflow.com/a/44493045)
 - [ ] web api
   - [ ] signUp(Web Authn)
   - [ ] signIn(Web Authn)
