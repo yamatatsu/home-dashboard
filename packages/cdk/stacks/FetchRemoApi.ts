@@ -34,7 +34,7 @@ export class FetchRemoApi extends cdk.Stack {
     });
 
     const fetchRemoApi = new lambda.Function(this, "fetchRemoApi", {
-      functionName: "FetchRemoApi",
+      functionName: "HomeDashboard-FetchRemoApi",
       code,
       runtime: lambda.Runtime.NODEJS_12_X,
       handler: "index.fetchRemoApi",
@@ -46,7 +46,7 @@ export class FetchRemoApi extends cdk.Stack {
       timeout: cdk.Duration.seconds(3),
     });
     const putRemoData = new lambda.Function(this, "putRemoData", {
-      functionName: "PutRemoData",
+      functionName: "HomeDashboard-PutRemoData",
       code,
       runtime: lambda.Runtime.NODEJS_12_X,
       handler: "index.putRemoData",
@@ -57,7 +57,7 @@ export class FetchRemoApi extends cdk.Stack {
       timeout: cdk.Duration.seconds(3),
     });
     const backupRemoData = new lambda.Function(this, "backupRemoData", {
-      functionName: "BackupRemoData",
+      functionName: "HomeDashboard-BackupRemoData",
       code,
       runtime: lambda.Runtime.NODEJS_12_X,
       handler: "index.backupRemoData",
