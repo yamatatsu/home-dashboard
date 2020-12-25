@@ -1,70 +1,103 @@
 import React, { FC } from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import { useGoToSignIn } from "../routes";
 import { RedirectIfSignedIn } from "../componrnts/RedirectIfSignedIn";
-import { CHALLENGE_URL } from "../constants";
+import { SIGN_UP_CHALLENGE_URL } from "../constants";
+
+const schema = Yup.object().shape({
+  username: Yup.string().required().min(2).max(100),
+});
 
 export const SignUp: FC = () => {
   const goToSignIn = useGoToSignIn();
+
+  const formik = useFormik({
+    initialValues: {
+      username: "",
+    },
+    validationSchema: schema,
+    onSubmit: (values) => {
+      signUp(values.username)
+        .then(() => {
+          goToSignIn();
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    },
+  });
 
   return (
     <RedirectIfSignedIn>
       <h2>Sign Up</h2>
 
-      <div>
-        <button
-          type="button"
-          onClick={() => {
-            signUp()
-              .then(() => {
-                goToSignIn();
-              })
-              .catch((err) => {
-                console.error(err);
-              });
-          }}
-        >
-          Sign Up
-        </button>
-      </div>
+      <form onSubmit={formik.handleSubmit}>
+        <div>
+          <label htmlFor="username">Username: </label>
+          <input
+            id="username"
+            name="username"
+            type="username"
+            onChange={formik.handleChange}
+            value={formik.values.username}
+          />
+          {formik.errors.username && formik.touched.username ? (
+            <div>{formik.errors.username}</div>
+          ) : null}
+        </div>
+        <button type="submit">Submit</button>
+      </form>
     </RedirectIfSignedIn>
   );
 };
 
-async function signUp() {
-  const response = await fetch(CHALLENGE_URL);
+async function signUp(username: string) {
+  const response = await fetch(SIGN_UP_CHALLENGE_URL, {
+    method: "POST",
+    credentials: "include",
+    mode: "cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username }),
+  });
+  if (!response.ok) {
+    throw new Error("Server response is error.");
+  }
   const json = await response.json();
-  const challenge = json.challenge;
+
+  const challenge = json.publicKeyOptions.challenge;
+  const userId = json.publicKeyOptions.user.id;
   if (!challenge || typeof challenge !== "string") {
     throw new Error(`challenge should be string.`);
   }
+  if (!userId || typeof userId !== "string") {
+    throw new Error(`userId should be string.`);
+  }
 
-  const res = await navigator.credentials.create({
-    publicKey: {
-      attestation: "none",
-      authenticatorSelection: {
-        // authenticatorAttachment: AuthenticatorAttachment,
-        requireResidentKey: false,
-        userVerification: "preferred",
+  return navigator.credentials
+    .create({
+      publicKey: {
+        ...json.publicKeyOptions,
+        challenge: new TextEncoder().encode(challenge),
+        user: {
+          ...json.publicKeyOptions.user,
+          id: new TextEncoder().encode(userId),
+        },
       },
-      challenge: new TextEncoder().encode(challenge),
-      // excludeCredentials?: PublicKeyCredentialDescriptor[],
-      // extensions?: AuthenticationExtensionsClientInputs,
-      pubKeyCredParams: [
-        { alg: -7, type: "public-key" },
-        { alg: -257, type: "public-key" },
-      ],
-      rp: { name: "Yamatatsu Home Dashboard" },
-      // timeout?: number,
-      user: {
-        id: new TextEncoder().encode("dummy-username"),
-        name: "dummy-username",
-        displayName: "Dummy taro",
-        // icon?: string,
+    })
+    .then(
+      (res) => {
+        console.log(res);
+        return res;
       },
-    },
-    // signal?: AbortSignal,
-  });
+      (err) => {
+        // WebAuthn の Popup がキャンセルされた場合はログを出さない。
+        if (err.name === "NotAllowedError") {
+          console.info("WebAuthn Popup is canceled.");
+          return;
+        }
 
-  console.log(res);
-  return res;
+        return Promise.reject(err);
+      }
+    );
 }
