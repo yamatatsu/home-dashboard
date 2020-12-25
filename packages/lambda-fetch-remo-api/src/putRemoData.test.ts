@@ -48,7 +48,7 @@ describe("putRemoData", () => {
 
   const date = new Date("2020/12/17 00:00:00Z");
 
-  test("throw error if env is needed.", async () => {
+  test("throw error if env TABLE_NAME is undefined.", async () => {
     await expect(putRemoData(testMessage, date)).rejects.toThrow(
       "Enviroment variable `TABLE_NAME` is required."
     );

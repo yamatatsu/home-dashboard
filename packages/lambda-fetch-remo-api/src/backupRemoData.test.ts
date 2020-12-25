@@ -10,7 +10,7 @@ describe("backupRemoData", () => {
     console.info = jest.fn();
   });
 
-  test("throw error if env BUCKET_NAME is needed.", async () => {
+  test("throw error if env BUCKET_NAME is undefined.", async () => {
     const message = JSON.stringify({
       MessageId: "test-MessageId",
       Message: '["test-Message-1"]',
