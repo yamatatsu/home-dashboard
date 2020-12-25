@@ -17,6 +17,11 @@ export default async function putRemoData(
   messageBody: string,
   date: Date
 ): Promise<void> {
+  // jest でのテストしやすさの為に関数内で環境変数を展開する
+  const { TABLE_NAME } = process.env;
+  if (!TABLE_NAME)
+    throw new Error("Enviroment variable `TABLE_NAME` is required.");
+
   console.info("messageBody: %s", messageBody);
   const sqsMessage = await sqsMessageSchema.validate(JSON.parse(messageBody));
 
@@ -28,10 +33,6 @@ export default async function putRemoData(
     console.warn("SQS Message is empty array.");
     return;
   }
-
-  const { TABLE_NAME } = process.env;
-  if (!TABLE_NAME)
-    throw new Error("Enviroment variable `TABLE_NAME` is required.");
 
   const ttl = getTtl(date, 6);
 
