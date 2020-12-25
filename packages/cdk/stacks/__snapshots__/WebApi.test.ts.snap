@@ -5,6 +5,15 @@ Object {
   "Resources": Object {
     "HttpApiDefaultStage3EEB07D6": Object {
       "Properties": Object {
+        "AccessLogSettings": Object {
+          "DestinationArn": Object {
+            "Fn::GetAtt": Array [
+              "apiLogGroupC7068A49",
+              "Arn",
+            ],
+          },
+          "Format": "{ \\"requestId\\":\\"$context.requestId\\", \\"ip\\": \\"$context.identity.sourceIp\\", \\"requestTime\\":\\"$context.requestTime\\", \\"httpMethod\\":\\"$context.httpMethod\\",\\"routeKey\\":\\"$context.routeKey\\", \\"status\\":\\"$context.status\\",\\"protocol\\":\\"$context.protocol\\", \\"responseLength\\":\\"$context.responseLength\\" }",
+        },
         "ApiId": Object {
           "Ref": "HttpApiF5A9A8A7",
         },
@@ -323,6 +332,14 @@ Object {
         },
       },
       "Type": "AWS::Lambda::Permission",
+    },
+    "apiLogGroupC7068A49": Object {
+      "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "RetentionInDays": 731,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Delete",
     },
     "signUpChallengeE4AB8E64": Object {
       "DependsOn": Array [

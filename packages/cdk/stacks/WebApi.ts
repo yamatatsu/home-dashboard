@@ -2,6 +2,7 @@ import * as cdk from "@aws-cdk/core";
 import * as lambda from "@aws-cdk/aws-lambda";
 import * as dynamodb from "@aws-cdk/aws-dynamodb";
 import * as apigateway from "@aws-cdk/aws-apigatewayv2";
+import * as logs from "@aws-cdk/aws-logs";
 import { LambdaProxyIntegration } from "@aws-cdk/aws-apigatewayv2-integrations";
 
 type WebApiProps = cdk.StackProps & {
@@ -35,6 +36,18 @@ export class WebApi extends cdk.Stack {
         allowCredentials: true,
       },
     });
+    const logGroup = new logs.LogGroup(this, "apiLogGroup", {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+    if (api.defaultStage) {
+      const cfnStage = api.defaultStage.node
+        .defaultChild as apigateway.CfnStage;
+      cfnStage.accessLogSettings = {
+        destinationArn: logGroup.logGroupArn,
+        format:
+          '{ "requestId":"$context.requestId", "ip": "$context.identity.sourceIp", "requestTime":"$context.requestTime", "httpMethod":"$context.httpMethod","routeKey":"$context.routeKey", "status":"$context.status","protocol":"$context.protocol", "responseLength":"$context.responseLength" }',
+      };
+    }
 
     api.addRoutes({
       path: "/auth/signUpChallenge",
