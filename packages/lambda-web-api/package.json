@@ -8,7 +8,7 @@
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
-    "@types/aws-lambda": "8.10.67",
+    "@types/aws-lambda": "8.10.68",
     "@types/cbor": "5.0.1",
     "@types/jest": "26.0.19",
     "@types/jwk-to-pem": "2.0.0",
