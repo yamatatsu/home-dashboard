@@ -64,7 +64,6 @@ async function signUp(username: string): Promise<void> {
   }
 
   const decodedCredential = publicKeyCredentialToJSON(result.credential);
-  console.log(decodedCredential);
 
   await fetchSignUp({ username, credential: decodedCredential });
 }
