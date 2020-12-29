@@ -58,42 +58,16 @@ export default async function signUpChallenge(
     Item: {
       partitionKey: `user:${username}`,
       sortKey: `signUpChallenge:${challenge}`,
-      challenge,
       username,
+      signUpChallenge: challenge,
       createdAt: now.toISOString(),
     },
   };
-
   console.info("It will be saved. params: ", params);
   await DocumentClient.put(params);
 
-  const publicKeyOptions = generatePublicKeyOptions(username, challenge);
-
   return {
     statusCode: 201,
-    body: JSON.stringify({ publicKeyOptions }),
+    body: JSON.stringify({ challenge }),
   };
 }
-
-// TODO: def response type
-const generatePublicKeyOptions = (username: string, challenge: string) => {
-  return {
-    challenge,
-    attestation: "direct",
-    authenticatorSelection: {
-      // authenticatorAttachment: AuthenticatorAttachment,
-      requireResidentKey: false,
-      userVerification: "preferred",
-    },
-    rp: {
-      id: "home.yamatatsu.dev",
-      name: "Home Dashboard",
-    },
-    user: {
-      id: username,
-      name: username,
-      displayName: username,
-    },
-    pubKeyCredParams: [{ type: "public-key", alg: -7 }], // "ES256" IANA COSE Algorithms registry
-  };
-};

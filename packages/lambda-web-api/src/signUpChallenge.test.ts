@@ -101,9 +101,9 @@ test("Success pattern", async () => {
     TableName: "test-AUTH_TABLE_NAME",
     Item: {
       partitionKey: "user:test-username",
-      sortKey: expect.any(String),
-      challenge: expect.any(String),
+      sortKey: expect.stringMatching(/^signUpChallenge\:/),
       username: "test-username",
+      signUpChallenge: expect.any(String),
       createdAt: date.toISOString(),
     },
   });
@@ -113,20 +113,6 @@ test("Success pattern", async () => {
     body: expect.any(String),
   });
   expect(JSON.parse(result.body ?? "")).toStrictEqual({
-    publicKeyOptions: {
-      challenge: expect.any(String),
-      attestation: "direct",
-      authenticatorSelection: {
-        requireResidentKey: false,
-        userVerification: "preferred",
-      },
-      rp: { id: "home.yamatatsu.dev", name: "Home Dashboard" },
-      user: {
-        id: "test-username",
-        name: "test-username",
-        displayName: "test-username",
-      },
-      pubKeyCredParams: [{ type: "public-key", alg: -7 }],
-    },
+    challenge: expect.any(String),
   });
 });
