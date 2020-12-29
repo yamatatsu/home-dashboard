@@ -1,4 +1,5 @@
 const API_ORIGIN = process.env.API_ORIGIN;
+export const DEV = process.env.NODE_ENV === "development";
 
 export const SIGN_UP_CHALLENGE_URL = API_ORIGIN + "/auth/signUpChallenge";
 export const SIGN_UP_URL = API_ORIGIN + "/auth/signUp";

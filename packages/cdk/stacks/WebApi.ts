@@ -9,6 +9,7 @@ type WebApiProps = cdk.StackProps & {
   code: lambda.Code;
   homeAuthTable: dynamodb.ITable;
   allowOrigins: string[];
+  rpId: string;
   dev: boolean;
 };
 
@@ -25,7 +26,21 @@ export class WebApi extends cdk.Stack {
         AUTH_TABLE_NAME: props.homeAuthTable.tableName,
       },
     });
+    const signUp = new lambda.Function(this, "signUp", {
+      functionName: `HomeDashboard-signUp${props.dev ? "-dev" : ""}`,
+      code: props.code,
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: "index.signUp",
+      environment: {
+        AUTH_TABLE_NAME: props.homeAuthTable.tableName,
+        ALLOW_ORIGINS: props.allowOrigins.join(","),
+        RP_ID: props.rpId,
+      },
+      memorySize: 256,
+      timeout: cdk.Duration.seconds(10),
+    });
     props.homeAuthTable.grantReadWriteData(signUpChallenge);
+    props.homeAuthTable.grantReadWriteData(signUp);
 
     const api = new apigateway.HttpApi(this, "HttpApi", {
       apiName: `HomeDashboard-WebApi${props.dev ? "-dev" : ""}`,
@@ -57,7 +72,7 @@ export class WebApi extends cdk.Stack {
     api.addRoutes({
       path: "/auth/signUp",
       methods: [apigateway.HttpMethod.POST],
-      integration: new LambdaProxyIntegration({ handler: signUpChallenge }),
+      integration: new LambdaProxyIntegration({ handler: signUp }),
     });
     api.addRoutes({
       path: "/auth/signInChallenge",

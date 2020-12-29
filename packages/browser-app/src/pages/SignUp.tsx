@@ -1,9 +1,11 @@
 import React, { FC } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import base64url from "base64url";
 import { useGoToSignIn } from "../routes";
 import { RedirectIfSignedIn } from "../componrnts/RedirectIfSignedIn";
-import { SIGN_UP_CHALLENGE_URL } from "../constants";
+import { fetchSignUp, fetchSignUpChallenge } from "../lib/fetching";
+import { createCredentials } from "../lib/WebAuthn";
 
 const schema = Yup.object().shape({
   username: Yup.string().required().min(2).max(100),
@@ -52,52 +54,39 @@ export const SignUp: FC = () => {
   );
 };
 
-async function signUp(username: string) {
-  const response = await fetch(SIGN_UP_CHALLENGE_URL, {
-    method: "POST",
-    credentials: "include",
-    mode: "cors",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username }),
-  });
-  if (!response.ok) {
-    throw new Error("Server response is error.");
-  }
-  const json = await response.json();
+async function signUp(username: string): Promise<void> {
+  const challenge = await fetchSignUpChallenge(username);
 
-  const challenge = json.publicKeyOptions.challenge;
-  const userId = json.publicKeyOptions.user.id;
-  if (!challenge || typeof challenge !== "string") {
-    throw new Error(`challenge should be string.`);
-  }
-  if (!userId || typeof userId !== "string") {
-    throw new Error(`userId should be string.`);
+  const result = await createCredentials(challenge, username);
+  if (result.canceled) {
+    console.info("WebAuthn Popup is canceled.");
+    return;
   }
 
-  return navigator.credentials
-    .create({
-      publicKey: {
-        ...json.publicKeyOptions,
-        challenge: new TextEncoder().encode(challenge),
-        user: {
-          ...json.publicKeyOptions.user,
-          id: new TextEncoder().encode(userId),
-        },
-      },
-    })
-    .then(
-      (res) => {
-        console.log(res);
-        return res;
-      },
-      (err) => {
-        // WebAuthn の Popup がキャンセルされた場合はログを出さない。
-        if (err.name === "NotAllowedError") {
-          console.info("WebAuthn Popup is canceled.");
-          return;
-        }
+  const decodedCredential = publicKeyCredentialToJSON(result.credential);
+  console.log(decodedCredential);
 
-        return Promise.reject(err);
-      }
-    );
+  await fetchSignUp({ username, credential: decodedCredential });
 }
+
+const publicKeyCredentialToJSON = (pubKeyCred: any): any => {
+  if (pubKeyCred instanceof Array) {
+    return pubKeyCred.map(publicKeyCredentialToJSON);
+  }
+
+  if (pubKeyCred instanceof ArrayBuffer) {
+    return base64url.encode(Buffer.from(pubKeyCred));
+  }
+
+  if (pubKeyCred instanceof Object) {
+    const obj: Record<string, any> = {};
+
+    for (let key in pubKeyCred) {
+      obj[key] = publicKeyCredentialToJSON(pubKeyCred[key]);
+    }
+
+    return obj;
+  }
+
+  return pubKeyCred;
+};

@@ -16,6 +16,7 @@ test("WebApi Stack", () => {
     code: lambda.Code.fromInline("xxx"),
     homeAuthTable: table,
     allowOrigins: ["test-allowOrigins"],
+    rpId: "test-rpId",
     dev: false,
   });
 
