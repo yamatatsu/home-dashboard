@@ -8,18 +8,20 @@ import { DocumentClient } from "./awsSdk";
 
 type Event = Pick<APIGatewayProxyEventV2, "body">;
 
-const eventSchema = Yup.object().shape({ body: Yup.string().required() });
-const bodySchema = Yup.object().shape({
-  username: Yup.string().required().min(2).max(100),
-});
-
-const { AUTH_TABLE_NAME } = process.env;
+const eventSchema = Yup.object()
+  .required()
+  .shape({ body: Yup.string().required() });
+const bodySchema = Yup.object()
+  .required()
+  .shape({
+    username: Yup.string().required().min(2).max(100),
+  });
 
 /**
- * Sign Up 処理
+ * Sign Up Challenge 処理
  * WebAuthnなのでusernameの重複チェックはしない。
  * 本来であればこのようなMFAではないWebAuthn実装をする場合、usernameをemailなどにして、OTPによるメアドの所有チェックをする必要があるが今回は簡便のためにこれを行わない。
- * 代わりに、SignUpを承認制とし、管理者がapproveしないとSignInできないようにする。この実装はサイトのユーザーが有限（今回は家族のみ）の場合にも妥当であると考える。
+ * 代わりに、SignUpを承認制とし、管理者がapproveしないとSignInできないようにする。この実装はサイトのユーザーが有限（今回は家族のみ）の場合に妥当であると考える。
  *
  * @param event
  */
@@ -27,6 +29,7 @@ export default async function signUpChallenge(
   event: Event,
   now: Date
 ): Promise<APIGatewayProxyStructuredResultV2> {
+  const { AUTH_TABLE_NAME } = process.env;
   if (!AUTH_TABLE_NAME) {
     throw new Error("Enviroment variable `AUTH_TABLE_NAME` is required.");
   }
@@ -53,11 +56,11 @@ export default async function signUpChallenge(
   const params = {
     TableName: AUTH_TABLE_NAME,
     Item: {
-      partitionKey: `username:${username}`,
+      partitionKey: `user:${username}`,
       sortKey: `signUpChallenge:${challenge}`,
       challenge,
       username,
-      createdAt: now,
+      createdAt: now.toISOString(),
     },
   };
 
@@ -82,7 +85,10 @@ const generatePublicKeyOptions = (username: string, challenge: string) => {
       requireResidentKey: false,
       userVerification: "preferred",
     },
-    rp: { name: "FIDO Examples Corporation" },
+    rp: {
+      id: "home.yamatatsu.dev",
+      name: "Home Dashboard",
+    },
     user: {
       id: username,
       name: username,
