@@ -10,19 +10,20 @@ describe("backupRemoData", () => {
     console.info = jest.fn();
   });
 
-  test("throw error if message is empty.", async () => {
-    await expect(backupRemoData("", date)).rejects.toThrow(
-      "Unexpected end of JSON input"
-    );
-  });
-
-  test("throw error if env BUCKET_NAME is needed.", async () => {
+  test("throw error if env BUCKET_NAME is undefined.", async () => {
     const message = JSON.stringify({
       MessageId: "test-MessageId",
       Message: '["test-Message-1"]',
     });
     await expect(backupRemoData(message, date)).rejects.toThrow(
       "Enviroment variable `BUCKET_NAME` is required."
+    );
+  });
+
+  test("throw error if message is empty.", async () => {
+    process.env = { ...process.env, BUCKET_NAME: "test-BUCKET_NAME" };
+    await expect(backupRemoData("", date)).rejects.toThrow(
+      "Unexpected end of JSON input"
     );
   });
 

@@ -24,6 +24,8 @@ const fetchRemoApi = new FetchRemoApi(app, "FetchRemoApi", {
 
 new WebApi(app, "WebApi-development", {
   code: lambda.Code.fromAsset(`${__dirname}/../../lambda-web-api/dist`),
+  homeAuthTable: dynamodb.homeAuthTable,
   allowOrigins: ["http://localhost:1234"],
+  rpId: "localhost",
   dev: true,
 });

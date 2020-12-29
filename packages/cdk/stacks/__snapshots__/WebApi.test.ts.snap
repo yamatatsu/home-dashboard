@@ -5,6 +5,15 @@ Object {
   "Resources": Object {
     "HttpApiDefaultStage3EEB07D6": Object {
       "Properties": Object {
+        "AccessLogSettings": Object {
+          "DestinationArn": Object {
+            "Fn::GetAtt": Array [
+              "apiLogGroupC7068A49",
+              "Arn",
+            ],
+          },
+          "Format": "{ \\"requestId\\":\\"$context.requestId\\", \\"ip\\": \\"$context.identity.sourceIp\\", \\"requestTime\\":\\"$context.requestTime\\", \\"httpMethod\\":\\"$context.httpMethod\\",\\"routeKey\\":\\"$context.routeKey\\", \\"status\\":\\"$context.status\\",\\"protocol\\":\\"$context.protocol\\", \\"responseLength\\":\\"$context.responseLength\\" }",
+        },
         "ApiId": Object {
           "Ref": "HttpApiF5A9A8A7",
         },
@@ -16,28 +25,35 @@ Object {
     "HttpApiF5A9A8A7": Object {
       "Properties": Object {
         "CorsConfiguration": Object {
+          "AllowCredentials": true,
+          "AllowHeaders": Array [
+            "content-type",
+          ],
+          "AllowMethods": Array [
+            "POST",
+          ],
           "AllowOrigins": Array [
             "test-allowOrigins",
           ],
         },
-        "Name": "HomeDashboardApi",
+        "Name": "HomeDashboard-WebApi",
         "ProtocolType": "HTTP",
       },
       "Type": "AWS::ApiGatewayV2::Api",
     },
-    "HttpApiGETauthchallenge573B056E": Object {
+    "HttpApiPOSTauthsignIn1C78838F": Object {
       "Properties": Object {
         "ApiId": Object {
           "Ref": "HttpApiF5A9A8A7",
         },
-        "RouteKey": "GET /auth/challenge",
+        "RouteKey": "POST /auth/signIn",
         "Target": Object {
           "Fn::Join": Array [
             "",
             Array [
               "integrations/",
               Object {
-                "Ref": "HttpApiGETauthchallengeGETauthchallengeIntegrationBDA6710B",
+                "Ref": "HttpApiPOSTauthsignInPOSTauthsignInIntegration92E7A2D7",
               },
             ],
           ],
@@ -45,7 +61,27 @@ Object {
       },
       "Type": "AWS::ApiGatewayV2::Route",
     },
-    "HttpApiGETauthchallengeGETauthchallengeIntegrationBDA6710B": Object {
+    "HttpApiPOSTauthsignInChallengeBEAE4341": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "HttpApiF5A9A8A7",
+        },
+        "RouteKey": "POST /auth/signInChallenge",
+        "Target": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "integrations/",
+              Object {
+                "Ref": "HttpApiPOSTauthsignInChallengePOSTauthsignInChallengeIntegrationCB941692",
+              },
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::ApiGatewayV2::Route",
+    },
+    "HttpApiPOSTauthsignInChallengePOSTauthsignInChallengeIntegrationCB941692": Object {
       "Properties": Object {
         "ApiId": Object {
           "Ref": "HttpApiF5A9A8A7",
@@ -53,7 +89,7 @@ Object {
         "IntegrationType": "AWS_PROXY",
         "IntegrationUri": Object {
           "Fn::GetAtt": Array [
-            "getAuthChallenge3B9F2065",
+            "signUpChallengeE4AB8E64",
             "Arn",
           ],
         },
@@ -61,12 +97,12 @@ Object {
       },
       "Type": "AWS::ApiGatewayV2::Integration",
     },
-    "HttpApiGETauthchallengeTargetHttpApiGETauthchallenge682056F5PermissionA2BFF7DC": Object {
+    "HttpApiPOSTauthsignInChallengeTargetHttpApiPOSTauthsignInChallengeF386A038Permission7F2D1FB3": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "getAuthChallenge3B9F2065",
+            "signUpChallengeE4AB8E64",
             "Arn",
           ],
         },
@@ -91,36 +127,281 @@ Object {
               Object {
                 "Ref": "HttpApiF5A9A8A7",
               },
-              "/*/*/auth/challenge",
+              "/*/*/auth/signInChallenge",
             ],
           ],
         },
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "getAuthChallenge3B9F2065": Object {
+    "HttpApiPOSTauthsignInPOSTauthsignInIntegration92E7A2D7": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "HttpApiF5A9A8A7",
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": Object {
+          "Fn::GetAtt": Array [
+            "signUpChallengeE4AB8E64",
+            "Arn",
+          ],
+        },
+        "PayloadFormatVersion": "2.0",
+      },
+      "Type": "AWS::ApiGatewayV2::Integration",
+    },
+    "HttpApiPOSTauthsignInTargetHttpApiPOSTauthsignIn59380A31Permission1B78D519": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "signUpChallengeE4AB8E64",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "HttpApiF5A9A8A7",
+              },
+              "/*/*/auth/signIn",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "HttpApiPOSTauthsignUp853A73FF": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "HttpApiF5A9A8A7",
+        },
+        "RouteKey": "POST /auth/signUp",
+        "Target": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "integrations/",
+              Object {
+                "Ref": "HttpApiPOSTauthsignUpPOSTauthsignUpIntegration1BD19CA0",
+              },
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::ApiGatewayV2::Route",
+    },
+    "HttpApiPOSTauthsignUpChallengeE256B5D4": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "HttpApiF5A9A8A7",
+        },
+        "RouteKey": "POST /auth/signUpChallenge",
+        "Target": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "integrations/",
+              Object {
+                "Ref": "HttpApiPOSTauthsignUpChallengePOSTauthsignUpChallengeIntegrationACC93027",
+              },
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::ApiGatewayV2::Route",
+    },
+    "HttpApiPOSTauthsignUpChallengePOSTauthsignUpChallengeIntegrationACC93027": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "HttpApiF5A9A8A7",
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": Object {
+          "Fn::GetAtt": Array [
+            "signUpChallengeE4AB8E64",
+            "Arn",
+          ],
+        },
+        "PayloadFormatVersion": "2.0",
+      },
+      "Type": "AWS::ApiGatewayV2::Integration",
+    },
+    "HttpApiPOSTauthsignUpChallengeTargetHttpApiPOSTauthsignUpChallengeFFBEDB3EPermission32C7F8EF": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "signUpChallengeE4AB8E64",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "HttpApiF5A9A8A7",
+              },
+              "/*/*/auth/signUpChallenge",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "HttpApiPOSTauthsignUpPOSTauthsignUpIntegration1BD19CA0": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "HttpApiF5A9A8A7",
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": Object {
+          "Fn::GetAtt": Array [
+            "signUp5E93447F",
+            "Arn",
+          ],
+        },
+        "PayloadFormatVersion": "2.0",
+      },
+      "Type": "AWS::ApiGatewayV2::Integration",
+    },
+    "HttpApiPOSTauthsignUpTargetHttpApiPOSTauthsignUp53F86822Permission212DB179": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "signUp5E93447F",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "HttpApiF5A9A8A7",
+              },
+              "/*/*/auth/signUp",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "apiLogGroupC7068A49": Object {
+      "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "RetentionInDays": 731,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "signUp5E93447F": Object {
       "DependsOn": Array [
-        "getAuthChallengeServiceRoleCA47EE4D",
+        "signUpServiceRoleDefaultPolicy866220C7",
+        "signUpServiceRole353D824C",
       ],
       "Properties": Object {
         "Code": Object {
           "ZipFile": "xxx",
         },
-        "FunctionName": "HomeDashboard-WebApi",
-        "Handler": "index.getAuthChallenge",
-        "MemorySize": 128,
+        "Environment": Object {
+          "Variables": Object {
+            "ALLOW_ORIGINS": "test-allowOrigins",
+            "AUTH_TABLE_NAME": Object {
+              "Fn::ImportValue": "test-stack:ExportsOutputReftesttableB6F02C7740211428",
+            },
+            "RP_ID": "test-rpId",
+          },
+        },
+        "FunctionName": "HomeDashboard-signUp",
+        "Handler": "index.signUp",
+        "MemorySize": 256,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "getAuthChallengeServiceRoleCA47EE4D",
+            "signUpServiceRole353D824C",
             "Arn",
           ],
         },
         "Runtime": "nodejs12.x",
-        "Timeout": 3,
+        "Timeout": 10,
       },
       "Type": "AWS::Lambda::Function",
     },
-    "getAuthChallengeServiceRoleCA47EE4D": Object {
+    "signUpChallengeE4AB8E64": Object {
+      "DependsOn": Array [
+        "signUpChallengeServiceRoleDefaultPolicy427FF7AA",
+        "signUpChallengeServiceRoleA12993EA",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "ZipFile": "xxx",
+        },
+        "Environment": Object {
+          "Variables": Object {
+            "AUTH_TABLE_NAME": Object {
+              "Fn::ImportValue": "test-stack:ExportsOutputReftesttableB6F02C7740211428",
+            },
+          },
+        },
+        "FunctionName": "HomeDashboard-signUpChallenge",
+        "Handler": "index.signUpChallenge",
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "signUpChallengeServiceRoleA12993EA",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs12.x",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "signUpChallengeServiceRoleA12993EA": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -150,6 +431,115 @@ Object {
         ],
       },
       "Type": "AWS::IAM::Role",
+    },
+    "signUpChallengeServiceRoleDefaultPolicy427FF7AA": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::ImportValue": "test-stack:ExportsOutputFnGetAtttesttableB6F02C77Arn4AC37B77",
+                },
+                Object {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "signUpChallengeServiceRoleDefaultPolicy427FF7AA",
+        "Roles": Array [
+          Object {
+            "Ref": "signUpChallengeServiceRoleA12993EA",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "signUpServiceRole353D824C": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "signUpServiceRoleDefaultPolicy866220C7": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::ImportValue": "test-stack:ExportsOutputFnGetAtttesttableB6F02C77Arn4AC37B77",
+                },
+                Object {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "signUpServiceRoleDefaultPolicy866220C7",
+        "Roles": Array [
+          Object {
+            "Ref": "signUpServiceRole353D824C",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
   },
 }

@@ -66,7 +66,6 @@ Object {
         },
         "FunctionName": "HomeDashboard-BackupRemoData",
         "Handler": "index.backupRemoData",
-        "MemorySize": 128,
         "Role": Object {
           "Fn::GetAtt": Array [
             "backupRemoDataServiceRole989C5AF2",
@@ -74,7 +73,6 @@ Object {
           ],
         },
         "Runtime": "nodejs12.x",
-        "Timeout": 3,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -248,7 +246,6 @@ Object {
         },
         "FunctionName": "HomeDashboard-FetchRemoApi",
         "Handler": "index.fetchRemoApi",
-        "MemorySize": 128,
         "Role": Object {
           "Fn::GetAtt": Array [
             "fetchRemoApiServiceRole01CA419F",
@@ -256,7 +253,6 @@ Object {
           ],
         },
         "Runtime": "nodejs12.x",
-        "Timeout": 3,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -332,7 +328,6 @@ Object {
         },
         "FunctionName": "HomeDashboard-PutRemoData",
         "Handler": "index.putRemoData",
-        "MemorySize": 128,
         "Role": Object {
           "Fn::GetAtt": Array [
             "putRemoDataServiceRoleB14A0DAE",
@@ -340,7 +335,6 @@ Object {
           ],
         },
         "Runtime": "nodejs12.x",
-        "Timeout": 3,
       },
       "Type": "AWS::Lambda::Function",
     },

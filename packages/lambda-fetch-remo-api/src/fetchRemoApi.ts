@@ -2,6 +2,7 @@ import fetch from "node-fetch";
 import { SNS } from "./awsSdk";
 
 export default async function fetchRemoApi(): Promise<void> {
+  // jest でのテストしやすさの為に関数内で環境変数を展開する
   const { REMO_TOKEN, TOPIC_ARN } = process.env;
   if (!REMO_TOKEN)
     throw new Error("Enviroment variable `REMO_TOKEN` is required.");

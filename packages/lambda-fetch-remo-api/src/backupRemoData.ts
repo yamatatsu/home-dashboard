@@ -5,12 +5,13 @@ export default async function backupRemoData(
   messageBody: string,
   date: Date
 ): Promise<void> {
-  console.info("messageBody: %s", messageBody);
-  const sqsMessage = await sqsMessageSchema.validate(JSON.parse(messageBody));
-
+  // jest でのテストしやすさの為に関数内で環境変数を展開する
   const { BUCKET_NAME } = process.env;
   if (!BUCKET_NAME)
     throw new Error("Enviroment variable `BUCKET_NAME` is required.");
+
+  console.info("messageBody: %s", messageBody);
+  const sqsMessage = await sqsMessageSchema.validate(JSON.parse(messageBody));
 
   await S3.putObject({
     Bucket: BUCKET_NAME,

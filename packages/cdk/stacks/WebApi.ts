@@ -1,11 +1,15 @@
 import * as cdk from "@aws-cdk/core";
 import * as lambda from "@aws-cdk/aws-lambda";
+import * as dynamodb from "@aws-cdk/aws-dynamodb";
 import * as apigateway from "@aws-cdk/aws-apigatewayv2";
+import * as logs from "@aws-cdk/aws-logs";
 import { LambdaProxyIntegration } from "@aws-cdk/aws-apigatewayv2-integrations";
 
 type WebApiProps = cdk.StackProps & {
   code: lambda.Code;
+  homeAuthTable: dynamodb.ITable;
   allowOrigins: string[];
+  rpId: string;
   dev: boolean;
 };
 
@@ -13,27 +17,72 @@ export class WebApi extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props: WebApiProps) {
     super(scope, id, props);
 
-    const getAuthChallenge = new lambda.Function(this, "getAuthChallenge", {
-      functionName: `HomeDashboard-WebApi${props.dev ? "-dev" : ""}`,
+    const signUpChallenge = new lambda.Function(this, "signUpChallenge", {
+      functionName: `HomeDashboard-signUpChallenge${props.dev ? "-dev" : ""}`,
       code: props.code,
       runtime: lambda.Runtime.NODEJS_12_X,
-      handler: "index.getAuthChallenge",
-      environment: {},
-      memorySize: 128,
-      timeout: cdk.Duration.seconds(3),
-    });
-
-    const api = new apigateway.HttpApi(this, "HttpApi", {
-      apiName: `HomeDashboardApi${props.dev ? "-dev" : ""}`,
-      corsPreflight: {
-        allowOrigins: props.allowOrigins,
+      handler: "index.signUpChallenge",
+      environment: {
+        AUTH_TABLE_NAME: props.homeAuthTable.tableName,
       },
     });
+    const signUp = new lambda.Function(this, "signUp", {
+      functionName: `HomeDashboard-signUp${props.dev ? "-dev" : ""}`,
+      code: props.code,
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: "index.signUp",
+      environment: {
+        AUTH_TABLE_NAME: props.homeAuthTable.tableName,
+        ALLOW_ORIGINS: props.allowOrigins.join(","),
+        RP_ID: props.rpId,
+      },
+      memorySize: 256,
+      timeout: cdk.Duration.seconds(10),
+    });
+    props.homeAuthTable.grantReadWriteData(signUpChallenge);
+    props.homeAuthTable.grantReadWriteData(signUp);
+
+    const api = new apigateway.HttpApi(this, "HttpApi", {
+      apiName: `HomeDashboard-WebApi${props.dev ? "-dev" : ""}`,
+      corsPreflight: {
+        allowOrigins: props.allowOrigins,
+        allowMethods: [apigateway.HttpMethod.POST],
+        allowHeaders: ["content-type"],
+        allowCredentials: true,
+      },
+    });
+    const logGroup = new logs.LogGroup(this, "apiLogGroup", {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+    if (api.defaultStage) {
+      const cfnStage = api.defaultStage.node
+        .defaultChild as apigateway.CfnStage;
+      cfnStage.accessLogSettings = {
+        destinationArn: logGroup.logGroupArn,
+        format:
+          '{ "requestId":"$context.requestId", "ip": "$context.identity.sourceIp", "requestTime":"$context.requestTime", "httpMethod":"$context.httpMethod","routeKey":"$context.routeKey", "status":"$context.status","protocol":"$context.protocol", "responseLength":"$context.responseLength" }',
+      };
+    }
 
     api.addRoutes({
-      path: "/auth/challenge",
-      methods: [apigateway.HttpMethod.GET],
-      integration: new LambdaProxyIntegration({ handler: getAuthChallenge }),
+      path: "/auth/signUpChallenge",
+      methods: [apigateway.HttpMethod.POST],
+      integration: new LambdaProxyIntegration({ handler: signUpChallenge }),
+    });
+    api.addRoutes({
+      path: "/auth/signUp",
+      methods: [apigateway.HttpMethod.POST],
+      integration: new LambdaProxyIntegration({ handler: signUp }),
+    });
+    api.addRoutes({
+      path: "/auth/signInChallenge",
+      methods: [apigateway.HttpMethod.POST],
+      integration: new LambdaProxyIntegration({ handler: signUpChallenge }),
+    });
+    api.addRoutes({
+      path: "/auth/signIn",
+      methods: [apigateway.HttpMethod.POST],
+      integration: new LambdaProxyIntegration({ handler: signUpChallenge }),
     });
   }
 }

@@ -26,8 +26,6 @@ export class FetchRemoApi extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props: FetchRemoApiProps) {
     super(scope, id, props);
 
-    const { code, remoToken, homeDataTable } = props;
-
     const topic = new sns.Topic(this, "Topic");
     const bucket = new s3.Bucket(this, "Bucket", {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -35,37 +33,31 @@ export class FetchRemoApi extends cdk.Stack {
 
     const fetchRemoApi = new lambda.Function(this, "fetchRemoApi", {
       functionName: "HomeDashboard-FetchRemoApi",
-      code,
+      code: props.code,
       runtime: lambda.Runtime.NODEJS_12_X,
       handler: "index.fetchRemoApi",
       environment: {
-        REMO_TOKEN: remoToken,
+        REMO_TOKEN: props.remoToken,
         TOPIC_ARN: topic.topicArn,
       },
-      memorySize: 128,
-      timeout: cdk.Duration.seconds(3),
     });
     const putRemoData = new lambda.Function(this, "putRemoData", {
       functionName: "HomeDashboard-PutRemoData",
-      code,
+      code: props.code,
       runtime: lambda.Runtime.NODEJS_12_X,
       handler: "index.putRemoData",
       environment: {
-        TABLE_NAME: homeDataTable.tableName,
+        TABLE_NAME: props.homeDataTable.tableName,
       },
-      memorySize: 128,
-      timeout: cdk.Duration.seconds(3),
     });
     const backupRemoData = new lambda.Function(this, "backupRemoData", {
       functionName: "HomeDashboard-BackupRemoData",
-      code,
+      code: props.code,
       runtime: lambda.Runtime.NODEJS_12_X,
       handler: "index.backupRemoData",
       environment: {
         BUCKET_NAME: bucket.bucketName,
       },
-      memorySize: 128,
-      timeout: cdk.Duration.seconds(3),
     });
 
     new events.Rule(this, "ScheduleRule", {
@@ -82,7 +74,7 @@ export class FetchRemoApi extends cdk.Stack {
     putRemoData.addEventSource(new SqsEventSource(putRemoDataQueue));
     backupRemoData.addEventSource(new SqsEventSource(backupRemoDataQueue));
 
-    homeDataTable.grantWriteData(putRemoData);
+    props.homeDataTable.grantWriteData(putRemoData);
     bucket.grantPut(backupRemoData);
   }
 }

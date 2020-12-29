@@ -18,7 +18,7 @@ describe("fetchRemoApi", () => {
 
   // TODO: name of tests
 
-  test("Throw if no REMO_TOKEN is passed.", async () => {
+  test("Throw if env REMO_TOKEN is undefined.", async () => {
     await expect(fetchRemoApi()).rejects.toThrow(
       "Enviroment variable `REMO_TOKEN` is required."
     );

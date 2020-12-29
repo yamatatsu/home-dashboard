@@ -3,6 +3,41 @@
 exports[`DynamodbStack Stack 1`] = `
 Object {
   "Resources": Object {
+    "HomeAuthTableE963759C": Object {
+      "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "AttributeDefinitions": Array [
+          Object {
+            "AttributeName": "partitionKey",
+            "AttributeType": "S",
+          },
+          Object {
+            "AttributeName": "sortKey",
+            "AttributeType": "S",
+          },
+        ],
+        "KeySchema": Array [
+          Object {
+            "AttributeName": "partitionKey",
+            "KeyType": "HASH",
+          },
+          Object {
+            "AttributeName": "sortKey",
+            "KeyType": "RANGE",
+          },
+        ],
+        "ProvisionedThroughput": Object {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5,
+        },
+        "TimeToLiveSpecification": Object {
+          "AttributeName": "ttl",
+          "Enabled": true,
+        },
+      },
+      "Type": "AWS::DynamoDB::Table",
+      "UpdateReplacePolicy": "Delete",
+    },
     "HomeDataTable592412A1": Object {
       "DeletionPolicy": "Delete",
       "Properties": Object {

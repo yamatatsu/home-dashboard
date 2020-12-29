@@ -1,6 +1,10 @@
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
-import _getAuthChallenge from "./getAuthChallenge";
+import _signUpChallenge from "./signUpChallenge";
+import _signUp from "./signUp";
 
-export const getAuthChallenge: APIGatewayProxyHandlerV2 = async () => {
-  return _getAuthChallenge();
+export const signUpChallenge: APIGatewayProxyHandlerV2 = async (event) => {
+  return _signUpChallenge(event, new Date());
+};
+export const signUp: APIGatewayProxyHandlerV2 = async (event) => {
+  return _signUp(event, new Date());
 };
