@@ -5,6 +5,7 @@ import { useSetRecoilState } from "recoil";
 import { LinkToSignUp } from "../routes";
 import { signedInAtom } from "../recoil";
 import { RedirectIfSignedIn } from "../componrnts/RedirectIfSignedIn";
+import { fetchSignInChallenge } from "../lib/fetching";
 
 const schema = Yup.object().shape({
   username: Yup.string().required().min(2).max(100),
@@ -57,5 +58,6 @@ export const SignIn: FC = () => {
 };
 
 async function signIn(username: string): Promise<void> {
-  console.log({ username });
+  const { challenge, credentialIds } = await fetchSignInChallenge(username);
+  console.info({ challenge, credentialIds });
 }
