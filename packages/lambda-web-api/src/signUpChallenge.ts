@@ -4,7 +4,7 @@ import {
 } from "aws-lambda";
 import * as crypto from "crypto";
 import * as Yup from "yup";
-import { DocumentClient } from "./awsSdk";
+import { putSignUpChallenge } from "./db";
 
 type Event = Pick<APIGatewayProxyEventV2, "body">;
 
@@ -53,18 +53,7 @@ export default async function signUpChallenge(
     .replace(/\//g, "_")
     .replace(/=*$/g, "");
 
-  const params = {
-    TableName: AUTH_TABLE_NAME,
-    Item: {
-      partitionKey: `user:${username}`,
-      sortKey: `signUpChallenge:${challenge}`,
-      username,
-      signUpChallenge: challenge,
-      createdAt: now.toISOString(),
-    },
-  };
-  console.info("It will be saved. params: ", params);
-  await DocumentClient.put(params);
+  await putSignUpChallenge(username, challenge, now);
 
   return {
     statusCode: 201,

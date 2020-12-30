@@ -1,7 +1,7 @@
-jest.mock("./awsSdk");
+jest.mock("./db");
 
 import signUp from "./signUp";
-import { DocumentClient } from "./awsSdk";
+import { getSignUpChallenge, putCredential } from "./db";
 
 const date = new Date("2020-12-23 00:00:00Z");
 
@@ -9,8 +9,10 @@ beforeEach(() => {
   // console.info = jest.fn();
 });
 afterEach(() => {
-  // @ts-ignore
-  DocumentClient.put.mockClear();
+  // @ts-expect-error
+  getSignUpChallenge.mockClear();
+  // @ts-expect-error
+  putCredential.mockClear();
 });
 
 // TODO: Happy path only...
@@ -23,9 +25,7 @@ test("Success pattern", async () => {
     RP_ID: "localhost",
   };
 
-  (DocumentClient.get as jest.Mock<any, any>).mockReturnValue({
-    Item: {}, // not undefined
-  });
+  (getSignUpChallenge as jest.Mock<any, any>).mockReturnValue({}); // not undefined
 
   const result = await signUp(
     {
@@ -45,32 +45,24 @@ test("Success pattern", async () => {
     date
   );
 
-  expect(DocumentClient.get).toHaveBeenCalledTimes(1);
-  expect(DocumentClient.get).toHaveBeenCalledWith({
-    TableName: "test-AUTH_TABLE_NAME",
-    Key: {
-      partitionKey: "user:test-username",
-      sortKey: expect.stringMatching(/^signUpChallenge:/),
+  expect(getSignUpChallenge).toHaveBeenCalledTimes(1);
+  expect(getSignUpChallenge).toHaveBeenCalledWith(
+    "test-username",
+    expect.any(String)
+  );
+  expect(putCredential).toHaveBeenCalledTimes(1);
+  expect(putCredential).toHaveBeenCalledWith(
+    "test-username",
+    "test-credentialId",
+    {
+      crv: "P-256",
+      kty: "EC",
+      x: expect.any(String),
+      y: expect.any(String),
     },
-  });
-  expect(DocumentClient.put).toHaveBeenCalledTimes(1);
-  expect(DocumentClient.put).toHaveBeenCalledWith({
-    TableName: "test-AUTH_TABLE_NAME",
-    Item: {
-      partitionKey: "user:test-username",
-      sortKey: "credential:test-credentialId",
-      username: "test-username",
-      credentialId: "test-credentialId",
-      jwk: {
-        crv: "P-256",
-        kty: "EC",
-        x: expect.any(String),
-        y: expect.any(String),
-      },
-      signCount: 1609225301,
-      createdAt: date.toISOString(),
-    },
-  });
+    1609225301,
+    date
+  );
 
   expect(result).toStrictEqual({
     statusCode: 201,

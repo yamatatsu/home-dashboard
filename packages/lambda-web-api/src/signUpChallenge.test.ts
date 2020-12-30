@@ -1,8 +1,7 @@
-jest.mock("./awsSdk");
+jest.mock("./db");
 
-import { TextEncoder } from "util";
 import signUpChallenge from "./signUpChallenge";
-import { DocumentClient } from "./awsSdk";
+import { putSignUpChallenge } from "./db";
 
 const date = new Date("2020-12-23 00:00:00Z");
 
@@ -11,7 +10,7 @@ beforeEach(() => {
 });
 afterEach(() => {
   // @ts-ignore
-  DocumentClient.put.mockClear();
+  putSignUpChallenge.mockClear();
 });
 
 test("throw if env AUTH_TABLE_NAME is undefined", async () => {
@@ -96,17 +95,12 @@ test("Success pattern", async () => {
     date
   );
 
-  expect(DocumentClient.put).toHaveBeenCalledTimes(1);
-  expect(DocumentClient.put).toHaveBeenCalledWith({
-    TableName: "test-AUTH_TABLE_NAME",
-    Item: {
-      partitionKey: "user:test-username",
-      sortKey: expect.stringMatching(/^signUpChallenge\:/),
-      username: "test-username",
-      signUpChallenge: expect.any(String),
-      createdAt: date.toISOString(),
-    },
-  });
+  expect(putSignUpChallenge).toHaveBeenCalledTimes(1);
+  expect(putSignUpChallenge).toHaveBeenCalledWith(
+    "test-username",
+    expect.any(String),
+    date
+  );
 
   expect(result).toStrictEqual({
     statusCode: 201,

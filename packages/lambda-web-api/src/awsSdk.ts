@@ -14,6 +14,9 @@ export const DocumentClient = {
   put: (params: AWS.DynamoDB.DocumentClient.PutItemInput) => {
     return docClient.put(params).promise();
   },
+  query: (params: AWS.DynamoDB.DocumentClient.QueryInput) => {
+    return docClient.query(params).promise();
+  },
 };
 
 export const SNS = {

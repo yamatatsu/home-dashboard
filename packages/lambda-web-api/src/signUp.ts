@@ -7,8 +7,7 @@ import base64url from "base64url";
 import * as Yup from "yup";
 import * as cbor from "cbor";
 import * as jwkToPem from "jwk-to-pem";
-
-import { DocumentClient } from "./awsSdk";
+import { getSignUpChallenge, putCredential } from "./db";
 
 type Event = Pick<APIGatewayProxyEventV2, "body">;
 type Credential = {
@@ -63,17 +62,14 @@ export default async function signUpChallenge(
   event: Event,
   now: Date
 ): Promise<APIGatewayProxyStructuredResultV2> {
-  const { AUTH_TABLE_NAME, ALLOW_ORIGINS, RP_ID } = process.env;
-  if (!AUTH_TABLE_NAME) {
-    throw new Error("Enviroment variable `AUTH_TABLE_NAME` is required.");
-  }
+  const { ALLOW_ORIGINS, RP_ID } = process.env;
   if (!ALLOW_ORIGINS) {
     throw new Error("Enviroment variable `ALLOW_ORIGINS` is required.");
   }
   if (!RP_ID) {
     throw new Error("Enviroment variable `RP_ID` is required.");
   }
-  console.info({ AUTH_TABLE_NAME, ALLOW_ORIGINS, RP_ID });
+  console.info({ ALLOW_ORIGINS, RP_ID });
 
   const validatedEvent = await validateEvent(event);
   if (validatedEvent.hasError) {
@@ -94,7 +90,7 @@ export default async function signUpChallenge(
     // Step.7 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
     verifyType(clientData);
     // Step.8 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
-    await verifyChallenge(AUTH_TABLE_NAME, username, clientData);
+    await verifyChallenge(username, clientData);
     // Step.9 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
     verifyOrigin(ALLOW_ORIGINS, clientData);
   } catch (error) {
@@ -156,20 +152,13 @@ export default async function signUpChallenge(
   // やるならcredentialのdynamodbへの登録のkeyをpもsも `credential:${credential.id}` にする。userのcredential一覧はGSIからとる。
 
   // Step.23 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
-  const putParams = {
-    TableName: AUTH_TABLE_NAME,
-    Item: {
-      partitionKey: `user:${username}`,
-      sortKey: `credential:${credential.id}`,
-      username,
-      credentialId: credential.id,
-      jwk: publicKeyJwk,
-      signCount: authDataStruct.signCount,
-      createdAt: now.toISOString(),
-    },
-  };
-  console.info("It will be put. params: ", putParams);
-  await DocumentClient.put(putParams);
+  await putCredential(
+    username,
+    credential.id,
+    publicKeyJwk,
+    authDataStruct.signCount,
+    now
+  );
 
   return {
     statusCode: 201,
@@ -213,21 +202,11 @@ function verifyType(clientData: ClientData): void {
 }
 
 async function verifyChallenge(
-  tableName: string,
   username: string,
   clientData: ClientData
 ): Promise<void> {
-  const params = {
-    TableName: tableName,
-    Key: {
-      partitionKey: `user:${username}`,
-      sortKey: `signUpChallenge:${clientData.challenge}`,
-    },
-  };
-  console.info("It will be get. params: ", params);
-  const res = await DocumentClient.get(params);
-
-  if (!res.Item) {
+  const challenge = await getSignUpChallenge(username, clientData.challenge);
+  if (!challenge) {
     throw new Error(
       `No challenge has found. username: ${username} challenge: ${clientData.challenge}`
     );
@@ -243,7 +222,6 @@ function verifyOrigin(allowOrigins: string, clientData: ClientData): void {
 }
 
 function verifyRpIdHash(authData: AuthData, rpId: string) {
-  // TODO: def in consts
   if (hash(rpId).equals(Buffer.from(authData.rpIdHash)) === false) {
     throw new Error(
       `rpIdHash is unmatch. authDataStruct.rpIdHash: ${authData.rpIdHash}`
