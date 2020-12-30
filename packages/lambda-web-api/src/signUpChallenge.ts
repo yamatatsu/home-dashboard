@@ -2,9 +2,9 @@ import {
   APIGatewayProxyStructuredResultV2,
   APIGatewayProxyEventV2,
 } from "aws-lambda";
-import * as crypto from "crypto";
 import * as Yup from "yup";
-import { putSignUpChallenge } from "./db";
+import { putSignUpChallenge } from "./lib/db";
+import { createChallenge } from "./lib/webAuthn";
 
 type Event = Pick<APIGatewayProxyEventV2, "body">;
 
@@ -46,12 +46,7 @@ export default async function signUpChallenge(
     };
   }
 
-  const challenge = crypto
-    .randomBytes(128)
-    .toString("base64")
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=*$/g, "");
+  const challenge = createChallenge();
 
   await putSignUpChallenge(username, challenge, now);
 

@@ -2,11 +2,18 @@ import {
   APIGatewayProxyStructuredResultV2,
   APIGatewayProxyEventV2,
 } from "aws-lambda";
-import * as crypto from "crypto";
 import base64url from "base64url";
 import * as Yup from "yup";
-import * as jwkToPem from "jwk-to-pem";
-import { getSignInChallenge, getCredential, putCredential } from "./db";
+import { getSignInChallenge, getCredential, putCredential } from "./lib/db";
+import {
+  getClientAuth,
+  verifyOrigin,
+  verifyRpIdHash,
+  verifyFlag,
+  verifySignature,
+  hashClientData,
+  parseAuthData,
+} from "./lib/webAuthn";
 
 type Event = Pick<APIGatewayProxyEventV2, "body">;
 type Credential = {
@@ -16,19 +23,6 @@ type Credential = {
     clientDataJSON: string;
     signature: string;
   };
-};
-type ClientData = {
-  challenge: string;
-  origin: string;
-  type: "webauthn.get";
-};
-type AuthData = {
-  rpIdHash: Buffer;
-  flags: number;
-  signCount: number;
-  aaguid: Buffer;
-  credentialId: Buffer;
-  credentialPublicKey: Buffer;
 };
 
 const eventSchema = Yup.object()
@@ -93,9 +87,9 @@ export default async function signIn(
 
   try {
     // Step.11 of https://www.w3.org/TR/webauthn/#sctn-verifying-assertion
-    verifyType(clientData);
+    verifyType(clientData.type);
     // Step.12 of https://www.w3.org/TR/webauthn/#sctn-verifying-assertion
-    await verifyChallenge(username, clientData);
+    await verifyChallenge(username, clientData.challenge);
     // Step.13 of https://www.w3.org/TR/webauthn/#sctn-verifying-assertion
     verifyOrigin(ALLOW_ORIGINS, clientData);
 
@@ -125,7 +119,7 @@ export default async function signIn(
     // Skip Step.18 of https://www.w3.org/TR/webauthn/#sctn-verifying-assertion
 
     // Step.19 of https://www.w3.org/TR/webauthn/#sctn-verifying-assertion
-    const clientDataHash = hashClientData(credential);
+    const clientDataHash = hashClientData(credential.response.clientDataJSON);
     // Step.20 of https://www.w3.org/TR/webauthn/#sctn-verifying-assertion
     verifySignature(signature, jwk, authData, clientDataHash);
 
@@ -172,126 +166,20 @@ async function validateEvent(
   }
 }
 
-function getClientAuth(clientDataJSON: string): ClientData {
-  return JSON.parse(base64url.decode(clientDataJSON)) as ClientData;
-}
-
-function verifyType(clientData: ClientData): void {
-  if (clientData.type !== "webauthn.get") {
-    throw new Error(
-      `clientData.type is invalid. clientData.type: ${clientData.type}`
-    );
-  }
-}
-
 async function verifyChallenge(
   username: string,
-  clientData: ClientData
+  challenge: string
 ): Promise<void> {
-  const challenge = await getSignInChallenge(username, clientData.challenge);
-  if (!challenge) {
-    throw new Error(
-      `No challenge has found. username: ${username} challenge: ${clientData.challenge}`
-    );
-  }
-}
-
-function verifyOrigin(allowOrigins: string, clientData: ClientData): void {
-  if (!allowOrigins.split(",").includes(clientData.origin)) {
-    throw new Error(
-      `clientData.origin is invalid. clientData.origin: ${clientData.origin} ALLOW_ORIGINS: ${allowOrigins}`
-    );
-  }
-}
-
-function verifyRpIdHash(authData: AuthData, rpId: string) {
-  if (hash(rpId).equals(Buffer.from(authData.rpIdHash)) === false) {
-    throw new Error(
-      `rpIdHash is unmatch. authDataStruct.rpIdHash: ${authData.rpIdHash}`
-    );
-  }
-}
-
-function verifyFlag(authData: AuthData) {
-  // Flags UP の一致を確認
-  if (Boolean(authData.flags & 0x01) === false) {
-    throw new Error("Flags UP is unmatch.");
-  }
-  // Flags UV の一致を確認
-  if (Boolean(authData.flags & 0x04) === false) {
-    throw new Error("Flags UV is unmatch.");
-  }
-}
-
-function verifySignature(
-  signature: Buffer,
-  jwk: jwkToPem.JWK,
-  authData: Buffer,
-  clientDataHash: Buffer
-) {
-  const pem = jwkToPem(jwk);
-  const result = crypto
-    .createVerify("SHA256")
-    .update(authData)
-    .update(clientDataHash)
-    .verify(pem, signature);
-
+  const result = await getSignInChallenge(username, challenge);
   if (!result) {
-    throw new Error("Incorrect Signature.");
+    throw new Error(
+      `No challenge has found. username: ${username} challenge: ${challenge}`
+    );
   }
 }
 
-function hashClientData(credential: Credential) {
-  return hash(base64url.toBuffer(credential.response.clientDataJSON));
+export function verifyType(type: string): void {
+  if (type !== "webauthn.get") {
+    throw new Error(`clientData.type is invalid. clientData.type: ${type}`);
+  }
 }
-
-/**
- * Parses authenticatorData buffer.
- * @see https://www.w3.org/TR/webauthn/#fig-attStructs
- * @param authData - authData in attestationObject
- * @return         - parsed authenticatorData struct
- */
-const parseAuthData = (authData: Buffer): AuthData => {
-  const rpIdHash = authData.slice(0, 32);
-  const flags = authData[32];
-  const signCount =
-    (authData[33] << 24) |
-    (authData[34] << 16) |
-    (authData[35] << 8) |
-    authData[36];
-  const aaguid = authData.slice(37, 53);
-  const credentialIdLength = (authData[53] << 8) + authData[54];
-  const credentialId = authData.slice(55, 55 + credentialIdLength);
-  const credentialPublicKey = authData.slice(55 + credentialIdLength);
-
-  return {
-    rpIdHash,
-    flags,
-    signCount,
-    aaguid,
-    credentialId,
-    credentialPublicKey,
-  };
-};
-
-/**
- * Returns SHA-256 digest of the given data.
- * @param data - data to hash
- * @return     - the hash
- */
-const hash = (data: crypto.BinaryLike): Buffer => {
-  return crypto.createHash("SHA256").update(data).digest();
-};
-
-/**
- * support only EC
- * @param cose
- */
-const coseToJwk = (publicKeyCbor: Map<any, any>) => {
-  return {
-    kty: "EC",
-    crv: "P-256",
-    x: base64url(publicKeyCbor.get(-2)),
-    y: base64url(publicKeyCbor.get(-3)),
-  } as const;
-};

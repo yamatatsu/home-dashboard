@@ -1,7 +1,7 @@
-jest.mock("./db");
+jest.mock("./lib/db");
 
 import signIn from "./signIn";
-import { getSignInChallenge, getCredential, putCredential } from "./db";
+import { getSignInChallenge, getCredential, putCredential } from "./lib/db";
 
 const date = new Date("2020-12-23 00:00:00Z");
 
