@@ -5,7 +5,7 @@ import { useSetRecoilState } from "recoil";
 import { LinkToSignUp } from "../routes";
 import { signedInAtom } from "../recoil";
 import { RedirectIfSignedIn } from "../componrnts/RedirectIfSignedIn";
-import { fetchSignInChallenge } from "../lib/fetching";
+import { fetchSignInChallenge, fetchSignIn } from "../lib/fetching";
 import { getCredentials } from "../lib/WebAuthn";
 
 const schema = Yup.object().shape({
@@ -66,5 +66,6 @@ async function signIn(username: string): Promise<void> {
     console.info("WebAuthn Popup is canceled.");
     return;
   }
-  console.log(result.credential);
+
+  await fetchSignIn({ username, credential: result.credential });
 }

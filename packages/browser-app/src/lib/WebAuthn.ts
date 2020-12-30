@@ -51,6 +51,7 @@ export async function getCredentials(
 ): Promise<ResponseType> {
   const publicKey: PublicKeyCredentialRequestOptions = {
     challenge: base64url.toBuffer(challenge).buffer,
+    userVerification: "preferred",
     allowCredentials: credentialIds.map((id) => ({
       transports: ["internal"],
       type: "public-key",

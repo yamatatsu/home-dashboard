@@ -14,16 +14,16 @@ export type SignInChallenge = {
   signInChallenge: string;
   createdAt: string;
 };
+export type JWK = { kty: "EC"; crv: string; x: string; y: string };
 export type Credential = {
   partitionKey: string;
   sortKey: string;
   username: string;
   credentialId: string;
-  jwk: { kty: string; crv: string; x: string; y: string };
+  jwk: JWK;
   signCount: number;
   createdAt: string;
 };
-export type JWK = { kty: string; crv: string; x: string; y: string };
 
 export async function getSignUpChallenge(
   username: string,
@@ -59,6 +59,23 @@ export async function putSignUpChallenge(
   const result = await DocumentClient.put(params);
   console.info("putSignUpChallenge: %o", result);
   return !!result.Attributes;
+}
+
+export async function getCredential(
+  username: string,
+  credentialId: string
+): Promise<Credential | undefined> {
+  const params = {
+    TableName: getAuthTableName(),
+    Key: {
+      partitionKey: `user:${username}`,
+      sortKey: `credential:${credentialId}`,
+    },
+  };
+  console.info("It will be query. params: %o", params);
+  const result = await DocumentClient.get(params);
+  console.info("getCredential: %o", result);
+  return result.Item as Credential | undefined;
 }
 
 export async function queryCredentials(
@@ -103,6 +120,23 @@ export async function putCredential(
   const result = await DocumentClient.put(putParams);
   console.info("putCredential: %o", result);
   return !!result.Attributes;
+}
+
+export async function getSignInChallenge(
+  username: string,
+  challenge: string
+): Promise<SignInChallenge | undefined> {
+  const params = {
+    TableName: getAuthTableName(),
+    Key: {
+      partitionKey: `user:${username}`,
+      sortKey: `signInChallenge:${challenge}`,
+    },
+  };
+  console.info("It will be get. params: %o", params);
+  const result = await DocumentClient.get(params);
+  console.info("getSignInChallenge: %o", result);
+  return result.Item as SignInChallenge | undefined;
 }
 
 export async function putSignInChallenge(

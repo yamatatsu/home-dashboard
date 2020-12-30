@@ -3,6 +3,7 @@ import {
   SIGN_UP_CHALLENGE_URL,
   SIGN_UP_URL,
   SIGN_IN_CHALLENGE_URL,
+  SIGN_IN_URL,
 } from "../constants";
 
 export async function fetchSignUpChallenge(username: string): Promise<string> {
@@ -57,4 +58,21 @@ export async function fetchSignInChallenge(
     });
 
   return scheme.validate(json);
+}
+
+export async function fetchSignIn(
+  decodedCredential: Record<string, any>
+): Promise<{ challenge: string; credentialIds: string[] }> {
+  const response = await fetch(SIGN_IN_URL, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(decodedCredential),
+  });
+  if (!response.ok) {
+    throw new Error("fetchSignIn response is error.");
+  }
+  const json = await response.json();
+
+  return json;
 }

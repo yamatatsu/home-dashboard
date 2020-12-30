@@ -25,7 +25,7 @@ export class WebApi extends cdk.Stack {
       environment: {
         AUTH_TABLE_NAME: props.homeAuthTable.tableName,
       },
-      memorySize: 128,
+      memorySize: 256,
       timeout: cdk.Duration.seconds(4),
     });
     const signUp = new lambda.Function(this, "signUp", {
@@ -38,7 +38,7 @@ export class WebApi extends cdk.Stack {
         ALLOW_ORIGINS: props.allowOrigins.join(","),
         RP_ID: props.rpId,
       },
-      memorySize: 128,
+      memorySize: 256,
       timeout: cdk.Duration.seconds(4),
     });
     const signInChallenge = new lambda.Function(this, "signInChallenge", {
@@ -49,12 +49,26 @@ export class WebApi extends cdk.Stack {
       environment: {
         AUTH_TABLE_NAME: props.homeAuthTable.tableName,
       },
-      memorySize: 128,
+      memorySize: 256,
+      timeout: cdk.Duration.seconds(4),
+    });
+    const signIn = new lambda.Function(this, "signIn", {
+      functionName: `HomeDashboard-signIn${props.dev ? "-dev" : ""}`,
+      code: props.code,
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: "index.signIn",
+      environment: {
+        AUTH_TABLE_NAME: props.homeAuthTable.tableName,
+        ALLOW_ORIGINS: props.allowOrigins.join(","),
+        RP_ID: props.rpId,
+      },
+      memorySize: 256,
       timeout: cdk.Duration.seconds(4),
     });
     props.homeAuthTable.grantReadWriteData(signUpChallenge);
     props.homeAuthTable.grantReadWriteData(signUp);
     props.homeAuthTable.grantReadWriteData(signInChallenge);
+    props.homeAuthTable.grantReadWriteData(signIn);
 
     const api = new apigateway.HttpApi(this, "HttpApi", {
       apiName: `HomeDashboard-WebApi${props.dev ? "-dev" : ""}`,
@@ -96,7 +110,7 @@ export class WebApi extends cdk.Stack {
     api.addRoutes({
       path: "/auth/signIn",
       methods: [apigateway.HttpMethod.POST],
-      integration: new LambdaProxyIntegration({ handler: signUpChallenge }),
+      integration: new LambdaProxyIntegration({ handler: signIn }),
     });
   }
 }

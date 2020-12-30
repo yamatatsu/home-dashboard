@@ -142,7 +142,7 @@ Object {
         "IntegrationType": "AWS_PROXY",
         "IntegrationUri": Object {
           "Fn::GetAtt": Array [
-            "signUpChallengeE4AB8E64",
+            "signInFB14E69C",
             "Arn",
           ],
         },
@@ -155,7 +155,7 @@ Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "signUpChallengeE4AB8E64",
+            "signInFB14E69C",
             "Arn",
           ],
         },
@@ -359,7 +359,7 @@ Object {
         },
         "FunctionName": "HomeDashboard-signInChallenge",
         "Handler": "index.signInChallenge",
-        "MemorySize": 128,
+        "MemorySize": 256,
         "Role": Object {
           "Fn::GetAtt": Array [
             "signInChallengeServiceRole2F9BFBDB",
@@ -441,6 +441,108 @@ Object {
       },
       "Type": "AWS::IAM::Policy",
     },
+    "signInFB14E69C": Object {
+      "DependsOn": Array [
+        "signInServiceRoleDefaultPolicy62723471",
+        "signInServiceRoleA1955DB5",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "ZipFile": "xxx",
+        },
+        "Environment": Object {
+          "Variables": Object {
+            "ALLOW_ORIGINS": "test-allowOrigins",
+            "AUTH_TABLE_NAME": Object {
+              "Fn::ImportValue": "test-stack:ExportsOutputReftesttableB6F02C7740211428",
+            },
+            "RP_ID": "test-rpId",
+          },
+        },
+        "FunctionName": "HomeDashboard-signIn",
+        "Handler": "index.signIn",
+        "MemorySize": 256,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "signInServiceRoleA1955DB5",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs12.x",
+        "Timeout": 4,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "signInServiceRoleA1955DB5": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "signInServiceRoleDefaultPolicy62723471": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::ImportValue": "test-stack:ExportsOutputFnGetAtttesttableB6F02C77Arn4AC37B77",
+                },
+                Object {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "signInServiceRoleDefaultPolicy62723471",
+        "Roles": Array [
+          Object {
+            "Ref": "signInServiceRoleA1955DB5",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "signUp5E93447F": Object {
       "DependsOn": Array [
         "signUpServiceRoleDefaultPolicy866220C7",
@@ -461,7 +563,7 @@ Object {
         },
         "FunctionName": "HomeDashboard-signUp",
         "Handler": "index.signUp",
-        "MemorySize": 128,
+        "MemorySize": 256,
         "Role": Object {
           "Fn::GetAtt": Array [
             "signUpServiceRole353D824C",
@@ -491,7 +593,7 @@ Object {
         },
         "FunctionName": "HomeDashboard-signUpChallenge",
         "Handler": "index.signUpChallenge",
-        "MemorySize": 128,
+        "MemorySize": 256,
         "Role": Object {
           "Fn::GetAtt": Array [
             "signUpChallengeServiceRoleA12993EA",

@@ -5,19 +5,22 @@ import {
 import * as crypto from "crypto";
 import base64url from "base64url";
 import * as Yup from "yup";
-import * as cbor from "cbor";
 import * as jwkToPem from "jwk-to-pem";
-import { getSignUpChallenge, putCredential } from "./db";
+import { getSignInChallenge, getCredential, putCredential } from "./db";
 
 type Event = Pick<APIGatewayProxyEventV2, "body">;
 type Credential = {
   id: string;
-  response: { attestationObject: string; clientDataJSON: string };
+  response: {
+    authenticatorData: string;
+    clientDataJSON: string;
+    signature: string;
+  };
 };
 type ClientData = {
   challenge: string;
   origin: string;
-  type: "webauthn.create";
+  type: "webauthn.get";
 };
 type AuthData = {
   rpIdHash: Buffer;
@@ -40,25 +43,19 @@ const bodySchema = Yup.object()
       .shape({
         id: Yup.string().required(),
         response: Yup.object().required().shape({
-          attestationObject: Yup.string().required(),
+          authenticatorData: Yup.string().required(),
           clientDataJSON: Yup.string().required(),
+          signature: Yup.string().required(),
         }),
       }),
   });
-const clientDataSchema = Yup.object()
-  .required()
-  .shape({
-    challenge: Yup.string().required(),
-    origin: Yup.string().required(),
-    type: Yup.string().required().equals(["webauthn.create"]),
-  });
 
 /**
- * Sign Up 処理
+ * Sign In 処理
  *
  * @param event
  */
-export default async function signUpChallenge(
+export default async function signIn(
   event: Event,
   now: Date
 ): Promise<APIGatewayProxyStructuredResultV2> {
@@ -82,80 +79,71 @@ export default async function signUpChallenge(
   const { username, credential } = validatedEvent.value.body;
   console.info({ username, credential });
 
-  // Step.5 and .6 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
-  const clientData = await getClientAuth(credential.response.clientDataJSON);
+  // Step.5 of https://www.w3.org/TR/webauthn/#sctn-verifying-assertion
+  // TODO: If options.allowCredentials is not empty, verify that credential.id identifies one of the public key credentials listed in options.allowCredentials.
+
+  // Step.6 of https://www.w3.org/TR/webauthn/#sctn-verifying-assertion
+  // TODO:
+
+  // Step.8 and Step.9 and .10 of https://www.w3.org/TR/webauthn/#sctn-verifying-assertion
+  const authData = base64url.toBuffer(credential.response.authenticatorData);
+  const signature = base64url.toBuffer(credential.response.signature);
+  const clientData = getClientAuth(credential.response.clientDataJSON);
   console.info({ clientData });
 
   try {
-    // Step.7 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
+    // Step.11 of https://www.w3.org/TR/webauthn/#sctn-verifying-assertion
     verifyType(clientData);
-    // Step.8 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
+    // Step.12 of https://www.w3.org/TR/webauthn/#sctn-verifying-assertion
     await verifyChallenge(username, clientData);
-    // Step.9 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
+    // Step.13 of https://www.w3.org/TR/webauthn/#sctn-verifying-assertion
     verifyOrigin(ALLOW_ORIGINS, clientData);
+
+    // skip Step.14 of https://www.w3.org/TR/webauthn/#sctn-verifying-assertion
   } catch (error) {
     console.error(error);
     // give no hint to client
     return { statusCode: 400, body: "Invalid clientDataJSON." };
   }
 
-  // skip Step.10 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
-
-  // Step.11 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
-  const clientDataHash = hashClientData(credential);
-
-  // Step.12 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
-  const { fmt, authData, attStmt } = getAttestationObject(credential);
-  console.info({ fmt, authData, attStmt });
-
   const authDataStruct = parseAuthData(authData);
   console.info({ authDataStruct });
 
-  const publicKeyCbor: Map<any, any> = cbor.decode(
-    authDataStruct.credentialPublicKey
-  );
-  console.info({ publicKeyCbor });
-  const publicKeyJwk = coseToJwk(publicKeyCbor);
-  console.info({ publicKeyJwk });
+  const registeredCredential = await getCredential(username, credential.id);
+  if (!registeredCredential) {
+    throw new Error("No credential is found.");
+  }
+  const { jwk, signCount } = registeredCredential;
 
   try {
-    // Step.13 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
+    // Step.15 of https://www.w3.org/TR/webauthn/#sctn-verifying-assertion
     verifyRpIdHash(authDataStruct, RP_ID);
-    // Step.14 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
-    // Step.15 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
+    // Step.16 of https://www.w3.org/TR/webauthn/#sctn-verifying-assertion
+    // Step.17 of https://www.w3.org/TR/webauthn/#sctn-verifying-assertion
     verifyFlag(authDataStruct);
-    // Step.16 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
-    const alg = getAlgFromPublicKey(publicKeyCbor);
-    verifyAlg(alg);
 
-    // skip Step.17 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
+    // Skip Step.18 of https://www.w3.org/TR/webauthn/#sctn-verifying-assertion
 
-    // Step.18 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
-    verifyFmt(fmt, attStmt);
-    const attStmtForPackedWithoutX5c = attStmt as { sig: Buffer; alg: number };
-    // Step.19 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
-    // for only Packed without x5c (横着)
-    verifyAttStmt(attStmtForPackedWithoutX5c, alg);
-    verifySignature(
-      attStmtForPackedWithoutX5c.sig,
-      publicKeyJwk,
-      authData,
-      clientDataHash
-    );
+    // Step.19 of https://www.w3.org/TR/webauthn/#sctn-verifying-assertion
+    const clientDataHash = hashClientData(credential);
+    // Step.20 of https://www.w3.org/TR/webauthn/#sctn-verifying-assertion
+    verifySignature(signature, jwk, authData, clientDataHash);
+
+    if (signCount >= authDataStruct.signCount) {
+      throw new Error(
+        "signCount should be more than registered. signCount: ${} authDataStruct.signCount: ${authDataStruct.signCount}"
+      );
+    }
   } catch (error) {
     console.error(error);
-    return { statusCode: 400, body: "Invalid attestationObject." };
+    return { statusCode: 400, body: "Invalid authenticatorData." };
   }
 
-  // Step.22 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
-  // credential.id の一意性の保証。他のサンプルでも実装されていない。。。なんでだろう。
-  // やるならcredentialのdynamodbへの登録のkeyをpもsも `credential:${credential.id}` にする。userのcredential一覧はGSIからとる。
-
-  // Step.23 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
+  // Step.21 of https://www.w3.org/TR/webauthn/#sctn-verifying-assertion
   await putCredential(
     username,
     credential.id,
-    publicKeyJwk,
+    jwk,
     authDataStruct.signCount,
     now
   );
@@ -184,17 +172,12 @@ async function validateEvent(
   }
 }
 
-/**
- * Yupでvalidateするけど、余計かな。方が欲しいだけだけど as を使うのが正しいのか。
- */
-function getClientAuth(clientDataJSON: string): Promise<ClientData> {
-  return clientDataSchema.validate(
-    JSON.parse(base64url.decode(clientDataJSON))
-  );
+function getClientAuth(clientDataJSON: string): ClientData {
+  return JSON.parse(base64url.decode(clientDataJSON)) as ClientData;
 }
 
 function verifyType(clientData: ClientData): void {
-  if (clientData.type !== "webauthn.create") {
+  if (clientData.type !== "webauthn.get") {
     throw new Error(
       `clientData.type is invalid. clientData.type: ${clientData.type}`
     );
@@ -205,7 +188,7 @@ async function verifyChallenge(
   username: string,
   clientData: ClientData
 ): Promise<void> {
-  const challenge = await getSignUpChallenge(username, clientData.challenge);
+  const challenge = await getSignInChallenge(username, clientData.challenge);
   if (!challenge) {
     throw new Error(
       `No challenge has found. username: ${username} challenge: ${clientData.challenge}`
@@ -240,30 +223,6 @@ function verifyFlag(authData: AuthData) {
   }
 }
 
-function verifyAlg(alg: number) {
-  if (alg !== -7) {
-    throw new Error("Incorrect Alg in credentialPublicKey.");
-  }
-}
-
-function verifyFmt(fmt: string, attStmt: Object) {
-  // for only Packed without x5c (横着)
-  if (fmt !== "packed") {
-    throw new Error(`Unsupported attestation format. fmt: ${fmt}`);
-  }
-  if (attStmt.hasOwnProperty("x5c")) {
-    throw new Error("Unsupported attStmt that has x5c.");
-  }
-}
-
-function verifyAttStmt(attStmt: { sig: Buffer; alg: number }, alg: number) {
-  if (attStmt.alg !== alg) {
-    throw new Error(
-      `Incorrect Signature. ${{ "attStmt.alg": attStmt.alg, alg }}`
-    );
-  }
-}
-
 function verifySignature(
   signature: Buffer,
   jwk: jwkToPem.JWK,
@@ -284,17 +243,6 @@ function verifySignature(
 
 function hashClientData(credential: Credential) {
   return hash(base64url.toBuffer(credential.response.clientDataJSON));
-}
-
-function getAttestationObject(credential: Credential) {
-  const attestationObject = cbor.decode(
-    base64url.toBuffer(credential.response.attestationObject)
-  );
-  // cast
-  const fmt: string = attestationObject.fmt;
-  const authData: Buffer = attestationObject.authData;
-  const attStmt: Object = attestationObject.attStmt;
-  return { fmt, authData, attStmt };
 }
 
 /**
@@ -334,10 +282,6 @@ const parseAuthData = (authData: Buffer): AuthData => {
 const hash = (data: crypto.BinaryLike): Buffer => {
   return crypto.createHash("SHA256").update(data).digest();
 };
-
-function getAlgFromPublicKey(publicKeyCbor: any) {
-  return publicKeyCbor.get(3);
-}
 
 /**
  * support only EC

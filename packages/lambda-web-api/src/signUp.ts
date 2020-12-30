@@ -45,20 +45,13 @@ const bodySchema = Yup.object()
         }),
       }),
   });
-const clientDataSchema = Yup.object()
-  .required()
-  .shape({
-    challenge: Yup.string().required(),
-    origin: Yup.string().required(),
-    type: Yup.string().required().equals(["webauthn.create"]),
-  });
 
 /**
  * Sign Up 処理
  *
  * @param event
  */
-export default async function signUpChallenge(
+export default async function signUp(
   event: Event,
   now: Date
 ): Promise<APIGatewayProxyStructuredResultV2> {
@@ -83,7 +76,7 @@ export default async function signUpChallenge(
   console.info({ username, credential });
 
   // Step.5 and .6 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
-  const clientData = await getClientAuth(credential.response.clientDataJSON);
+  const clientData = getClientAuth(credential.response.clientDataJSON);
   console.info({ clientData });
 
   try {
@@ -93,13 +86,13 @@ export default async function signUpChallenge(
     await verifyChallenge(username, clientData);
     // Step.9 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
     verifyOrigin(ALLOW_ORIGINS, clientData);
+
+    // skip Step.10 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
   } catch (error) {
     console.error(error);
     // give no hint to client
     return { statusCode: 400, body: "Invalid clientDataJSON." };
   }
-
-  // skip Step.10 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
 
   // Step.11 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
   const clientDataHash = hashClientData(credential);
@@ -184,13 +177,8 @@ async function validateEvent(
   }
 }
 
-/**
- * Yupでvalidateするけど、余計かな。方が欲しいだけだけど as を使うのが正しいのか。
- */
-function getClientAuth(clientDataJSON: string): Promise<ClientData> {
-  return clientDataSchema.validate(
-    JSON.parse(base64url.decode(clientDataJSON))
-  );
+function getClientAuth(clientDataJSON: string): ClientData {
+  return JSON.parse(base64url.decode(clientDataJSON)) as ClientData;
 }
 
 function verifyType(clientData: ClientData): void {
