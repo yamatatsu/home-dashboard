@@ -1,7 +1,6 @@
 import React, { FC } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import base64url from "base64url";
 import { useGoToSignIn } from "../routes";
 import { RedirectIfSignedIn } from "../componrnts/RedirectIfSignedIn";
 import { fetchSignUp, fetchSignUpChallenge } from "../lib/fetching";
@@ -63,29 +62,5 @@ async function signUp(username: string): Promise<void> {
     return;
   }
 
-  const decodedCredential = publicKeyCredentialToJSON(result.credential);
-
-  await fetchSignUp({ username, credential: decodedCredential });
+  await fetchSignUp({ username, credential: result.credential });
 }
-
-const publicKeyCredentialToJSON = (pubKeyCred: any): any => {
-  if (pubKeyCred instanceof Array) {
-    return pubKeyCred.map(publicKeyCredentialToJSON);
-  }
-
-  if (pubKeyCred instanceof ArrayBuffer) {
-    return base64url.encode(Buffer.from(pubKeyCred));
-  }
-
-  if (pubKeyCred instanceof Object) {
-    const obj: Record<string, any> = {};
-
-    for (let key in pubKeyCred) {
-      obj[key] = publicKeyCredentialToJSON(pubKeyCred[key]);
-    }
-
-    return obj;
-  }
-
-  return pubKeyCred;
-};

@@ -6,6 +6,7 @@ import { LinkToSignUp } from "../routes";
 import { signedInAtom } from "../recoil";
 import { RedirectIfSignedIn } from "../componrnts/RedirectIfSignedIn";
 import { fetchSignInChallenge } from "../lib/fetching";
+import { getCredentials } from "../lib/WebAuthn";
 
 const schema = Yup.object().shape({
   username: Yup.string().required().min(2).max(100),
@@ -59,5 +60,11 @@ export const SignIn: FC = () => {
 
 async function signIn(username: string): Promise<void> {
   const { challenge, credentialIds } = await fetchSignInChallenge(username);
-  console.info({ challenge, credentialIds });
+
+  const result = await getCredentials(challenge, credentialIds);
+  if (result.canceled) {
+    console.info("WebAuthn Popup is canceled.");
+    return;
+  }
+  console.log(result.credential);
 }
