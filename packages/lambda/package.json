@@ -22,7 +22,7 @@
     "typescript": "4.1.3"
   },
   "dependencies": {
-    "aws-sdk": "2.819.0",
+    "aws-sdk": "2.820.0",
     "base64url": "3.0.1",
     "cbor": "5.1.0",
     "cookie": "^0.4.1",
