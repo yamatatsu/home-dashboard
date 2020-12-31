@@ -3,8 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build:fetch-remo-api": "cd ../lambda-fetch-remo-api; yarn build",
-    "build:web-api": "cd ../lambda-web-api; yarn build",
+    "build:lambda": "cd ../lambda; yarn build",
     "predeploy": "run-p build:*",
     "deploy": "cdk deploy --progress=events",
     "test": "jest",
