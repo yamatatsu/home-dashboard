@@ -5,17 +5,31 @@ const sns = new AWS.SNS();
 const s3 = new AWS.S3();
 
 export const DocumentClient = {
-  batchWrite: (params: AWS.DynamoDB.DocumentClient.BatchWriteItemInput) => {
-    return docClient.batchWrite(params).promise();
+  batchWrite: async (
+    params: AWS.DynamoDB.DocumentClient.BatchWriteItemInput
+  ) => {
+    console.info("It will be batchWrite. params: %o", params);
+    const result = await docClient.batchWrite(params).promise();
+    console.info("batchWrite_result: %o", result);
+    return result;
   },
-  get: (params: AWS.DynamoDB.DocumentClient.GetItemInput) => {
-    return docClient.get(params).promise();
+  get: async (params: AWS.DynamoDB.DocumentClient.GetItemInput) => {
+    console.info("It will be get. params: %o", params);
+    const result = await docClient.get(params).promise();
+    console.info("get_result: %o", result);
+    return result;
   },
-  put: (params: AWS.DynamoDB.DocumentClient.PutItemInput) => {
-    return docClient.put(params).promise();
+  put: async (params: AWS.DynamoDB.DocumentClient.PutItemInput) => {
+    console.info("It will be put. params: %o", params);
+    const result = await docClient.put(params).promise();
+    console.info("put_result: %o", result);
+    return result;
   },
-  query: (params: AWS.DynamoDB.DocumentClient.QueryInput) => {
-    return docClient.query(params).promise();
+  query: async (params: AWS.DynamoDB.DocumentClient.QueryInput) => {
+    console.info("It will be query. params: %o", params);
+    const result = await docClient.query(params).promise();
+    console.info("query_result: %o", result);
+    return result;
   },
 };
 

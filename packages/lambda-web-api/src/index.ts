@@ -3,6 +3,7 @@ import _signUpChallenge from "./signUpChallenge";
 import _signUp from "./signUp";
 import _signInChallenge from "./signInChallenge";
 import _signIn from "./signIn";
+import _authorize from "./authorize";
 
 export const signUpChallenge: APIGatewayProxyHandlerV2 = async (event) => {
   return _signUpChallenge(event, new Date());
@@ -15,4 +16,7 @@ export const signInChallenge: APIGatewayProxyHandlerV2 = async (event) => {
 };
 export const signIn: APIGatewayProxyHandlerV2 = async (event) => {
   return _signIn(event, new Date());
+};
+export const authorize = async (event: any) => {
+  return _authorize(event);
 };

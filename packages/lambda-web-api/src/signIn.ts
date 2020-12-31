@@ -4,7 +4,14 @@ import {
 } from "aws-lambda";
 import base64url from "base64url";
 import * as Yup from "yup";
-import { getSignInChallenge, getCredential, putCredential } from "./lib/db";
+import * as cookie from "cookie";
+import { v4 as uuid } from "uuid";
+import {
+  getSignInChallenge,
+  getCredential,
+  putCredential,
+  putSession,
+} from "./lib/db";
 import {
   getClientAuth,
   verifyOrigin,
@@ -142,11 +149,23 @@ export default async function signIn(
     now
   );
 
+  const sessionId = uuid();
+  putSession(sessionId, username, now);
+
+  const dev = ALLOW_ORIGINS.split(",").some((s) =>
+    s.startsWith("http://localhost")
+  );
   return {
     statusCode: 201,
-    body: JSON.stringify({
-      // TODO:
-    }),
+    body: JSON.stringify({ ok: true }),
+    cookies: [
+      cookie.serialize("sessionId", sessionId, {
+        httpOnly: true,
+        maxAge: 1 * 60, // FIXME: for test // sec
+        sameSite: dev ? "none" : "strict",
+        secure: !dev,
+      }),
+    ],
   };
 }
 

@@ -92,6 +92,11 @@ test("Success pattern", async () => {
   expect(result).toStrictEqual({
     statusCode: 201,
     body: expect.any(String),
+    cookies: [
+      expect.stringMatching(
+        /^sessionId\=.+\; Max\-Age\=60\; HttpOnly\; SameSite\=None$/
+      ),
+    ],
   });
-  expect(JSON.parse(result.body ?? "")).toStrictEqual({});
+  expect(JSON.parse(result.body ?? "")).toStrictEqual({ ok: true });
 });
