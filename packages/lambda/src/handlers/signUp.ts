@@ -3,7 +3,7 @@ import {
   APIGatewayProxyEventV2,
 } from "aws-lambda";
 import base64url from "base64url";
-import * as Yup from "yup";
+import * as z from "zod";
 import * as cbor from "cbor";
 import { getSignUpChallenge, putCredential } from "../lib/db";
 import {
@@ -22,28 +22,22 @@ import {
 } from "../lib/webAuthn";
 
 type Event = Pick<APIGatewayProxyEventV2, "body">;
-type Credential = {
-  id: string;
-  response: { attestationObject: string; clientDataJSON: string };
-};
 
-const eventSchema = Yup.object()
-  .required()
-  .shape({ body: Yup.string().required() });
-const bodySchema = Yup.object()
-  .required()
-  .shape({
-    username: Yup.string().required(),
-    credential: Yup.object()
-      .required()
-      .shape({
-        id: Yup.string().required(),
-        response: Yup.object().required().shape({
-          attestationObject: Yup.string().required(),
-          clientDataJSON: Yup.string().required(),
-        }),
-      }),
-  });
+const eventSchema = z.object({ body: z.string() });
+const bodySchema = z.object({
+  username: z.string(),
+  credential: z
+    .object({
+      id: z.string(),
+      response: z
+        .object({
+          attestationObject: z.string(),
+          clientDataJSON: z.string(),
+        })
+        .nonstrict(),
+    })
+    .nonstrict(),
+});
 
 /**
  * Sign Up 処理
@@ -64,14 +58,14 @@ export default async function signUp(
   console.info({ ALLOW_ORIGINS, RP_ID });
 
   const validatedEvent = await validateEvent(event);
-  if (validatedEvent.hasError) {
+  if (!validatedEvent.success) {
     return {
       statusCode: 400,
       body: JSON.stringify({ message: validatedEvent.error.message }),
     };
   }
 
-  const { username, credential } = validatedEvent.value.body;
+  const { username, credential } = validatedEvent.data;
   console.info({ username, credential });
 
   // Step.5 and .6 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
@@ -162,20 +156,12 @@ export default async function signUp(
   };
 }
 
-type Container<T> =
-  | { hasError: false; value: T }
-  | { hasError: true; error: Error };
-
-async function validateEvent(
-  event: any
-): Promise<Container<{ body: { username: string; credential: Credential } }>> {
-  try {
-    const validEvent = await eventSchema.validate(event);
-    const body = await bodySchema.validate(JSON.parse(validEvent.body));
-    return { hasError: false, value: { body } };
-  } catch (error) {
-    return { hasError: true, error };
+async function validateEvent(event: any) {
+  const validatedEvent = eventSchema.safeParse(event);
+  if (!validatedEvent.success) {
+    return validatedEvent;
   }
+  return bodySchema.safeParse(JSON.parse(validatedEvent.data.body));
 }
 
 async function verifyChallenge(

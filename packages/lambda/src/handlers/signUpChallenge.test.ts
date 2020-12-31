@@ -22,7 +22,7 @@ test("thrown if no body", async () => {
   process.env = { ...process.env, AUTH_TABLE_NAME: "test-AUTH_TABLE_NAME" };
 
   await expect(signUpChallenge({}, date)).resolves.toStrictEqual({
-    body: expect.stringMatching(/body is a required field/),
+    body: expect.stringMatching(/invalid_type at body/),
     statusCode: 400,
   });
 });
@@ -32,7 +32,7 @@ test("thrown if no username", async () => {
   await expect(
     signUpChallenge({ body: JSON.stringify({}) }, date)
   ).resolves.toStrictEqual({
-    body: expect.stringMatching(/username is a required field/),
+    body: expect.stringMatching(/invalid_type at username/),
     statusCode: 400,
   });
 });
@@ -42,7 +42,7 @@ test("thrown if empty username", async () => {
   await expect(
     signUpChallenge({ body: JSON.stringify({ username: "" }) }, date)
   ).resolves.toStrictEqual({
-    body: expect.stringMatching(/username is a required field/),
+    body: expect.stringMatching(/too_small at username/),
     statusCode: 400,
   });
 });
@@ -52,7 +52,7 @@ test("thrown if username length is less than 2", async () => {
   await expect(
     signUpChallenge({ body: JSON.stringify({ username: "a" }) }, date)
   ).resolves.toStrictEqual({
-    body: expect.stringMatching(/username must be at least 2 characters/),
+    body: expect.stringMatching(/too_small at username/),
     statusCode: 400,
   });
 });
@@ -64,7 +64,7 @@ test("thrown if username length is more than 100", async () => {
   await expect(
     signUpChallenge({ body: JSON.stringify({ username: len101 }) }, date)
   ).resolves.toStrictEqual({
-    body: expect.stringMatching(/username must be at most 100 characters/),
+    body: expect.stringMatching(/too_big at username/),
     statusCode: 400,
   });
 });

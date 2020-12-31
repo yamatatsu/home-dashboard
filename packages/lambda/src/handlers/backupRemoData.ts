@@ -11,7 +11,7 @@ export default async function backupRemoData(
     throw new Error("Enviroment variable `BUCKET_NAME` is required.");
 
   console.info("messageBody: %s", messageBody);
-  const sqsMessage = await sqsMessageSchema.validate(JSON.parse(messageBody));
+  const sqsMessage = sqsMessageSchema.parse(JSON.parse(messageBody));
 
   await S3.putObject({
     Bucket: BUCKET_NAME,

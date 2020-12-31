@@ -1,11 +1,12 @@
 import * as AWS from "aws-sdk";
-import {
-  RemoEvent,
-  sqsMessageSchema,
-  eventSchema,
-  remoDataSchema,
-} from "../schema";
+import { sqsMessageSchema, remoDataSchema } from "../schema";
 import { DocumentClient } from "../lib/awsSdk";
+import {
+  remoEventSchema,
+  createRemoEventRecord,
+  RemoEvent,
+  RemoEventRecord,
+} from "../models/remoEvent";
 
 type RemoData = {
   name: string;
@@ -23,23 +24,20 @@ export default async function putRemoData(
     throw new Error("Enviroment variable `TABLE_NAME` is required.");
 
   console.info("messageBody: %s", messageBody);
-  const sqsMessage = await sqsMessageSchema.validate(JSON.parse(messageBody));
 
-  const remoDataList = await remoDataSchema.validate(
-    JSON.parse(sqsMessage.Message)
-  );
-
+  const sqsMessage = sqsMessageSchema.parse(JSON.parse(messageBody));
+  const remoDataList = remoDataSchema.parse(JSON.parse(sqsMessage.Message));
   if (remoDataList.length === 0) {
     console.warn("SQS Message is empty array.");
     return;
   }
 
-  const ttl = getTtl(date, 6);
-
   const writeRequests = remoDataList
-    .map(remoDataToRemoEvents)
+    .map((remoData) => remoDataToRemoEvents(remoData))
     .flat()
-    .map((event) => remoEventToWriteRequest(event, ttl));
+    .map((a) => remoEventSchema.parse(a))
+    .map((validated) => createRemoEventRecord(validated, date))
+    .map(remoEventToWriteRequest);
 
   const params: AWS.DynamoDB.DocumentClient.BatchWriteItemInput = {
     RequestItems: { [TABLE_NAME]: writeRequests },
@@ -48,29 +46,21 @@ export default async function putRemoData(
   await DocumentClient.batchWrite(params);
 }
 
-const getTtl = (date: Date, hour: number) =>
-  Math.floor(date.getTime() / 1000) + hour * 60 * 60;
-
 const remoDataToRemoEvents = (data: RemoData): RemoEvent[] => {
   const { id, name, newest_events } = data;
   return Object.entries(newest_events).map(([key, event]) => {
-    eventSchema.validate(event);
     return {
-      partitionKey: `remoEvent:${id}_${key}`,
-      sortKey: event.created_at,
       deviceId: id,
       deviceName: name,
-      type: key,
-      createdAt: event.created_at,
+      eventType: key,
       value: event.val,
+      createdAt: event.created_at,
     };
   });
 };
+
 const remoEventToWriteRequest = (
-  event: RemoEvent,
-  ttl: number
+  record: RemoEventRecord
 ): AWS.DynamoDB.DocumentClient.WriteRequest => {
-  return {
-    PutRequest: { Item: { ...event, ttl } },
-  };
+  return { PutRequest: { Item: record } };
 };

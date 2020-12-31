@@ -1,7 +1,4 @@
-import { create as object } from "yup/lib/object";
-import { create as array } from "yup/lib/array";
-import { create as string } from "yup/lib/string";
-import { create as number } from "yup/lib/number";
+import * as z from "zod";
 
 export type RemoEvent = {
   partitionKey: string;
@@ -13,24 +10,23 @@ export type RemoEvent = {
   value: number;
 };
 
-export const sqsMessageSchema = object().shape({
-  Message: string().required(),
-  MessageId: string().required(),
-});
-
-export const eventSchema = object({
-  val: number().required(),
-  created_at: string().required(),
-});
-export const remoDataSchema = array(
-  object().shape({
-    name: string().required(),
-    id: string().required(),
-    newest_events: object().required().shape({
-      hu: object(),
-      il: object(),
-      mo: object(),
-      te: object(),
-    }),
+export const sqsMessageSchema = z
+  .object({
+    Message: z.string(),
+    MessageId: z.string(),
   })
-).required();
+  .nonstrict();
+
+export const eventSchema = z.object({
+  val: z.number(),
+  created_at: z.string(),
+});
+export const remoDataSchema = z.array(
+  z
+    .object({
+      name: z.string(),
+      id: z.string(),
+      newest_events: z.record(eventSchema),
+    })
+    .nonstrict()
+);
