@@ -39,11 +39,9 @@ export default async function putRemoData(
     .map((validated) => createRemoEventRecord(validated, date))
     .map(remoEventToWriteRequest);
 
-  const params: AWS.DynamoDB.DocumentClient.BatchWriteItemInput = {
+  await DocumentClient.batchWrite({
     RequestItems: { [TABLE_NAME]: writeRequests },
-  };
-  console.info("it will be saved as %o", params);
-  await DocumentClient.batchWrite(params);
+  });
 }
 
 const remoDataToRemoEvents = (data: RemoData): RemoEvent[] => {
