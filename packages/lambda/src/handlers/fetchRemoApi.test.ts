@@ -1,9 +1,9 @@
 jest.mock("node-fetch");
-jest.mock("./awsSdk");
+jest.mock("../lib/awsSdk");
 
 import fetch from "node-fetch";
 import fetchRemoApi from "./fetchRemoApi";
-import { SNS } from "./awsSdk";
+import { SNS } from "../lib/awsSdk";
 
 const { Response } = jest.requireActual("node-fetch");
 

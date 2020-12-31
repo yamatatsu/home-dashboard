@@ -5,7 +5,7 @@ import {
 import base64url from "base64url";
 import * as Yup from "yup";
 import * as cbor from "cbor";
-import { getSignUpChallenge, putCredential } from "./lib/db";
+import { getSignUpChallenge, putCredential } from "../lib/db";
 import {
   getClientAuth,
   verifyOrigin,
@@ -19,7 +19,7 @@ import {
   getAttestationObject,
   parseAuthData,
   getAlgFromPublicKey,
-} from "./lib/webAuthn";
+} from "../lib/webAuthn";
 
 type Event = Pick<APIGatewayProxyEventV2, "body">;
 type Credential = {

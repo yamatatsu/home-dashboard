@@ -1,7 +1,7 @@
-jest.mock("./awsSdk");
+jest.mock("../lib/awsSdk");
 
 import putRemoData from "./putRemoData";
-import { DocumentClient } from "./awsSdk";
+import { DocumentClient } from "../lib/awsSdk";
 
 const Message = JSON.stringify([
   {

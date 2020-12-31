@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import { SNS } from "./awsSdk";
+import { SNS } from "../lib/awsSdk";
 
 export default async function fetchRemoApi(): Promise<void> {
   // jest でのテストしやすさの為に関数内で環境変数を展開する

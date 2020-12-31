@@ -11,7 +11,7 @@ import {
   getCredential,
   putCredential,
   putSession,
-} from "./lib/db";
+} from "../lib/db";
 import {
   getClientAuth,
   verifyOrigin,
@@ -20,7 +20,7 @@ import {
   verifySignature,
   hashClientData,
   parseAuthData,
-} from "./lib/webAuthn";
+} from "../lib/webAuthn";
 
 type Event = Pick<APIGatewayProxyEventV2, "body">;
 type Credential = {

@@ -1,7 +1,7 @@
-jest.mock("./awsSdk");
+jest.mock("../lib/awsSdk");
 
 import backupRemoData from "./backupRemoData";
-import { S3 } from "./awsSdk";
+import { S3 } from "../lib/awsSdk";
 
 describe("backupRemoData", () => {
   const date = new Date("2020/12/17 00:00:00Z");

@@ -1,5 +1,5 @@
-import { sqsMessageSchema } from "./schema";
-import { S3 } from "./awsSdk";
+import { sqsMessageSchema } from "../schema";
+import { S3 } from "../lib/awsSdk";
 
 export default async function backupRemoData(
   messageBody: string,

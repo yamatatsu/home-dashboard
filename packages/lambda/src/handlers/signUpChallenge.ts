@@ -3,8 +3,8 @@ import {
   APIGatewayProxyEventV2,
 } from "aws-lambda";
 import * as Yup from "yup";
-import { putSignUpChallenge } from "./lib/db";
-import { createChallenge } from "./lib/webAuthn";
+import { putSignUpChallenge } from "../lib/db";
+import { createChallenge } from "../lib/webAuthn";
 
 type Event = Pick<APIGatewayProxyEventV2, "body">;
 

@@ -4,8 +4,8 @@ import {
   sqsMessageSchema,
   eventSchema,
   remoDataSchema,
-} from "./schema";
-import { DocumentClient } from "./awsSdk";
+} from "../schema";
+import { DocumentClient } from "../lib/awsSdk";
 
 type RemoData = {
   name: string;
