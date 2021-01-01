@@ -24,7 +24,7 @@ import {
 
 type Event = Pick<APIGatewayProxyEventV2, "body">;
 
-const eventSchema = z.object({ body: z.string() });
+const eventSchema = z.object({ body: z.string() }).nonstrict();
 const bodySchema = z.object({
   username: z.string(),
   credential: z
