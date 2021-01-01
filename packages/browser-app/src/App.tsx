@@ -9,10 +9,44 @@ export const App: FC = () => {
     return createBrowserHistory();
   }, []);
   return (
-    <RecoilRoot>
-      <RoconRoot history={history}>
-        <Routes />
-      </RoconRoot>
-    </RecoilRoot>
+    <ErrorBoundary>
+      <RecoilRoot>
+        <RoconRoot history={history}>
+          <Routes />
+        </RoconRoot>
+      </RecoilRoot>
+    </ErrorBoundary>
   );
 };
+
+type Props = React.PropsWithChildren<{}>;
+
+interface State {
+  hasError: boolean;
+}
+
+class ErrorBoundary extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error): State {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
+    console.log("error: " + error);
+    console.log("errorInfo: " + JSON.stringify(errorInfo));
+    console.log("componentStack: " + errorInfo.componentStack);
+  }
+
+  render(): React.ReactNode {
+    if (this.state.hasError) {
+      // FIXME:
+      return <div>Error.</div>;
+    }
+
+    return this.props.children;
+  }
+}
