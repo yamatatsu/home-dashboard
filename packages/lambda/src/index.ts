@@ -9,6 +9,8 @@ import _signInChallenge from "./handlers/signInChallenge";
 import _signIn from "./handlers/signIn";
 import _authorize from "./handlers/authorize";
 
+import _getRemoEvents from "./handlers/getRemoEvents";
+
 import _fetchRemoApi from "./handlers/fetchRemoApi";
 import _putRemoData from "./handlers/putRemoData";
 import _backupRemoData from "./handlers/backupRemoData";
@@ -27,6 +29,10 @@ export const signIn: APIGatewayProxyHandlerV2 = async (event) => {
 };
 export const authorize = async (event: any) => {
   return _authorize(event);
+};
+
+export const getRemoEvents: APIGatewayProxyHandlerV2 = async (event) => {
+  return _getRemoEvents(event);
 };
 
 export const fetchRemoApi: ScheduledHandler = async () => {

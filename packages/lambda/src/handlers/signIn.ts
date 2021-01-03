@@ -153,7 +153,7 @@ export default async function signIn(
         httpOnly: true,
         maxAge: 1 * 60, // FIXME: for test // sec
         sameSite: dev ? "none" : "strict",
-        secure: !dev,
+        secure: true,
       }),
     ],
   };

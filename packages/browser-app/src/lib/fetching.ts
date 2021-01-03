@@ -4,6 +4,7 @@ import {
   SIGN_UP_URL,
   SIGN_IN_CHALLENGE_URL,
   SIGN_IN_URL,
+  REMO_EVENTS_URL,
 } from "../constants";
 
 export async function fetchSignUpChallenge(username: string): Promise<string> {
@@ -74,5 +75,18 @@ export async function fetchSignIn(
   }
   const json = await response.json();
 
+  return json;
+}
+
+export async function fetchGetRemoEvents(): Promise<any> {
+  const response = await fetch(REMO_EVENTS_URL, {
+    method: "GET",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+  });
+  if (!response.ok) {
+    throw new Error("fetchSignIn response is error.");
+  }
+  const json = await response.json();
   return json;
 }

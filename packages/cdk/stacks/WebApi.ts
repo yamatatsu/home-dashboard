@@ -3,6 +3,7 @@ import * as lambda from "@aws-cdk/aws-lambda";
 import * as dynamodb from "@aws-cdk/aws-dynamodb";
 import * as apigateway from "@aws-cdk/aws-apigatewayv2";
 import * as logs from "@aws-cdk/aws-logs";
+import * as iam from "@aws-cdk/aws-iam";
 import { LambdaProxyIntegration } from "@aws-cdk/aws-apigatewayv2-integrations";
 
 type WebApiProps = cdk.StackProps & {
@@ -65,17 +66,39 @@ export class WebApi extends cdk.Stack {
       memorySize: 256,
       timeout: cdk.Duration.seconds(4),
     });
+
+    const authorize = new lambda.Function(this, "authorize", {
+      functionName: `HomeDashboard-authorize${props.dev ? "-dev" : ""}`,
+      code: props.code,
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: "index.authorize",
+      environment: {},
+      memorySize: 128,
+      timeout: cdk.Duration.seconds(4),
+    });
+
+    const getRemoEvents = new lambda.Function(this, "getRemoEvents", {
+      functionName: `HomeDashboard-getRemoEvents${props.dev ? "-dev" : ""}`,
+      code: props.code,
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: "index.getRemoEvents",
+      environment: {},
+      memorySize: 128,
+      timeout: cdk.Duration.seconds(4),
+    });
+
     props.homeAuthTable.grantReadWriteData(signUpChallenge);
     props.homeAuthTable.grantReadWriteData(signUp);
     props.homeAuthTable.grantReadWriteData(signInChallenge);
     props.homeAuthTable.grantReadWriteData(signIn);
+    props.homeAuthTable.grantReadData(authorize);
 
     const api = new apigateway.HttpApi(this, "HttpApi", {
       apiName: `HomeDashboard-WebApi${props.dev ? "-dev" : ""}`,
       corsPreflight: {
         allowOrigins: props.allowOrigins,
-        allowMethods: [apigateway.HttpMethod.POST],
-        allowHeaders: ["content-type"],
+        allowMethods: [apigateway.HttpMethod.GET, apigateway.HttpMethod.POST],
+        allowHeaders: ["content-type", "Cookie"],
         allowCredentials: true,
       },
     });
@@ -87,10 +110,47 @@ export class WebApi extends cdk.Stack {
         .defaultChild as apigateway.CfnStage;
       cfnStage.accessLogSettings = {
         destinationArn: logGroup.logGroupArn,
-        format:
-          '{ "requestId":"$context.requestId", "ip": "$context.identity.sourceIp", "requestTime":"$context.requestTime", "httpMethod":"$context.httpMethod","routeKey":"$context.routeKey", "status":"$context.status","protocol":"$context.protocol", "responseLength":"$context.responseLength" }',
+        format: JSON.stringify({
+          requestId: "$context.requestId",
+          ip: "$context.identity.sourceIp",
+          requestTime: "$context.requestTimeEpoch",
+          httpMethod: "$context.httpMethod",
+          path: "$context.path",
+          routeKey: "$context.routeKey",
+          status: "$context.status",
+          protocol: "$context.protocol",
+          responseLength: "$context.responseLength",
+          responseLatency: "$context.responseLatency",
+          "authorizer.error": "$context.authorizer.error",
+          "authorizer.principalId": "$context.authorizer.principalId",
+          "error.message": "$context.error.message",
+          "error.messageString": "$context.error.messageString",
+          "error.responseType": "$context.error.responseType",
+          "integration.error": "$context.integration.error",
+          "integration.integrationStatus":
+            "$context.integration.integrationStatus",
+          "integration.latency": "$context.integration.latency",
+          "integration.requestId": "$context.integration.requestId",
+          "integration.status": "$context.integration.status",
+        }),
       };
     }
+
+    const authorizer = new apigateway.CfnAuthorizer(this, "Authorizer", {
+      apiId: api.httpApiId,
+      authorizerType: "REQUEST",
+      // identitySource: ["$request.header.Cookie"],
+      identitySource: [],
+      name: "HomeDashboardAuthorizer",
+      authorizerPayloadFormatVersion: "2.0",
+      // authorizerResultTtlInSeconds: 4,
+      authorizerResultTtlInSeconds: 0,
+      authorizerUri: cdk.Fn.sub(
+        "arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${fnArn}/invocations",
+        { region: this.region, fnArn: authorize.functionArn }
+      ),
+      enableSimpleResponses: true,
+    });
 
     api.addRoutes({
       path: "/auth/signUpChallenge",
@@ -111,6 +171,27 @@ export class WebApi extends cdk.Stack {
       path: "/auth/signIn",
       methods: [apigateway.HttpMethod.POST],
       integration: new LambdaProxyIntegration({ handler: signIn }),
+    });
+
+    const routes = api.addRoutes({
+      path: "/remoEvents",
+      methods: [apigateway.HttpMethod.GET],
+      integration: new LambdaProxyIntegration({ handler: getRemoEvents }),
+    });
+
+    routes.forEach((route) => {
+      const cfnRoute = route.node.defaultChild as apigateway.CfnRoute;
+      cfnRoute.authorizationType = "CUSTOM";
+      cfnRoute.authorizerId = authorizer.ref;
+
+      authorize.addPermission(`authorize-${route.path}-Permission`, {
+        principal: new iam.ServicePrincipal("apigateway.amazonaws.com"),
+        sourceArn: cdk.Stack.of(route).formatArn({
+          service: "execute-api",
+          resource: route.httpApi.httpApiId,
+          resourceName: `authorizers/${authorizer.ref}`,
+        }),
+      });
     });
   }
 }

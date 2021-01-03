@@ -3,6 +3,38 @@
 exports[`WebApi Stack 1`] = `
 Object {
   "Resources": Object {
+    "Authorizer": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "HttpApiF5A9A8A7",
+        },
+        "AuthorizerPayloadFormatVersion": "2.0",
+        "AuthorizerResultTtlInSeconds": 4,
+        "AuthorizerType": "REQUEST",
+        "AuthorizerUri": Object {
+          "Fn::Sub": Array [
+            "arn:aws:apigateway:\${region}:lambda:path/2015-03-31/functions/\${fnArn}/invocations",
+            Object {
+              "fnArn": Object {
+                "Fn::GetAtt": Array [
+                  "authorize0036E950",
+                  "Arn",
+                ],
+              },
+              "region": Object {
+                "Ref": "AWS::Region",
+              },
+            },
+          ],
+        },
+        "EnableSimpleResponses": true,
+        "IdentitySource": Array [
+          "$request.header.Cookie",
+        ],
+        "Name": "HomeDashboardAuthorizer",
+      },
+      "Type": "AWS::ApiGatewayV2::Authorizer",
+    },
     "HttpApiDefaultStage3EEB07D6": Object {
       "Properties": Object {
         "AccessLogSettings": Object {
@@ -40,6 +72,83 @@ Object {
         "ProtocolType": "HTTP",
       },
       "Type": "AWS::ApiGatewayV2::Api",
+    },
+    "HttpApiGETremoEventsDA5CD001": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "HttpApiF5A9A8A7",
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": Object {
+          "Ref": "Authorizer",
+        },
+        "RouteKey": "GET /remoEvents",
+        "Target": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "integrations/",
+              Object {
+                "Ref": "HttpApiGETremoEventsGETremoEventsIntegration3B174E92",
+              },
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::ApiGatewayV2::Route",
+    },
+    "HttpApiGETremoEventsGETremoEventsIntegration3B174E92": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "HttpApiF5A9A8A7",
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": Object {
+          "Fn::GetAtt": Array [
+            "getRemoEventsE86B84DD",
+            "Arn",
+          ],
+        },
+        "PayloadFormatVersion": "2.0",
+      },
+      "Type": "AWS::ApiGatewayV2::Integration",
+    },
+    "HttpApiGETremoEventsTargetHttpApiGETremoEvents6458946CPermission193774D6": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "getRemoEventsE86B84DD",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "HttpApiF5A9A8A7",
+              },
+              "/*/*/remoEvents",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
     },
     "HttpApiPOSTauthsignIn1C78838F": Object {
       "Properties": Object {
@@ -340,6 +449,188 @@ Object {
       },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Delete",
+    },
+    "authorize0036E950": Object {
+      "DependsOn": Array [
+        "authorizeServiceRoleDefaultPolicy9C5FA925",
+        "authorizeServiceRole2BB3673D",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "ZipFile": "xxx",
+        },
+        "FunctionName": "HomeDashboard-authorize",
+        "Handler": "index.authorize",
+        "MemorySize": 128,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "authorizeServiceRole2BB3673D",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs12.x",
+        "Timeout": 4,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "authorizeServiceRole2BB3673D": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "authorizeServiceRoleDefaultPolicy9C5FA925": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::ImportValue": "test-stack:ExportsOutputFnGetAtttesttableB6F02C77Arn4AC37B77",
+                },
+                Object {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "authorizeServiceRoleDefaultPolicy9C5FA925",
+        "Roles": Array [
+          Object {
+            "Ref": "authorizeServiceRole2BB3673D",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "authorizeauthorizeremoEventsPermissionC9A2CC92": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "authorize0036E950",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "HttpApiF5A9A8A7",
+              },
+              "/authorizers/",
+              Object {
+                "Ref": "Authorizer",
+              },
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "getRemoEventsE86B84DD": Object {
+      "DependsOn": Array [
+        "getRemoEventsServiceRole8A397E3D",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "ZipFile": "xxx",
+        },
+        "FunctionName": "HomeDashboard-getRemoEvents",
+        "Handler": "index.getRemoEvents",
+        "MemorySize": 128,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "getRemoEventsServiceRole8A397E3D",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs12.x",
+        "Timeout": 4,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "getRemoEventsServiceRole8A397E3D": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
     },
     "signInChallenge928536FE": Object {
       "DependsOn": Array [
