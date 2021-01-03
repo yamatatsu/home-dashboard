@@ -9,7 +9,7 @@ Object {
           "Ref": "HttpApiF5A9A8A7",
         },
         "AuthorizerPayloadFormatVersion": "2.0",
-        "AuthorizerResultTtlInSeconds": 4,
+        "AuthorizerResultTtlInSeconds": 0,
         "AuthorizerType": "REQUEST",
         "AuthorizerUri": Object {
           "Fn::Sub": Array [
@@ -28,9 +28,7 @@ Object {
           ],
         },
         "EnableSimpleResponses": true,
-        "IdentitySource": Array [
-          "$request.header.Cookie",
-        ],
+        "IdentitySource": Array [],
         "Name": "HomeDashboardAuthorizer",
       },
       "Type": "AWS::ApiGatewayV2::Authorizer",
@@ -44,7 +42,7 @@ Object {
               "Arn",
             ],
           },
-          "Format": "{ \\"requestId\\":\\"$context.requestId\\", \\"ip\\": \\"$context.identity.sourceIp\\", \\"requestTime\\":\\"$context.requestTime\\", \\"httpMethod\\":\\"$context.httpMethod\\",\\"routeKey\\":\\"$context.routeKey\\", \\"status\\":\\"$context.status\\",\\"protocol\\":\\"$context.protocol\\", \\"responseLength\\":\\"$context.responseLength\\" }",
+          "Format": "{\\"requestId\\":\\"$context.requestId\\",\\"ip\\":\\"$context.identity.sourceIp\\",\\"requestTime\\":\\"$context.requestTimeEpoch\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"path\\":\\"$context.path\\",\\"routeKey\\":\\"$context.routeKey\\",\\"status\\":\\"$context.status\\",\\"protocol\\":\\"$context.protocol\\",\\"responseLength\\":\\"$context.responseLength\\",\\"responseLatency\\":\\"$context.responseLatency\\",\\"authorizer.error\\":\\"$context.authorizer.error\\",\\"authorizer.principalId\\":\\"$context.authorizer.principalId\\",\\"error.message\\":\\"$context.error.message\\",\\"error.messageString\\":\\"$context.error.messageString\\",\\"error.responseType\\":\\"$context.error.responseType\\",\\"integration.error\\":\\"$context.integration.error\\",\\"integration.integrationStatus\\":\\"$context.integration.integrationStatus\\",\\"integration.latency\\":\\"$context.integration.latency\\",\\"integration.requestId\\":\\"$context.integration.requestId\\",\\"integration.status\\":\\"$context.integration.status\\"}",
         },
         "ApiId": Object {
           "Ref": "HttpApiF5A9A8A7",
@@ -60,8 +58,10 @@ Object {
           "AllowCredentials": true,
           "AllowHeaders": Array [
             "content-type",
+            "Cookie",
           ],
           "AllowMethods": Array [
+            "GET",
             "POST",
           ],
           "AllowOrigins": Array [
