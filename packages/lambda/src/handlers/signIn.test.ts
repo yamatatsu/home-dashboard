@@ -94,7 +94,7 @@ test("Success pattern", async () => {
     body: expect.any(String),
     cookies: [
       expect.stringMatching(
-        /^sessionId\=.+\; Max\-Age\=60\; HttpOnly\; SameSite\=None$/
+        /^sessionId\=.+\; Max\-Age\=60\; HttpOnly\; Secure\; SameSite\=None$/
       ),
     ],
   });

@@ -155,17 +155,8 @@ describe("putRemoData", () => {
       },
     };
 
-    expect(console.info).toHaveBeenCalledTimes(2);
-    expect(console.info).toHaveBeenNthCalledWith(
-      1,
-      "messageBody: %s",
-      testMessage
-    );
-    expect(console.info).toHaveBeenNthCalledWith(
-      2,
-      "it will be saved as %o",
-      expected
-    );
+    expect(console.info).toHaveBeenCalledTimes(1);
+    expect(console.info).toHaveBeenCalledWith("messageBody: %s", testMessage);
     // TODO: use snapshot test
     expect(DocumentClient.batchWrite).toHaveBeenCalledTimes(1);
     expect(DocumentClient.batchWrite).toHaveBeenCalledWith(expected);
