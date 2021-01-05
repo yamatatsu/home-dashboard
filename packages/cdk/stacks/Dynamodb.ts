@@ -1,16 +1,19 @@
 import * as cdk from "@aws-cdk/core";
 import * as dynamodb from "@aws-cdk/aws-dynamodb";
 
+type Props = cdk.StackProps & {};
+
 export class DynamodbStack extends cdk.Stack {
   public readonly homeAuthTable: dynamodb.ITable;
-  public readonly homeDataTable: dynamodb.ITable;
+  public readonly homeMainTable: dynamodb.ITable;
 
-  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: cdk.Construct, id: string, props?: Props) {
     super(scope, id, props);
 
     // 認証用のテーブル。未認証時もアクセスされるのでテーブルを分ける。
     // 行レベルでのアクセス制御もやってみたいが、今は考慮せずに進む。
     const homeAuthTable = new dynamodb.Table(this, "HomeAuthTable", {
+      tableName: "HomeDashboard-Auth",
       partitionKey: {
         name: "partitionKey",
         type: dynamodb.AttributeType.STRING,
@@ -20,7 +23,8 @@ export class DynamodbStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
-    const homeDataTable = new dynamodb.Table(this, "HomeDataTable", {
+    const homeMainTable = new dynamodb.Table(this, "HomeDataTable", {
+      tableName: "HomeDashboard-Main",
       partitionKey: {
         name: "partitionKey",
         type: dynamodb.AttributeType.STRING,
@@ -31,6 +35,6 @@ export class DynamodbStack extends cdk.Stack {
     });
 
     this.homeAuthTable = homeAuthTable;
-    this.homeDataTable = homeDataTable;
+    this.homeMainTable = homeMainTable;
   }
 }

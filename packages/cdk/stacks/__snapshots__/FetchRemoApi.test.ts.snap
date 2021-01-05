@@ -321,7 +321,7 @@ Object {
         },
         "Environment": Object {
           "Variables": Object {
-            "TABLE_NAME": Object {
+            "MAIN_TABLE_NAME": Object {
               "Fn::ImportValue": "test-stack:ExportsOutputReftesttableB6F02C7740211428",
             },
           },

@@ -6,9 +6,9 @@ type Event = Pick<APIGatewayProxyEventV2, "body">;
 export default async function getRemoEvents(
   event: Event
 ): Promise<APIGatewayProxyResultV2> {
-  // const { TABLE_NAME } = process.env;
-  // if (!TABLE_NAME)
-  //   throw new Error("Enviroment variable `TABLE_NAME` is required.");
+  // const { MAIN_TABLE_NAME } = process.env;
+  // if (!MAIN_TABLE_NAME)
+  //   throw new Error("Enviroment variable `MAIN_TABLE_NAME` is required.");
 
   return { statusCode: 200, body: JSON.stringify({ ok: true }) };
 }

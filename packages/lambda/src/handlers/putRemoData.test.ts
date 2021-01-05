@@ -48,20 +48,20 @@ describe("putRemoData", () => {
 
   const date = new Date("2020/12/17 00:00:00Z");
 
-  test("throw error if env TABLE_NAME is undefined.", async () => {
+  test("throw error if env MAIN_TABLE_NAME is undefined.", async () => {
     await expect(putRemoData(testMessage, date)).rejects.toThrow(
-      "Enviroment variable `TABLE_NAME` is required."
+      "Enviroment variable `MAIN_TABLE_NAME` is required."
     );
   });
 
   test("throw error if message is empty.", async () => {
-    process.env = { ...process.env, TABLE_NAME: "test-table-name" };
+    process.env = { ...process.env, MAIN_TABLE_NAME: "test-table-name" };
     await expect(putRemoData("", date)).rejects.toThrow(
       "Unexpected end of JSON input"
     );
   });
   test("Success if Empty data.", async () => {
-    process.env = { ...process.env, TABLE_NAME: "test-table-name" };
+    process.env = { ...process.env, MAIN_TABLE_NAME: "test-table-name" };
     const message = JSON.stringify({
       MessageId: "test-MessageId",
       Message: "[]",
@@ -75,7 +75,7 @@ describe("putRemoData", () => {
   // TODO: validation test
 
   test("RemoData is saved.", async () => {
-    process.env = { ...process.env, TABLE_NAME: "test-table-name" };
+    process.env = { ...process.env, MAIN_TABLE_NAME: "test-table-name" };
     await expect(putRemoData(testMessage, date)).resolves.toBeUndefined();
 
     const expected = {

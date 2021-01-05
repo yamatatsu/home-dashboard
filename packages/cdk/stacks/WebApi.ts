@@ -9,7 +9,7 @@ import { LambdaProxyIntegration } from "@aws-cdk/aws-apigatewayv2-integrations";
 type WebApiProps = cdk.StackProps & {
   code: lambda.Code;
   homeAuthTable: dynamodb.ITable;
-  homeDataTable: dynamodb.ITable;
+  homeMainTable: dynamodb.ITable;
   allowOrigins: string[];
   rpId: string;
   dev: boolean;
@@ -86,7 +86,7 @@ export class WebApi extends cdk.Stack {
       runtime: lambda.Runtime.NODEJS_12_X,
       handler: "index.getRemoEvents",
       environment: {
-        TABLE_NAME: props.homeDataTable.tableName,
+        MAIN_TABLE_NAME: props.homeMainTable.tableName,
       },
       memorySize: 128,
       timeout: cdk.Duration.seconds(4),

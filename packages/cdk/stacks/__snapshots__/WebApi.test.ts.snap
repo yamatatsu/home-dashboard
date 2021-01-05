@@ -9,7 +9,7 @@ Object {
           "Ref": "HttpApiF5A9A8A7",
         },
         "AuthorizerPayloadFormatVersion": "2.0",
-        "AuthorizerResultTtlInSeconds": 0,
+        "AuthorizerResultTtlInSeconds": 4,
         "AuthorizerType": "REQUEST",
         "AuthorizerUri": Object {
           "Fn::Sub": Array [
@@ -28,7 +28,9 @@ Object {
           ],
         },
         "EnableSimpleResponses": true,
-        "IdentitySource": Array [],
+        "IdentitySource": Array [
+          "$request.header.x-hd-auth",
+        ],
         "Name": "HomeDashboardAuthorizer",
       },
       "Type": "AWS::ApiGatewayV2::Authorizer",
@@ -58,7 +60,7 @@ Object {
           "AllowCredentials": true,
           "AllowHeaders": Array [
             "content-type",
-            "Cookie",
+            "x-hd-auth",
           ],
           "AllowMethods": Array [
             "GET",
@@ -459,6 +461,13 @@ Object {
         "Code": Object {
           "ZipFile": "xxx",
         },
+        "Environment": Object {
+          "Variables": Object {
+            "AUTH_TABLE_NAME": Object {
+              "Fn::ImportValue": "test-stack:ExportsOutputReftestauthTableA16FCBE8A9D00965",
+            },
+          },
+        },
         "FunctionName": "HomeDashboard-authorize",
         "Handler": "index.authorize",
         "MemorySize": 128,
@@ -520,7 +529,7 @@ Object {
               "Effect": "Allow",
               "Resource": Array [
                 Object {
-                  "Fn::ImportValue": "test-stack:ExportsOutputFnGetAtttesttableB6F02C77Arn4AC37B77",
+                  "Fn::ImportValue": "test-stack:ExportsOutputFnGetAtttestauthTableA16FCBE8Arn76F77019",
                 },
                 Object {
                   "Ref": "AWS::NoValue",
@@ -587,6 +596,13 @@ Object {
         "Code": Object {
           "ZipFile": "xxx",
         },
+        "Environment": Object {
+          "Variables": Object {
+            "MAIN_TABLE_NAME": Object {
+              "Fn::ImportValue": "test-stack:ExportsOutputReftestmainTable49DACA37A1DA94DB",
+            },
+          },
+        },
         "FunctionName": "HomeDashboard-getRemoEvents",
         "Handler": "index.getRemoEvents",
         "MemorySize": 128,
@@ -644,7 +660,7 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "AUTH_TABLE_NAME": Object {
-              "Fn::ImportValue": "test-stack:ExportsOutputReftesttableB6F02C7740211428",
+              "Fn::ImportValue": "test-stack:ExportsOutputReftestauthTableA16FCBE8A9D00965",
             },
           },
         },
@@ -713,7 +729,7 @@ Object {
               "Effect": "Allow",
               "Resource": Array [
                 Object {
-                  "Fn::ImportValue": "test-stack:ExportsOutputFnGetAtttesttableB6F02C77Arn4AC37B77",
+                  "Fn::ImportValue": "test-stack:ExportsOutputFnGetAtttestauthTableA16FCBE8Arn76F77019",
                 },
                 Object {
                   "Ref": "AWS::NoValue",
@@ -745,7 +761,7 @@ Object {
           "Variables": Object {
             "ALLOW_ORIGINS": "test-allowOrigins",
             "AUTH_TABLE_NAME": Object {
-              "Fn::ImportValue": "test-stack:ExportsOutputReftesttableB6F02C7740211428",
+              "Fn::ImportValue": "test-stack:ExportsOutputReftestauthTableA16FCBE8A9D00965",
             },
             "RP_ID": "test-rpId",
           },
@@ -815,7 +831,7 @@ Object {
               "Effect": "Allow",
               "Resource": Array [
                 Object {
-                  "Fn::ImportValue": "test-stack:ExportsOutputFnGetAtttesttableB6F02C77Arn4AC37B77",
+                  "Fn::ImportValue": "test-stack:ExportsOutputFnGetAtttestauthTableA16FCBE8Arn76F77019",
                 },
                 Object {
                   "Ref": "AWS::NoValue",
@@ -847,7 +863,7 @@ Object {
           "Variables": Object {
             "ALLOW_ORIGINS": "test-allowOrigins",
             "AUTH_TABLE_NAME": Object {
-              "Fn::ImportValue": "test-stack:ExportsOutputReftesttableB6F02C7740211428",
+              "Fn::ImportValue": "test-stack:ExportsOutputReftestauthTableA16FCBE8A9D00965",
             },
             "RP_ID": "test-rpId",
           },
@@ -878,7 +894,7 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "AUTH_TABLE_NAME": Object {
-              "Fn::ImportValue": "test-stack:ExportsOutputReftesttableB6F02C7740211428",
+              "Fn::ImportValue": "test-stack:ExportsOutputReftestauthTableA16FCBE8A9D00965",
             },
           },
         },
@@ -947,7 +963,7 @@ Object {
               "Effect": "Allow",
               "Resource": Array [
                 Object {
-                  "Fn::ImportValue": "test-stack:ExportsOutputFnGetAtttesttableB6F02C77Arn4AC37B77",
+                  "Fn::ImportValue": "test-stack:ExportsOutputFnGetAtttestauthTableA16FCBE8Arn76F77019",
                 },
                 Object {
                   "Ref": "AWS::NoValue",
@@ -1017,7 +1033,7 @@ Object {
               "Effect": "Allow",
               "Resource": Array [
                 Object {
-                  "Fn::ImportValue": "test-stack:ExportsOutputFnGetAtttesttableB6F02C77Arn4AC37B77",
+                  "Fn::ImportValue": "test-stack:ExportsOutputFnGetAtttestauthTableA16FCBE8Arn76F77019",
                 },
                 Object {
                   "Ref": "AWS::NoValue",

@@ -12,7 +12,7 @@ import * as s3 from "@aws-cdk/aws-s3";
 type FetchRemoApiProps = cdk.StackProps & {
   code: lambda.Code;
   remoToken: string;
-  homeDataTable: dynamodb.ITable;
+  homeMainTable: dynamodb.ITable;
 };
 
 /**
@@ -47,7 +47,7 @@ export class FetchRemoApi extends cdk.Stack {
       runtime: lambda.Runtime.NODEJS_12_X,
       handler: "index.putRemoData",
       environment: {
-        TABLE_NAME: props.homeDataTable.tableName,
+        MAIN_TABLE_NAME: props.homeMainTable.tableName,
       },
     });
     const backupRemoData = new lambda.Function(this, "backupRemoData", {
@@ -74,7 +74,7 @@ export class FetchRemoApi extends cdk.Stack {
     putRemoData.addEventSource(new SqsEventSource(putRemoDataQueue));
     backupRemoData.addEventSource(new SqsEventSource(backupRemoDataQueue));
 
-    props.homeDataTable.grantWriteData(putRemoData);
+    props.homeMainTable.grantWriteData(putRemoData);
     bucket.grantPut(backupRemoData);
   }
 }

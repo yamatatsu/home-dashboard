@@ -15,7 +15,7 @@ test("FetchRemoApi Stack", () => {
   const target = new FetchRemoApi(app, "Target", {
     code: lambda.Code.fromInline("xxx"),
     remoToken: "xxx",
-    homeDataTable: table,
+    homeMainTable: table,
   });
 
   expect(SynthUtils.toCloudFormation(target)).toMatchSnapshot();

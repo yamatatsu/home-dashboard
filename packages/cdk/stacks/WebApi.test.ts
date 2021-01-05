@@ -8,13 +8,17 @@ test("WebApi Stack", () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, "test-stack");
 
-  const table = new dynamodb.Table(stack, "test-table", {
+  const authTable = new dynamodb.Table(stack, "test-authTable", {
+    partitionKey: { name: "hoge", type: dynamodb.AttributeType.STRING },
+  });
+  const mainTable = new dynamodb.Table(stack, "test-mainTable", {
     partitionKey: { name: "hoge", type: dynamodb.AttributeType.STRING },
   });
 
   const target = new WebApi(app, "Target", {
     code: lambda.Code.fromInline("xxx"),
-    homeAuthTable: table,
+    homeAuthTable: authTable,
+    homeMainTable: mainTable,
     allowOrigins: ["test-allowOrigins"],
     rpId: "test-rpId",
     dev: false,

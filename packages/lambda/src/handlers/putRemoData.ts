@@ -19,9 +19,9 @@ export default async function putRemoData(
   date: Date
 ): Promise<void> {
   // jest でのテストしやすさの為に関数内で環境変数を展開する
-  const { TABLE_NAME } = process.env;
-  if (!TABLE_NAME)
-    throw new Error("Enviroment variable `TABLE_NAME` is required.");
+  const { MAIN_TABLE_NAME } = process.env;
+  if (!MAIN_TABLE_NAME)
+    throw new Error("Enviroment variable `MAIN_TABLE_NAME` is required.");
 
   console.info("messageBody: %s", messageBody);
 
@@ -40,7 +40,7 @@ export default async function putRemoData(
     .map(remoEventToWriteRequest);
 
   await DocumentClient.batchWrite({
-    RequestItems: { [TABLE_NAME]: writeRequests },
+    RequestItems: { [MAIN_TABLE_NAME]: writeRequests },
   });
 }
 
