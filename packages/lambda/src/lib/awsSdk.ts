@@ -10,26 +10,30 @@ export const DocumentClient = {
   ) => {
     console.info("It will be batchWrite. params: %o", params);
     const result = await docClient.batchWrite(params).promise();
-    console.info("batchWrite_result: %o", result);
-    return result;
+    const { $response, ...rest } = result;
+    console.info("batchWrite_result: %o", rest);
+    return rest;
   },
   get: async (params: AWS.DynamoDB.DocumentClient.GetItemInput) => {
     console.info("It will be get. params: %o", params);
     const result = await docClient.get(params).promise();
-    console.info("get_result: %o", result);
-    return result;
+    const { $response, ...rest } = result;
+    console.info("get_result: %o", rest);
+    return rest;
   },
   put: async (params: AWS.DynamoDB.DocumentClient.PutItemInput) => {
     console.info("It will be put. params: %o", params);
     const result = await docClient.put(params).promise();
-    console.info("put_result: %o", result);
-    return result;
+    const { $response, ...rest } = result;
+    console.info("put_result: %o", rest);
+    return rest;
   },
   query: async (params: AWS.DynamoDB.DocumentClient.QueryInput) => {
     console.info("It will be query. params: %o", params);
     const result = await docClient.query(params).promise();
-    console.info("query_result: %o", result);
-    return result;
+    const { $response, ...rest } = result;
+    console.info("query_result: %o", rest);
+    return rest;
   },
 };
 
