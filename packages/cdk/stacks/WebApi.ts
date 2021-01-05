@@ -9,6 +9,7 @@ import { LambdaProxyIntegration } from "@aws-cdk/aws-apigatewayv2-integrations";
 type WebApiProps = cdk.StackProps & {
   code: lambda.Code;
   homeAuthTable: dynamodb.ITable;
+  homeDataTable: dynamodb.ITable;
   allowOrigins: string[];
   rpId: string;
   dev: boolean;
@@ -72,7 +73,9 @@ export class WebApi extends cdk.Stack {
       code: props.code,
       runtime: lambda.Runtime.NODEJS_12_X,
       handler: "index.authorize",
-      environment: {},
+      environment: {
+        AUTH_TABLE_NAME: props.homeAuthTable.tableName,
+      },
       memorySize: 128,
       timeout: cdk.Duration.seconds(4),
     });
@@ -82,7 +85,9 @@ export class WebApi extends cdk.Stack {
       code: props.code,
       runtime: lambda.Runtime.NODEJS_12_X,
       handler: "index.getRemoEvents",
-      environment: {},
+      environment: {
+        TABLE_NAME: props.homeDataTable.tableName,
+      },
       memorySize: 128,
       timeout: cdk.Duration.seconds(4),
     });
@@ -98,7 +103,7 @@ export class WebApi extends cdk.Stack {
       corsPreflight: {
         allowOrigins: props.allowOrigins,
         allowMethods: [apigateway.HttpMethod.GET, apigateway.HttpMethod.POST],
-        allowHeaders: ["content-type", "Cookie"],
+        allowHeaders: ["content-type", "x-hd-auth"],
         allowCredentials: true,
       },
     });
@@ -139,12 +144,10 @@ export class WebApi extends cdk.Stack {
     const authorizer = new apigateway.CfnAuthorizer(this, "Authorizer", {
       apiId: api.httpApiId,
       authorizerType: "REQUEST",
-      // identitySource: ["$request.header.Cookie"],
-      identitySource: [],
+      identitySource: ["$request.header.x-hd-auth"],
       name: "HomeDashboardAuthorizer",
       authorizerPayloadFormatVersion: "2.0",
-      // authorizerResultTtlInSeconds: 4,
-      authorizerResultTtlInSeconds: 0,
+      authorizerResultTtlInSeconds: 4,
       authorizerUri: cdk.Fn.sub(
         "arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${fnArn}/invocations",
         { region: this.region, fnArn: authorize.functionArn }

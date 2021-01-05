@@ -1,38 +1,38 @@
-import {
-  APIGatewayRequestAuthorizerEvent,
-  APIGatewayAuthorizerResult,
-} from "aws-lambda";
 import * as cookie from "cookie";
 import { getSession } from "../lib/db";
 
-type Event = Pick<APIGatewayRequestAuthorizerEvent, "headers">;
+/**
+ * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-lambda-authorizer.html#http-api-lambda-authorizer.payload-format
+ */
+type Event = { headers: Record<string, string> };
+/**
+ * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-lambda-authorizer.html#http-api-lambda-authorizer.payload-format-response
+ */
+type Result =
+  | { isAuthorized: false; context: {} }
+  | { isAuthorized: true; context: { username: string } };
 
-export default async function authorize(
-  event: Event
-): Promise<APIGatewayAuthorizerResult> {
+export default async function authorize(event: Event): Promise<Result> {
   console.log("event: %o", event);
-  const cookieString = event.headers?.Cookie;
-  if (!cookieString) {
-    throw new Error("No cookie has provided.");
-  }
-  const cookies = cookie.parse(cookieString);
-  console.info("sessionId: ", cookies.sessionId);
+  // const cookieString = event.headers?.Cookie;
+  // if (!cookieString) {
+  //   throw new Error("No cookie has provided.");
+  // }
+  // const cookies = cookie.parse(cookieString);
+  // console.info("sessionId: ", cookies.sessionId);
+  const sessionId = event.headers?.["x-hd-auth"];
+  console.info("sessionId: ", sessionId);
 
-  if (!cookies.sessionId) {
-    throw new Error("cookies.sessionId is empty.");
+  if (!sessionId) {
+    console.info("sessionId is empty.");
+    return { isAuthorized: false, context: {} };
   }
-  const session = await getSession(cookies.sessionId);
+  const session = await getSession(sessionId);
   if (!session) {
-    throw new Error("No session has found.");
+    console.info("No session has found.");
+    return { isAuthorized: false, context: {} };
   }
   console.info("session: ", session);
 
-  return {
-    principalId: session.username,
-    policyDocument: {
-      Version: "2012-10-17",
-      Statement: [],
-    },
-    context: {},
-  };
+  return { isAuthorized: true, context: { username: session.username } };
 }

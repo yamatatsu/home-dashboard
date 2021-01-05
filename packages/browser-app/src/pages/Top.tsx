@@ -1,10 +1,10 @@
 import React, { FC } from "react";
 import { useSetRecoilState, useRecoilValueLoadable } from "recoil";
-import { signedInAtom, remoEventsSelector } from "../recoil";
+import { sessionIdAtom, remoEventsSelector } from "../recoil";
 import { RedirectIfNotSignedIn } from "../componrnts/RedirectIfNotSignedIn";
 
 export const Top: FC = () => {
-  const setSignedIn = useSetRecoilState(signedInAtom);
+  const setSessionId = useSetRecoilState(sessionIdAtom);
   const remoEventsResult = useRecoilValueLoadable(remoEventsSelector);
 
   if (remoEventsResult.state !== "hasValue") {
@@ -17,7 +17,7 @@ export const Top: FC = () => {
       <button
         type="button"
         onClick={() => {
-          setSignedIn(false);
+          setSessionId("");
         }}
       >
         signout

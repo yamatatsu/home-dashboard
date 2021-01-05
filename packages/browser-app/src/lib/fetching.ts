@@ -61,9 +61,7 @@ export async function fetchSignInChallenge(
   return scheme.validate(json);
 }
 
-export async function fetchSignIn(
-  decodedCredential: Record<string, any>
-): Promise<{ challenge: string; credentialIds: string[] }> {
+export async function fetchSignIn(decodedCredential: Record<string, any>) {
   const response = await fetch(SIGN_IN_URL, {
     method: "POST",
     credentials: "include",
@@ -78,11 +76,11 @@ export async function fetchSignIn(
   return json;
 }
 
-export async function fetchGetRemoEvents(): Promise<any> {
+export async function fetchGetRemoEvents(sessionId: string): Promise<any> {
   const response = await fetch(REMO_EVENTS_URL, {
     method: "GET",
     credentials: "include",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", "x-hd-auth": sessionId },
   });
   if (!response.ok) {
     throw new Error("fetchSignIn response is error.");

@@ -1,13 +1,13 @@
 import React, { FC } from "react";
 import { useRecoilState } from "recoil";
 import { RedirectSignIn } from "../routes";
-import { signedInAtom } from "../recoil";
+import { sessionIdAtom } from "../recoil";
 
 export const RedirectIfNotSignedIn: FC = (props) => {
   const { children } = props;
 
-  const [signedIn] = useRecoilState(signedInAtom);
-  if (!signedIn) {
+  const [sessionId] = useRecoilState(sessionIdAtom);
+  if (!sessionId) {
     return <RedirectSignIn />;
   }
 

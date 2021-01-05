@@ -140,14 +140,14 @@ export default async function signIn(
   );
 
   const sessionId = uuid();
-  putSession(sessionId, username, now);
+  await putSession(sessionId, username, now);
 
   const dev = ALLOW_ORIGINS.split(",").some((s) =>
     s.startsWith("http://localhost")
   );
   return {
     statusCode: 201,
-    body: JSON.stringify({ ok: true }),
+    body: JSON.stringify({ sessionId }),
     cookies: [
       cookie.serialize("sessionId", sessionId, {
         httpOnly: true,

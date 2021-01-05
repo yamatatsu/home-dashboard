@@ -3,7 +3,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useSetRecoilState } from "recoil";
 import { LinkToSignUp } from "../routes";
-import { signedInAtom } from "../recoil";
+import { sessionIdAtom } from "../recoil";
 import { RedirectIfSignedIn } from "../componrnts/RedirectIfSignedIn";
 import { fetchSignInChallenge, fetchSignIn } from "../lib/fetching";
 import { getCredentials } from "../lib/WebAuthn";
@@ -13,7 +13,7 @@ const schema = Yup.object().shape({
 });
 
 export const SignIn: FC = () => {
-  const setSignedIn = useSetRecoilState(signedInAtom);
+  const setSessionId = useSetRecoilState(sessionIdAtom);
 
   const formik = useFormik({
     initialValues: {
@@ -22,8 +22,8 @@ export const SignIn: FC = () => {
     validationSchema: schema,
     onSubmit: (values) => {
       signIn(values.username)
-        .then(() => {
-          setSignedIn(true);
+        .then(({ sessionId }) => {
+          setSessionId(sessionId);
         })
         .catch((err) => {
           console.error(err);
@@ -58,7 +58,7 @@ export const SignIn: FC = () => {
   );
 };
 
-async function signIn(username: string): Promise<void> {
+async function signIn(username: string) {
   const { challenge, credentialIds } = await fetchSignInChallenge(username);
 
   const result = await getCredentials(challenge, credentialIds);
@@ -67,5 +67,5 @@ async function signIn(username: string): Promise<void> {
     return;
   }
 
-  await fetchSignIn({ username, credential: result.credential });
+  return fetchSignIn({ username, credential: result.credential });
 }
