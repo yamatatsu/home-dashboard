@@ -27,7 +27,7 @@ export class FetchRemoApi extends cdk.Stack {
     super(scope, id, props);
 
     const topic = new sns.Topic(this, "Topic");
-    const bucket = new s3.Bucket(this, "Bucket", {
+    const bucket = new s3.Bucket(this, "BackupRemoDataBucket", {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 

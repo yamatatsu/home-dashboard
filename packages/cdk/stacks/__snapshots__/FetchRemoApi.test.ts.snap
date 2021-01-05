@@ -3,7 +3,7 @@
 exports[`FetchRemoApi Stack 1`] = `
 Object {
   "Resources": Object {
-    "Bucket83908E77": Object {
+    "BackupRemoDataBucket116EE8D6": Object {
       "DeletionPolicy": "Delete",
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Delete",
@@ -60,7 +60,7 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "BUCKET_NAME": Object {
-              "Ref": "Bucket83908E77",
+              "Ref": "BackupRemoDataBucket116EE8D6",
             },
           },
         },
@@ -192,7 +192,7 @@ Object {
                   Array [
                     Object {
                       "Fn::GetAtt": Array [
-                        "Bucket83908E77",
+                        "BackupRemoDataBucket116EE8D6",
                         "Arn",
                       ],
                     },

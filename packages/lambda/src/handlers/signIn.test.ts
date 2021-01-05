@@ -98,5 +98,7 @@ test("Success pattern", async () => {
       ),
     ],
   });
-  expect(JSON.parse(result.body ?? "")).toStrictEqual({ ok: true });
+  expect(JSON.parse(result.body ?? "")).toStrictEqual({
+    sessionId: expect.any(String),
+  });
 });
