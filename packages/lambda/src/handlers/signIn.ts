@@ -104,6 +104,10 @@ export default async function signIn(
   if (!registeredCredential) {
     throw new Error("No credential is found.");
   }
+  if (!registeredCredential.approved) {
+    console.info("This device is not approved yet. %o", registeredCredential);
+    return { statusCode: 401, body: "Your device is not approved yet." };
+  }
   const { jwk, signCount } = registeredCredential;
 
   try {

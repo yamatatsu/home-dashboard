@@ -1,3 +1,4 @@
+import * as AWS from "aws-sdk";
 import * as z from "zod";
 import { getTtl } from "./util";
 
@@ -23,14 +24,38 @@ export const remoEventSchema = z.object({
   value: z.number(),
 });
 
-export function createRemoEventRecord(
+export function createWriteRemoEventRequest(
+  remoEvent: RemoEvent,
+  now: Date
+): AWS.DynamoDB.DocumentClient.WriteRequest {
+  return createWriteRequest(createRemoEventRecord(remoEvent, now));
+}
+
+export function createQueryRemoEventInput(
+  tableName: string,
+  deviceId: string
+): AWS.DynamoDB.DocumentClient.QueryInput {
+  return {
+    TableName: tableName,
+    KeyConditionExpression: "#pKey = :pKey and begins_with(#sKey, :sKey)",
+    ExpressionAttributeNames: {
+      "#pKey": "partitionKey",
+      "#sKey": "sortKey",
+    },
+    ExpressionAttributeValues: {
+      ":pKey": getPKey(deviceId),
+      ":sKey": getSKey(),
+    },
+  };
+}
+function createRemoEventRecord(
   remoEvent: RemoEvent,
   now: Date
 ): RemoEventRecord {
   const { deviceId, deviceName, eventType, value, createdAt } = remoEvent;
   return {
-    partitionKey: `deviceId:${deviceId}`,
-    sortKey: `eventType:${eventType}|createdAt:${createdAt}`,
+    partitionKey: getPKey(deviceId),
+    sortKey: getSKey(eventType, createdAt),
     deviceId,
     deviceName,
     eventType,
@@ -38,4 +63,23 @@ export function createRemoEventRecord(
     createdAt,
     ttl: getTtl(now, 6),
   };
+}
+
+function getPKey(deviceId: string) {
+  return `deviceId:${deviceId}`;
+}
+function getSKey(eventType?: string, createdAt?: string) {
+  if (!eventType) {
+    return "eventType:";
+  }
+  if (!createdAt) {
+    return `eventType:${eventType}|createdAt:`;
+  }
+  return `eventType:${eventType}|createdAt:${createdAt}`;
+}
+
+function createWriteRequest(
+  record: RemoEventRecord
+): AWS.DynamoDB.DocumentClient.WriteRequest {
+  return { PutRequest: { Item: record } };
 }

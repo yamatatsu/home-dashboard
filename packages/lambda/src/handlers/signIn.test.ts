@@ -42,6 +42,7 @@ test("Success pattern", async () => {
     },
     signCount: "1609289710",
     createdAt: "2020-12-30T00:55:13.045Z",
+    approved: true,
   });
 
   const result = await signIn(

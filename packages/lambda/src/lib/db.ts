@@ -24,6 +24,7 @@ export type Credential = {
   jwk: JWK;
   signCount: number;
   createdAt: string;
+  approved: boolean;
 };
 export type Session = {
   partitionKey: string;
@@ -115,6 +116,7 @@ export async function putCredential(
     jwk,
     signCount: signCount,
     createdAt: createdAt.toISOString(),
+    approved: false,
   };
   const putParams = { TableName: getAuthTableName(), Item: item };
   const result = await DocumentClient.put(putParams);

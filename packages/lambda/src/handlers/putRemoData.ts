@@ -3,7 +3,7 @@ import { sqsMessageSchema, remoDataSchema } from "../schema";
 import { DocumentClient } from "../lib/awsSdk";
 import {
   remoEventSchema,
-  createRemoEventRecord,
+  createWriteRemoEventRequest,
   RemoEvent,
   RemoEventRecord,
 } from "../models/remoEvent";
@@ -36,8 +36,7 @@ export default async function putRemoData(
     .map((remoData) => remoDataToRemoEvents(remoData))
     .flat()
     .map((a) => remoEventSchema.parse(a))
-    .map((validated) => createRemoEventRecord(validated, date))
-    .map(remoEventToWriteRequest);
+    .map((validated) => createWriteRemoEventRequest(validated, date));
 
   await DocumentClient.batchWrite({
     RequestItems: { [MAIN_TABLE_NAME]: writeRequests },
@@ -55,10 +54,4 @@ const remoDataToRemoEvents = (data: RemoData): RemoEvent[] => {
       createdAt: event.created_at,
     };
   });
-};
-
-const remoEventToWriteRequest = (
-  record: RemoEventRecord
-): AWS.DynamoDB.DocumentClient.WriteRequest => {
-  return { PutRequest: { Item: record } };
 };
