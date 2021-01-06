@@ -6,7 +6,7 @@ import base64url from "base64url";
 import * as z from "zod";
 import * as cookie from "cookie";
 import { v4 as uuid } from "uuid";
-import { getSignInChallengeKey } from "../models/challenge";
+import { getGetSignInChallengeInput } from "../models/challenge";
 import {
   getGetCredentialInput,
   getPutCredentialInput,
@@ -180,8 +180,9 @@ async function verifyChallenge(
   username: string,
   challenge: string
 ): Promise<void> {
-  const key = getSignInChallengeKey(username, challenge);
-  const result = await AuthTableClient.get({ Key: key });
+  const result = await AuthTableClient.get(
+    getGetSignInChallengeInput(username, challenge)
+  );
   if (!result.Item) {
     throw new Error(
       `No challenge has found. username: ${username} challenge: ${challenge}`

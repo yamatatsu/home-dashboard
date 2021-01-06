@@ -1,6 +1,9 @@
 import * as AWS from "aws-sdk";
 import { getTtl } from "./util";
 
+type GetItemInput = AWS.DynamoDB.DocumentClient.GetItemInput;
+type PutItemInput = AWS.DynamoDB.DocumentClient.PutItemInput;
+
 export type Challenge = {
   partitionKey: string;
   sortKey: string;
@@ -10,22 +13,24 @@ export type Challenge = {
   ttl: number;
 };
 
-export function getSignUpChallengeKey(
+export function getGetSignUpChallengeInput(
   username: string,
   challenge: string
-): AWS.DynamoDB.DocumentClient.Key {
+): Omit<GetItemInput, "TableName"> {
   return {
-    partitionKey: getPKey(username),
-    sortKey: getSignUpChallengeSKey(challenge),
+    Key: {
+      partitionKey: getPKey(username),
+      sortKey: getSignUpChallengeSKey(challenge),
+    },
   };
 }
 
-export function getSignUpChallengeRecord(
+export function getPutSignUpChallengeInput(
   username: string,
   challenge: string,
   createdAt: Date
-): Challenge {
-  return {
+): Omit<PutItemInput, "TableName"> {
+  const item: Challenge = {
     partitionKey: getPKey(username),
     sortKey: getSignUpChallengeSKey(challenge),
     username,
@@ -33,24 +38,27 @@ export function getSignUpChallengeRecord(
     createdAt: createdAt.toISOString(),
     ttl: getTtl(createdAt, 1),
   };
+  return { Item: item };
 }
 
-export function getSignInChallengeKey(
+export function getGetSignInChallengeInput(
   username: string,
   challenge: string
-): AWS.DynamoDB.DocumentClient.Key {
+): Omit<GetItemInput, "TableName"> {
   return {
-    partitionKey: getPKey(username),
-    sortKey: getSignInChallengeSKey(challenge),
+    Key: {
+      partitionKey: getPKey(username),
+      sortKey: getSignInChallengeSKey(challenge),
+    },
   };
 }
 
-export function getSignInChallengeRecord(
+export function getPutSignInChallengeInput(
   username: string,
   challenge: string,
   createdAt: Date
-): Challenge {
-  return {
+): Omit<PutItemInput, "TableName"> {
+  const item: Challenge = {
     partitionKey: getPKey(username),
     sortKey: getSignInChallengeSKey(challenge),
     username,
@@ -58,6 +66,7 @@ export function getSignInChallengeRecord(
     createdAt: createdAt.toISOString(),
     ttl: getTtl(createdAt, 1),
   };
+  return { Item: item };
 }
 
 function getPKey(username: string) {

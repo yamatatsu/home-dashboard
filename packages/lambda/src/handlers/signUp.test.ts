@@ -6,7 +6,7 @@ import { AuthTableClient } from "../lib/awsSdk";
 const date = new Date("2020-12-23 00:00:00Z");
 
 beforeEach(() => {
-  // console.info = jest.fn();
+  console.info = jest.fn();
 });
 afterEach(() => {
   // @ts-expect-error

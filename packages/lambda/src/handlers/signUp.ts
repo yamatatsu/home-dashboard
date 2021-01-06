@@ -5,7 +5,7 @@ import {
 import base64url from "base64url";
 import * as z from "zod";
 import * as cbor from "cbor";
-import { getSignUpChallengeKey } from "../models/challenge";
+import { getGetSignUpChallengeInput } from "../models/challenge";
 import { getPutCredentialInput } from "../models/credential";
 import { AuthTableClient } from "../lib/awsSdk";
 import {
@@ -172,9 +172,10 @@ async function verifyChallenge(
   username: string,
   challenge: string
 ): Promise<void> {
-  const key = getSignUpChallengeKey(username, challenge);
-  const result = await AuthTableClient.get({ Key: key });
-  if (!result) {
+  const result = await AuthTableClient.get(
+    getGetSignUpChallengeInput(username, challenge)
+  );
+  if (!result.Item) {
     throw new Error(
       `No challenge has found. username: ${username} challenge: ${challenge}`
     );
