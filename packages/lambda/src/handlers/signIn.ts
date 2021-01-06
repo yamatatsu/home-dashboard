@@ -160,7 +160,7 @@ export default async function signIn(
     cookies: [
       cookie.serialize("sessionId", sessionId, {
         httpOnly: true,
-        maxAge: 1 * 60, // FIXME: for test // sec
+        maxAge: 12 * 60 * 60, // sec
         sameSite: dev ? "none" : "strict",
         secure: true,
       }),

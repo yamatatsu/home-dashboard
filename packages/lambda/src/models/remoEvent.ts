@@ -61,7 +61,7 @@ function createRemoEventRecord(
     eventType,
     value,
     createdAt,
-    ttl: getTtl(now, 6),
+    ttl: getTtl(now, 3 * 24),
   };
 }
 

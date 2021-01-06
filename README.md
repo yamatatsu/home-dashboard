@@ -8,8 +8,8 @@
 - [x] web api
 - [x] authn
 - [x] fetch remo data
-- [ ] challenge ttl
-- [ ] make session expiration more long
+- [x] challenge ttl
+- [x] make session expiration more long
 - [ ] refactor frontend
 - [ ] visualize remoEvents
 
