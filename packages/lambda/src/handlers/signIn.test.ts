@@ -2,7 +2,6 @@ jest.mock("../lib/db");
 jest.mock("../lib/awsSdk");
 
 import signIn from "./signIn";
-import { getCredential, putCredential } from "../lib/db";
 import { AuthTableClient } from "../lib/awsSdk";
 
 const date = new Date("2020-12-23 00:00:00Z");
@@ -14,9 +13,7 @@ afterEach(() => {
   // @ts-expect-error
   AuthTableClient.get.mockClear();
   // @ts-expect-error
-  getCredential.mockClear();
-  // @ts-expect-error
-  putCredential.mockClear();
+  AuthTableClient.put.mockClear();
 });
 
 // TODO: Happy path only...
@@ -29,22 +26,26 @@ test("Success pattern", async () => {
     RP_ID: "localhost",
   };
 
-  (AuthTableClient.get as jest.Mock<any, any>).mockReturnValue({ Item: {} });
-  (getCredential as jest.Mock<any, any>).mockReturnValue({
-    partitionKey: "user:aaa",
-    sortKey:
-      "credential:AXVt4yC1ssWMc43aM0MwS6otv0MvnpiHFVD7eg6U7MIbJftdBxzqhP3g",
-    username: "aaa",
-    credentialId: "AXVt4yC1ssWMc43aM0MwS6otv0MvnpiHFVD7eg6U7MIbJftdBxzqhP3g",
-    jwk: {
-      kty: "EC",
-      crv: "P-256",
-      x: "TwjbjplwEwfDDPFDSCuenj1WO2aXJth8syaZ5n5fRhE",
-      y: "9CVJGAS0RrLkd5vlDwzCU2D4l_oUSEUiDQPPC3_xego",
+  const getMock = AuthTableClient.get as jest.Mock<any, any>;
+  const putMock = AuthTableClient.put as jest.Mock<any, any>;
+  getMock.mockReturnValueOnce({ Item: {} });
+  getMock.mockReturnValueOnce({
+    Item: {
+      partitionKey: "user:aaa",
+      sortKey:
+        "credential:AXVt4yC1ssWMc43aM0MwS6otv0MvnpiHFVD7eg6U7MIbJftdBxzqhP3g",
+      username: "aaa",
+      credentialId: "AXVt4yC1ssWMc43aM0MwS6otv0MvnpiHFVD7eg6U7MIbJftdBxzqhP3g",
+      jwk: {
+        kty: "EC",
+        crv: "P-256",
+        x: "TwjbjplwEwfDDPFDSCuenj1WO2aXJth8syaZ5n5fRhE",
+        y: "9CVJGAS0RrLkd5vlDwzCU2D4l_oUSEUiDQPPC3_xego",
+      },
+      signCount: "1609289710",
+      createdAt: "2020-12-30T00:55:13.045Z",
+      approved: true,
     },
-    signCount: "1609289710",
-    createdAt: "2020-12-30T00:55:13.045Z",
-    approved: true,
   });
 
   const result = await signIn(
@@ -68,31 +69,37 @@ test("Success pattern", async () => {
     date
   );
 
-  expect(AuthTableClient.get).toHaveBeenCalledTimes(1);
-  expect(AuthTableClient.get).toHaveBeenCalledWith({
+  expect(getMock).toHaveBeenCalledTimes(2);
+  expect(getMock).toHaveBeenNthCalledWith(1, {
     Key: {
       partitionKey: "user:test-username",
       sortKey: expect.stringMatching(/^signInChallenge\:/),
     },
   });
-  expect(getCredential).toHaveBeenCalledTimes(1);
-  expect(getCredential).toHaveBeenCalledWith(
-    "test-username",
-    "test-credentialId"
-  );
-  expect(putCredential).toHaveBeenCalledTimes(1);
-  expect(putCredential).toHaveBeenCalledWith(
-    "test-username",
-    "test-credentialId",
-    {
-      crv: "P-256",
-      kty: "EC",
-      x: "TwjbjplwEwfDDPFDSCuenj1WO2aXJth8syaZ5n5fRhE",
-      y: "9CVJGAS0RrLkd5vlDwzCU2D4l_oUSEUiDQPPC3_xego",
+  expect(getMock).toHaveBeenNthCalledWith(2, {
+    Key: {
+      partitionKey: "user:test-username",
+      sortKey: "credential:test-credentialId",
     },
-    1609298543,
-    date
-  );
+  });
+  expect(putMock).toHaveBeenCalledTimes(1);
+  expect(putMock).toHaveBeenCalledWith({
+    Item: {
+      partitionKey: "user:test-username",
+      sortKey: "credential:test-credentialId",
+      username: "test-username",
+      credentialId: "test-credentialId",
+      jwk: {
+        crv: "P-256",
+        kty: "EC",
+        x: "TwjbjplwEwfDDPFDSCuenj1WO2aXJth8syaZ5n5fRhE",
+        y: "9CVJGAS0RrLkd5vlDwzCU2D4l_oUSEUiDQPPC3_xego",
+      },
+      signCount: 1609298543,
+      createdAt: "2020-12-23T00:00:00.000Z",
+      approved: false,
+    },
+  });
 
   expect(result).toStrictEqual({
     statusCode: 201,

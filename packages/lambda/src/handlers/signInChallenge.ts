@@ -3,8 +3,8 @@ import {
   APIGatewayProxyEventV2,
 } from "aws-lambda";
 import * as z from "zod";
-import { queryCredentials } from "../lib/db";
 import { getSignInChallengeRecord } from "../models/challenge";
+import { getQueryCredentialsInput } from "../models/credential";
 import { AuthTableClient } from "../lib/awsSdk";
 import { createChallenge } from "../lib/webAuthn";
 
@@ -35,11 +35,13 @@ export default async function signInChallenge(
     };
   }
 
-  const credentials = await queryCredentials(username);
-  if (!credentials) {
+  const credentials = await AuthTableClient.query(
+    getQueryCredentialsInput(username)
+  );
+  if (!credentials.Items) {
     return { statusCode: 400, body: "No credential is found." };
   }
-  const credentialIds = credentials.map((c) => c.credentialId);
+  const credentialIds = credentials.Items.map((c) => c.credentialId);
 
   const challenge = createChallenge();
 

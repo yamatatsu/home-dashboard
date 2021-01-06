@@ -5,8 +5,8 @@ import {
 import base64url from "base64url";
 import * as z from "zod";
 import * as cbor from "cbor";
-import { putCredential } from "../lib/db";
 import { getSignUpChallengeKey } from "../models/challenge";
+import { getPutCredentialInput } from "../models/credential";
 import { AuthTableClient } from "../lib/awsSdk";
 import {
   getClientAuth,
@@ -142,12 +142,14 @@ export default async function signUp(
   // やるならcredentialのdynamodbへの登録のkeyをpもsも `credential:${credential.id}` にする。userのcredential一覧はGSIからとる。
 
   // Step.23 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
-  await putCredential(
-    username,
-    credential.id,
-    publicKeyJwk,
-    authDataStruct.signCount,
-    now
+  await AuthTableClient.put(
+    getPutCredentialInput(
+      username,
+      credential.id,
+      publicKeyJwk,
+      authDataStruct.signCount,
+      now
+    )
   );
 
   return {

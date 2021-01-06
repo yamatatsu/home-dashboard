@@ -1,16 +1,5 @@
 import { DocumentClient } from "./awsSdk";
 
-export type JWK = { kty: "EC"; crv: string; x: string; y: string };
-export type Credential = {
-  partitionKey: string;
-  sortKey: string;
-  username: string;
-  credentialId: string;
-  jwk: JWK;
-  signCount: number;
-  createdAt: string;
-  approved: boolean;
-};
 export type Session = {
   partitionKey: string;
   sortKey: string;
@@ -19,62 +8,6 @@ export type Session = {
   ttl: number;
   createdAt: string;
 };
-
-export async function getCredential(
-  username: string,
-  credentialId: string
-): Promise<Credential | undefined> {
-  const params = {
-    TableName: getAuthTableName(),
-    Key: {
-      partitionKey: `user:${username}`,
-      sortKey: `credential:${credentialId}`,
-    },
-  };
-  const result = await DocumentClient.get(params);
-  return result.Item as Credential | undefined;
-}
-
-export async function queryCredentials(
-  username: string
-): Promise<Credential[] | undefined> {
-  const params = {
-    TableName: getAuthTableName(),
-    KeyConditionExpression: "#pKey = :pKey and begins_with(#sKey, :sKey)",
-    ExpressionAttributeNames: {
-      "#pKey": "partitionKey",
-      "#sKey": "sortKey",
-    },
-    ExpressionAttributeValues: {
-      ":pKey": `user:${username}`,
-      ":sKey": "credential:",
-    },
-  };
-  const result = await DocumentClient.query(params);
-  return result.Items as Credential[] | undefined;
-}
-
-export async function putCredential(
-  username: string,
-  credentialId: string,
-  jwk: JWK,
-  signCount: number,
-  createdAt: Date
-): Promise<boolean> {
-  const item: Credential = {
-    partitionKey: `user:${username}`,
-    sortKey: `credential:${credentialId}`,
-    username,
-    credentialId,
-    jwk,
-    signCount: signCount,
-    createdAt: createdAt.toISOString(),
-    approved: false,
-  };
-  const putParams = { TableName: getAuthTableName(), Item: item };
-  const result = await DocumentClient.put(putParams);
-  return !!result.Attributes;
-}
 
 export async function getSession(
   sessionId: string

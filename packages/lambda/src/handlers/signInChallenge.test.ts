@@ -1,8 +1,6 @@
-jest.mock("../lib/db");
 jest.mock("../lib/awsSdk");
 
 import signInChallenge from "./signInChallenge";
-import { queryCredentials } from "../lib/db";
 import { AuthTableClient } from "../lib/awsSdk";
 
 const date = new Date("2020-12-23 00:00:00Z");
@@ -12,8 +10,6 @@ beforeEach(() => {
 });
 afterEach(() => {
   // @ts-expect-error
-  queryCredentials.mockClear();
-  // @ts-expect-error
   AuthTableClient.put.mockClear();
 });
 
@@ -22,25 +18,37 @@ afterEach(() => {
 test("Success pattern", async () => {
   process.env = { ...process.env, AUTH_TABLE_NAME: "test-AUTH_TABLE_NAME" };
 
-  (queryCredentials as jest.Mock<any, any>).mockReturnValue([
-    {
-      partitionKey: "user:test-username",
-      sortKey: "credential:test-credentialId",
-      username: "test-username",
-      credentialId: "test-credentialId",
-      jwk: { kty: "test-kty", crv: "test-crv", x: "test-x", y: "test-y" },
-      signCount: 100,
-      createdAt: "test-createdAt",
-    },
-  ]);
+  (AuthTableClient.query as jest.Mock<any, any>).mockReturnValue({
+    Items: [
+      {
+        partitionKey: "user:test-username",
+        sortKey: "credential:test-credentialId",
+        username: "test-username",
+        credentialId: "test-credentialId",
+        jwk: { kty: "test-kty", crv: "test-crv", x: "test-x", y: "test-y" },
+        signCount: 100,
+        createdAt: "test-createdAt",
+      },
+    ],
+  });
 
   const result = await signInChallenge(
     { body: JSON.stringify({ username: "test-username" }) },
     date
   );
 
-  expect(queryCredentials).toHaveBeenCalledTimes(1);
-  expect(queryCredentials).toHaveBeenCalledWith("test-username");
+  expect(AuthTableClient.query).toHaveBeenCalledTimes(1);
+  expect(AuthTableClient.query).toHaveBeenCalledWith({
+    KeyConditionExpression: "#pKey = :pKey and begins_with(#sKey, :sKey)",
+    ExpressionAttributeNames: {
+      "#pKey": "partitionKey",
+      "#sKey": "sortKey",
+    },
+    ExpressionAttributeValues: {
+      ":pKey": "user:test-username",
+      ":sKey": "credential:",
+    },
+  });
   expect(AuthTableClient.put).toHaveBeenCalledTimes(1);
   expect(AuthTableClient.put).toHaveBeenCalledWith({
     Item: {
