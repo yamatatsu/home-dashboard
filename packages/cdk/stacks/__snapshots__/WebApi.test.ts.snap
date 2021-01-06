@@ -590,6 +590,7 @@ Object {
     },
     "getRemoEventsE86B84DD": Object {
       "DependsOn": Array [
+        "getRemoEventsServiceRoleDefaultPolicy4F9635B2",
         "getRemoEventsServiceRole8A397E3D",
       ],
       "Properties": Object {
@@ -647,6 +648,41 @@ Object {
         ],
       },
       "Type": "AWS::IAM::Role",
+    },
+    "getRemoEventsServiceRoleDefaultPolicy4F9635B2": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::ImportValue": "test-stack:ExportsOutputFnGetAtttestmainTable49DACA37ArnF6586204",
+                },
+                Object {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "getRemoEventsServiceRoleDefaultPolicy4F9635B2",
+        "Roles": Array [
+          Object {
+            "Ref": "getRemoEventsServiceRole8A397E3D",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "signInChallenge928536FE": Object {
       "DependsOn": Array [

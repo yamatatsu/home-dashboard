@@ -98,6 +98,8 @@ export class WebApi extends cdk.Stack {
     props.homeAuthTable.grantReadWriteData(signIn);
     props.homeAuthTable.grantReadData(authorize);
 
+    props.homeMainTable.grantReadData(getRemoEvents);
+
     const api = new apigateway.HttpApi(this, "HttpApi", {
       apiName: `HomeDashboard-WebApi${props.dev ? "-dev" : ""}`,
       corsPreflight: {
