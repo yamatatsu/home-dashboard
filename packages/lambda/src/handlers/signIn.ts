@@ -6,12 +6,12 @@ import base64url from "base64url";
 import * as z from "zod";
 import * as cookie from "cookie";
 import { v4 as uuid } from "uuid";
-import { putSession } from "../lib/db";
 import { getSignInChallengeKey } from "../models/challenge";
 import {
   getGetCredentialInput,
   getPutCredentialInput,
 } from "../models/credential";
+import { getPutSessionInput } from "../models/session";
 import { AuthTableClient } from "../lib/awsSdk";
 import {
   getClientAuth,
@@ -149,7 +149,7 @@ export default async function signIn(
   );
 
   const sessionId = uuid();
-  await putSession(sessionId, username, now);
+  await AuthTableClient.put(getPutSessionInput(sessionId, username, now));
 
   const dev = ALLOW_ORIGINS.split(",").some((s) =>
     s.startsWith("http://localhost")

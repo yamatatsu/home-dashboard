@@ -1,4 +1,3 @@
-jest.mock("../lib/db");
 jest.mock("../lib/awsSdk");
 
 import signIn from "./signIn";
@@ -7,7 +6,7 @@ import { AuthTableClient } from "../lib/awsSdk";
 const date = new Date("2020-12-23 00:00:00Z");
 
 beforeEach(() => {
-  // console.info = jest.fn();
+  console.info = jest.fn();
 });
 afterEach(() => {
   // @ts-expect-error
@@ -82,8 +81,8 @@ test("Success pattern", async () => {
       sortKey: "credential:test-credentialId",
     },
   });
-  expect(putMock).toHaveBeenCalledTimes(1);
-  expect(putMock).toHaveBeenCalledWith({
+  expect(putMock).toHaveBeenCalledTimes(2);
+  expect(putMock).toHaveBeenNthCalledWith(1, {
     Item: {
       partitionKey: "user:test-username",
       sortKey: "credential:test-credentialId",
@@ -98,6 +97,16 @@ test("Success pattern", async () => {
       signCount: 1609298543,
       createdAt: "2020-12-23T00:00:00.000Z",
       approved: false,
+    },
+  });
+  expect(putMock).toHaveBeenNthCalledWith(2, {
+    Item: {
+      partitionKey: expect.stringMatching(/^session\:/),
+      sortKey: expect.stringMatching(/^session\:/),
+      sessionId: expect.any(String),
+      username: "test-username",
+      createdAt: "2020-12-23T00:00:00.000Z",
+      ttl: 1608724800,
     },
   });
 
