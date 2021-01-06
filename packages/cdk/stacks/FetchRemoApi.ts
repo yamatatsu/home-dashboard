@@ -8,6 +8,7 @@ import * as dynamodb from "@aws-cdk/aws-dynamodb";
 import { SqsSubscription } from "@aws-cdk/aws-sns-subscriptions";
 import { SqsEventSource } from "@aws-cdk/aws-lambda-event-sources";
 import * as s3 from "@aws-cdk/aws-s3";
+import { addSslOnlyPolicyToBucket } from "./util";
 
 type FetchRemoApiProps = cdk.StackProps & {
   code: lambda.Code;
@@ -28,8 +29,10 @@ export class FetchRemoApi extends cdk.Stack {
 
     const topic = new sns.Topic(this, "Topic");
     const bucket = new s3.Bucket(this, "BackupRemoDataBucket", {
+      encryption: s3.BucketEncryption.S3_MANAGED,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
+    addSslOnlyPolicyToBucket(bucket);
 
     const fetchRemoApi = new lambda.Function(this, "fetchRemoApi", {
       functionName: "HomeDashboard-FetchRemoApi",
