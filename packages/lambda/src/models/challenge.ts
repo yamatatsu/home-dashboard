@@ -1,4 +1,5 @@
 import * as AWS from "aws-sdk";
+import { getTtl } from "./util";
 
 export type Challenge = {
   partitionKey: string;
@@ -6,6 +7,7 @@ export type Challenge = {
   username: string;
   challenge: string;
   createdAt: string;
+  ttl: number;
 };
 
 export function getSignUpChallengeKey(
@@ -29,6 +31,7 @@ export function getSignUpChallengeRecord(
     username,
     challenge: challenge,
     createdAt: createdAt.toISOString(),
+    ttl: getTtl(createdAt, 1),
   };
 }
 
@@ -53,6 +56,7 @@ export function getSignInChallengeRecord(
     username,
     challenge: challenge,
     createdAt: createdAt.toISOString(),
+    ttl: getTtl(createdAt, 1),
   };
 }
 

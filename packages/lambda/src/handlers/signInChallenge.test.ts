@@ -49,6 +49,7 @@ test("Success pattern", async () => {
       username: "test-username",
       challenge: expect.any(String),
       createdAt: "2020-12-23T00:00:00.000Z",
+      ttl: 1608685200,
     },
   });
   expect(result).toStrictEqual({
