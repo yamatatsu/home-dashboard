@@ -1,7 +1,7 @@
-jest.mock("../lib/db");
+jest.mock("../lib/awsSdk");
 
 import signUpChallenge from "./signUpChallenge";
-import { putSignUpChallenge } from "../lib/db";
+import { AuthTableClient } from "../lib/awsSdk";
 
 const date = new Date("2020-12-23 00:00:00Z");
 
@@ -9,15 +9,10 @@ beforeEach(() => {
   console.info = jest.fn();
 });
 afterEach(() => {
-  // @ts-ignore
-  putSignUpChallenge.mockClear();
+  // @ts-expect-error
+  AuthTableClient.put.mockClear();
 });
 
-test("throw if env AUTH_TABLE_NAME is undefined", async () => {
-  await expect(signUpChallenge({}, date)).rejects.toThrow(
-    "Enviroment variable `AUTH_TABLE_NAME` is required."
-  );
-});
 test("thrown if no body", async () => {
   process.env = { ...process.env, AUTH_TABLE_NAME: "test-AUTH_TABLE_NAME" };
 
@@ -95,12 +90,16 @@ test("Success pattern", async () => {
     date
   );
 
-  expect(putSignUpChallenge).toHaveBeenCalledTimes(1);
-  expect(putSignUpChallenge).toHaveBeenCalledWith(
-    "test-username",
-    expect.any(String),
-    date
-  );
+  expect(AuthTableClient.put).toHaveBeenCalledTimes(1);
+  expect(AuthTableClient.put).toHaveBeenCalledWith({
+    Item: {
+      partitionKey: "user:test-username",
+      sortKey: expect.stringMatching(/^signUpChallenge\:/),
+      username: "test-username",
+      challenge: expect.any(String),
+      createdAt: "2020-12-23T00:00:00.000Z",
+    },
+  });
 
   expect(result).toStrictEqual({
     statusCode: 201,

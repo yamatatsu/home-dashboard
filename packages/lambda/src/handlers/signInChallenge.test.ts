@@ -1,7 +1,9 @@
 jest.mock("../lib/db");
+jest.mock("../lib/awsSdk");
 
 import signInChallenge from "./signInChallenge";
-import { queryCredentials, putSignInChallenge } from "../lib/db";
+import { queryCredentials } from "../lib/db";
+import { AuthTableClient } from "../lib/awsSdk";
 
 const date = new Date("2020-12-23 00:00:00Z");
 
@@ -9,10 +11,10 @@ beforeEach(() => {
   console.info = jest.fn();
 });
 afterEach(() => {
-  // @ts-ignore
+  // @ts-expect-error
   queryCredentials.mockClear();
-  // @ts-ignore
-  putSignInChallenge.mockClear();
+  // @ts-expect-error
+  AuthTableClient.put.mockClear();
 });
 
 // TODO: Happy path only...
@@ -39,12 +41,16 @@ test("Success pattern", async () => {
 
   expect(queryCredentials).toHaveBeenCalledTimes(1);
   expect(queryCredentials).toHaveBeenCalledWith("test-username");
-  expect(putSignInChallenge).toHaveBeenCalledTimes(1);
-  expect(putSignInChallenge).toHaveBeenCalledWith(
-    "test-username",
-    expect.any(String),
-    date
-  );
+  expect(AuthTableClient.put).toHaveBeenCalledTimes(1);
+  expect(AuthTableClient.put).toHaveBeenCalledWith({
+    Item: {
+      partitionKey: "user:test-username",
+      sortKey: expect.stringMatching(/^signInChallenge\:/),
+      username: "test-username",
+      challenge: expect.any(String),
+      createdAt: "2020-12-23T00:00:00.000Z",
+    },
+  });
   expect(result).toStrictEqual({
     statusCode: 201,
     body: expect.any(String),

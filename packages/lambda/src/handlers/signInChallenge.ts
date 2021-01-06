@@ -3,7 +3,9 @@ import {
   APIGatewayProxyEventV2,
 } from "aws-lambda";
 import * as z from "zod";
-import { queryCredentials, putSignInChallenge } from "../lib/db";
+import { queryCredentials } from "../lib/db";
+import { getSignInChallengeRecord } from "../models/challenge";
+import { AuthTableClient } from "../lib/awsSdk";
 import { createChallenge } from "../lib/webAuthn";
 
 type Event = Pick<APIGatewayProxyEventV2, "body">;
@@ -41,7 +43,8 @@ export default async function signInChallenge(
 
   const challenge = createChallenge();
 
-  await putSignInChallenge(username, challenge, now);
+  const challengeRecord = getSignInChallengeRecord(username, challenge, now);
+  await AuthTableClient.put({ Item: challengeRecord });
 
   return {
     statusCode: 201,

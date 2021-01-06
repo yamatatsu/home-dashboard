@@ -1,7 +1,9 @@
 jest.mock("../lib/db");
+jest.mock("../lib/awsSdk");
 
 import signUp from "./signUp";
-import { getSignUpChallenge, putCredential } from "../lib/db";
+import { putCredential } from "../lib/db";
+import { AuthTableClient } from "../lib/awsSdk";
 
 const date = new Date("2020-12-23 00:00:00Z");
 
@@ -10,7 +12,7 @@ beforeEach(() => {
 });
 afterEach(() => {
   // @ts-expect-error
-  getSignUpChallenge.mockClear();
+  AuthTableClient.get.mockClear();
   // @ts-expect-error
   putCredential.mockClear();
 });
@@ -25,7 +27,7 @@ test("Success pattern", async () => {
     RP_ID: "localhost",
   };
 
-  (getSignUpChallenge as jest.Mock<any, any>).mockReturnValue({}); // not undefined
+  (AuthTableClient.get as jest.Mock<any, any>).mockReturnValue({ Item: {} }); // not undefined
 
   const result = await signUp(
     {
@@ -45,11 +47,13 @@ test("Success pattern", async () => {
     date
   );
 
-  expect(getSignUpChallenge).toHaveBeenCalledTimes(1);
-  expect(getSignUpChallenge).toHaveBeenCalledWith(
-    "test-username",
-    expect.any(String)
-  );
+  expect(AuthTableClient.get).toHaveBeenCalledTimes(1);
+  expect(AuthTableClient.get).toHaveBeenCalledWith({
+    Key: {
+      partitionKey: "user:test-username",
+      sortKey: expect.stringMatching(/^signUpChallenge\:/),
+    },
+  });
   expect(putCredential).toHaveBeenCalledTimes(1);
   expect(putCredential).toHaveBeenCalledWith(
     "test-username",

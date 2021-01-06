@@ -3,7 +3,8 @@ import {
   APIGatewayProxyEventV2,
 } from "aws-lambda";
 import * as z from "zod";
-import { putSignUpChallenge } from "../lib/db";
+import { getSignUpChallengeRecord } from "../models/challenge";
+import { AuthTableClient } from "../lib/awsSdk";
 import { createChallenge } from "../lib/webAuthn";
 
 type Event = Pick<APIGatewayProxyEventV2, "body">;
@@ -23,11 +24,6 @@ export default async function signUpChallenge(
   event: Event,
   now: Date
 ): Promise<APIGatewayProxyStructuredResultV2> {
-  const { AUTH_TABLE_NAME } = process.env;
-  if (!AUTH_TABLE_NAME) {
-    throw new Error("Enviroment variable `AUTH_TABLE_NAME` is required.");
-  }
-
   let username: string;
   try {
     const validEvent = eventSchema.parse(event);
@@ -39,7 +35,8 @@ export default async function signUpChallenge(
 
   const challenge = createChallenge();
 
-  await putSignUpChallenge(username, challenge, now);
+  const challengeRecord = getSignUpChallengeRecord(username, challenge, now);
+  await AuthTableClient.put({ Item: challengeRecord });
 
   return { statusCode: 201, body: JSON.stringify({ challenge }) };
 }

@@ -1,20 +1,5 @@
-import * as AWS from "aws-sdk";
 import { DocumentClient } from "./awsSdk";
 
-export type SignUpChallenge = {
-  partitionKey: string;
-  sortKey: string;
-  username: string;
-  signUpChallenge: string;
-  createdAt: string;
-};
-export type SignInChallenge = {
-  partitionKey: string;
-  sortKey: string;
-  username: string;
-  signInChallenge: string;
-  createdAt: string;
-};
 export type JWK = { kty: "EC"; crv: string; x: string; y: string };
 export type Credential = {
   partitionKey: string;
@@ -34,38 +19,6 @@ export type Session = {
   ttl: number;
   createdAt: string;
 };
-
-export async function getSignUpChallenge(
-  username: string,
-  challenge: string
-): Promise<SignUpChallenge | undefined> {
-  const params = {
-    TableName: getAuthTableName(),
-    Key: {
-      partitionKey: `user:${username}`,
-      sortKey: `signUpChallenge:${challenge}`,
-    },
-  };
-  const result = await DocumentClient.get(params);
-  return result.Item as SignUpChallenge | undefined;
-}
-
-export async function putSignUpChallenge(
-  username: string,
-  challenge: string,
-  createdAt: Date
-): Promise<boolean> {
-  const item: SignUpChallenge = {
-    partitionKey: `user:${username}`,
-    sortKey: `signUpChallenge:${challenge}`,
-    username,
-    signUpChallenge: challenge,
-    createdAt: createdAt.toISOString(),
-  };
-  const params = { TableName: getAuthTableName(), Item: item };
-  const result = await DocumentClient.put(params);
-  return !!result.Attributes;
-}
 
 export async function getCredential(
   username: string,
@@ -120,38 +73,6 @@ export async function putCredential(
   };
   const putParams = { TableName: getAuthTableName(), Item: item };
   const result = await DocumentClient.put(putParams);
-  return !!result.Attributes;
-}
-
-export async function getSignInChallenge(
-  username: string,
-  challenge: string
-): Promise<SignInChallenge | undefined> {
-  const params = {
-    TableName: getAuthTableName(),
-    Key: {
-      partitionKey: `user:${username}`,
-      sortKey: `signInChallenge:${challenge}`,
-    },
-  };
-  const result = await DocumentClient.get(params);
-  return result.Item as SignInChallenge | undefined;
-}
-
-export async function putSignInChallenge(
-  username: string,
-  challenge: string,
-  createdAt: Date
-): Promise<boolean> {
-  const item: SignInChallenge = {
-    partitionKey: `user:${username}`,
-    sortKey: `signInChallenge:${challenge}`,
-    username,
-    signInChallenge: challenge,
-    createdAt: createdAt.toISOString(),
-  };
-  const params = { TableName: getAuthTableName(), Item: item };
-  const result = await DocumentClient.put(params);
   return !!result.Attributes;
 }
 
