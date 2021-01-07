@@ -1,10 +1,11 @@
 import React, { FC } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useGoToSignIn } from "../routes";
-import { RedirectIfSignedIn } from "../componrnts/RedirectIfSignedIn";
+import { useRecoilState } from "recoil";
+import { useGoToSignIn, RedirectTop } from "../routes";
 import { fetchSignUp, fetchSignUpChallenge } from "../lib/fetching";
 import { createCredentials } from "../lib/WebAuthn";
+import { sessionIdAtom } from "../recoil";
 
 const schema = Yup.object().shape({
   username: Yup.string().required().min(2).max(100),
@@ -12,6 +13,8 @@ const schema = Yup.object().shape({
 
 export const SignUp: FC = () => {
   const goToSignIn = useGoToSignIn();
+
+  const [sessionId] = useRecoilState(sessionIdAtom);
 
   const formik = useFormik({
     initialValues: {
@@ -29,8 +32,11 @@ export const SignUp: FC = () => {
     },
   });
 
+  if (sessionId) {
+    return <RedirectTop />;
+  }
   return (
-    <RedirectIfSignedIn>
+    <>
       <h2>Sign Up</h2>
 
       <form onSubmit={formik.handleSubmit}>
@@ -49,7 +55,7 @@ export const SignUp: FC = () => {
         </div>
         <button type="submit">Submit</button>
       </form>
-    </RedirectIfSignedIn>
+    </>
   );
 };
 

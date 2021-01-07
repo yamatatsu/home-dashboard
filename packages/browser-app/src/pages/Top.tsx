@@ -1,27 +1,39 @@
 import React, { FC } from "react";
 import { useSetRecoilState, useRecoilValueLoadable } from "recoil";
 import { sessionIdAtom, remoEventsSelector } from "../recoil";
-import { RedirectIfNotSignedIn } from "../componrnts/RedirectIfNotSignedIn";
+import { RedirectSignIn } from "../routes";
 
 export const Top: FC = () => {
   const setSessionId = useSetRecoilState(sessionIdAtom);
+
   const remoEventsResult = useRecoilValueLoadable(remoEventsSelector);
 
-  if (remoEventsResult.state !== "hasValue") {
-    return null;
+  switch (remoEventsResult.state) {
+    case "loading": {
+      return <div>Loading...</div>;
+    }
+    case "hasError": {
+      throw remoEventsResult.errorOrThrow();
+    }
+    case "hasValue": {
+      const value = remoEventsResult.getValue();
+      if (!value.signed) {
+        return <RedirectSignIn />;
+      }
+      return (
+        <>
+          <div>awesome Contents</div>
+          <div>{JSON.stringify(remoEventsResult.getValue())}</div>
+          <button
+            type="button"
+            onClick={() => {
+              setSessionId("");
+            }}
+          >
+            signout
+          </button>
+        </>
+      );
+    }
   }
-  return (
-    <RedirectIfNotSignedIn>
-      <div>awesome Contents</div>
-      <div>{JSON.stringify(remoEventsResult.getValue())}</div>
-      <button
-        type="button"
-        onClick={() => {
-          setSessionId("");
-        }}
-      >
-        signout
-      </button>
-    </RedirectIfNotSignedIn>
-  );
 };
