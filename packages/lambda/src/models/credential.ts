@@ -49,7 +49,8 @@ export function getPutCredentialInput(
   credentialId: string,
   jwk: JWK,
   signCount: number,
-  createdAt: Date
+  createdAt: Date,
+  approved: boolean = false
 ): Omit<PutItemInput, "TableName"> {
   const item: Credential = {
     partitionKey: getPKey(username),
@@ -59,7 +60,7 @@ export function getPutCredentialInput(
     jwk,
     signCount: signCount,
     createdAt: createdAt.toISOString(),
-    approved: false,
+    approved,
   };
   return { Item: item };
 }

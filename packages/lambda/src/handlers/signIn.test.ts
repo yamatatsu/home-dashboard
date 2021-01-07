@@ -96,7 +96,7 @@ test("Success pattern", async () => {
       },
       signCount: 1609298543,
       createdAt: "2020-12-23T00:00:00.000Z",
-      approved: false,
+      approved: true,
     },
   });
   expect(putMock).toHaveBeenNthCalledWith(2, {

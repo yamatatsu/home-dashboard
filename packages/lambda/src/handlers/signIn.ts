@@ -144,7 +144,8 @@ export default async function signIn(
       credential.id,
       jwk,
       authDataStruct.signCount,
-      now
+      now,
+      true
     )
   );
 
