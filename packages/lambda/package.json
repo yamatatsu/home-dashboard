@@ -11,7 +11,7 @@
     "@types/aws-lambda": "8.10.70",
     "@types/cbor": "5.0.1",
     "@types/cookie": "0.4.0",
-    "@types/jest": "26.0.19",
+    "@types/jest": "26.0.20",
     "@types/jwk-to-pem": "2.0.0",
     "@types/node": "14.14.20",
     "@types/node-fetch": "2.5.7",
