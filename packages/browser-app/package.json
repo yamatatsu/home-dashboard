@@ -23,12 +23,12 @@
   },
   "dependencies": {
     "base64url": "3.0.1",
-    "date-fns": "^2.16.1",
+    "date-fns": "2.16.1",
     "formik": "2.2.6",
     "history": "5.0.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
-    "recharts": "^2.0.0",
+    "recharts": "2.0.0",
     "recoil": "0.1.2",
     "rocon": "1.2.0",
     "yup": "0.32.8"
