@@ -3,14 +3,15 @@ import { fetchGetRemoEvents } from "./lib/fetching";
 
 export const sessionIdAtom = atom({ key: "sessionId", default: "" });
 
-export const remoEventsSelector = selector({
+type RemoEvents = { signed: false } | { signed: true; remoEvents: any };
+export const remoEventsSelector = selector<RemoEvents>({
   key: "charCountState", // unique ID (with respect to other atoms/selectors)
   get: async ({ get }) => {
     const sessionId = get(sessionIdAtom);
     if (!sessionId) {
       return { signed: false };
     }
-    const remoEvents = await fetchGetRemoEvents(sessionId);
-    return { signed: true, remoEvents };
+    const result = await fetchGetRemoEvents(sessionId);
+    return { signed: true, remoEvents: result.remoEvents };
   },
 });
