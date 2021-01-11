@@ -7,7 +7,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@rediagram/aws": "0.4.0",
+    "@rediagram/aws": "0.4.1",
     "@rediagram/cli": "0.1.4",
     "@rediagram/tsconfig": "0.1.1",
     "@ts-graphviz/react": "0.7.0",
