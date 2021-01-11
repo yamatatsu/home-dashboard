@@ -2801,10 +2801,17 @@
     "@parcel/utils" "^1.11.0"
     physical-cpu-count "^2.0.0"
 
-"@rediagram/aws@0.4.0", "@rediagram/aws@^0.4.0":
+"@rediagram/aws@0.4.0":
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/@rediagram/aws/-/aws-0.4.0.tgz#1cb28c67a9d237171c2f1030c7201ce4953e768d"
   integrity sha512-5rGo21tlOJ2/Cp4gNndRB8U3KUKPcLY0R7CJAC2fnkS43sEtqlHN7hM49Vs63JmSSz7n4W/U0AWLHo09y6XSsw==
+  dependencies:
+    "@rediagram/cdk" "^0.3.0"
+
+"@rediagram/aws@^0.4.1":
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/@rediagram/aws/-/aws-0.4.1.tgz#44e4e110f6ad6abb0d64717a647cf7d9790de36b"
+  integrity sha512-O9hPtOqk61xW6557eUKCHt5gA8B4aUj3Ri8P+1wIwODYOFSijzhv8ooHwKFJB/7268qRJ0iT2HG6afTL4YriLQ==
   dependencies:
     "@rediagram/cdk" "^0.3.0"
 
@@ -2815,12 +2822,12 @@
   dependencies:
     caller "^1.0.1"
 
-"@rediagram/cli@0.1.3":
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/@rediagram/cli/-/cli-0.1.3.tgz#a507548273d6a53241517bae7e386381043ad1ba"
-  integrity sha512-AH2+8MHbN3qlezxK1HG4aWVeWuV+W+4xrHWjySAGK+jw/vJtFzTCirMaQx4xouIzbDviV/glSwu4dde/IkI1Ig==
+"@rediagram/cli@0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@rediagram/cli/-/cli-0.1.4.tgz#f86a7335bf01a2d61b1091147abd44ed25689bec"
+  integrity sha512-C6G+Uk3/lYoIocQjXpkrcajYWkagM0yxRqiFPFa5qlxb58QO2JatdvCE6ag2E/VnjbRo0diL7IC2SKCBNqdDXg==
   dependencies:
-    "@rediagram/aws" "^0.4.0"
+    "@rediagram/aws" "^0.4.1"
     "@rediagram/common" "^0.0.2"
     "@ts-graphviz/react" "^0.7.0"
     "@types/node" "^14.0.4"
