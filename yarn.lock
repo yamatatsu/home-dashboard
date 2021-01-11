@@ -11736,7 +11736,14 @@ trim-off-newlines@^1.0.0:
   resolved "https://registry.yarnpkg.com/trim-off-newlines/-/trim-off-newlines-1.0.1.tgz#9f9ba9d9efa8764c387698bcbfeb2c848f11adb3"
   integrity sha1-n5up2e+odkw4dpi8v+sshI8RrbM=
 
-ts-graphviz@0.13.2, ts-graphviz@^0.13.1:
+ts-graphviz@0.14.0:
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/ts-graphviz/-/ts-graphviz-0.14.0.tgz#8228d6fb30dd119bfdc96e427a9621f6b91618c2"
+  integrity sha512-uqGjBf44jZ2YdxGxaSxh1jNK3tASTaiP2XNDJ/FPVdVrntmpYl+ZkZDxyDt1Jt484F7N+hajE8Q4Y2ONnk5SOw==
+  dependencies:
+    tslib "^2.1.0"
+
+ts-graphviz@^0.13.1:
   version "0.13.2"
   resolved "https://registry.yarnpkg.com/ts-graphviz/-/ts-graphviz-0.13.2.tgz#b96c680466b427ae8e0d42a45cbf476ce6fc4e27"
   integrity sha512-ykQpHPT1RVNzv/ZN/zwawDIFHi8eiEl+H3x3B+ZOQ9eMUaosVMd1ePaf/CA9b15iix48cTa7RcXcWvI/ZgoNKw==
@@ -11786,6 +11793,11 @@ tslib@^2.0.0, tslib@^2.0.1:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.0.3.tgz#8e0741ac45fc0c226e58a17bfc3e64b9bc6ca61c"
   integrity sha512-uZtkfKblCEQtZKBF6EBXVZeQNl82yqtDQdv+eck8u7tdPxjLu2/lp5/uPW+um2tpuxINHWy3GhiccY7QgEaVHQ==
+
+tslib@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.1.0.tgz#da60860f1c2ecaa5703ab7d39bc05b6bf988b97a"
+  integrity sha512-hcVC3wYEziELGGmEEXue7D75zbwIIVUMWAVbHItGPx0ziyXxrOMQx4rQEVEV45Ut/1IotuEvwqPopzIOkDMf0A==
 
 tty-browserify@0.0.0:
   version "0.0.0"

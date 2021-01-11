@@ -15,7 +15,7 @@
     "@types/react": "17.0.0",
     "react": "17.0.1",
     "rediagram": "0.2.4",
-    "ts-graphviz": "0.13.2",
+    "ts-graphviz": "0.14.0",
     "ts-node": "9.1.1",
     "typescript": "4.1.3"
   }
