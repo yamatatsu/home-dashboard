@@ -10,11 +10,16 @@
 - [x] fetch remo data
 - [x] challenge ttl
 - [x] make session expiration more long
-- [ ] refactor frontend
-- [ ] visualize remoEvents
+- [x] refactor frontend
+- [x] visualize remoEvents
+- [x] divide dev and prod
+- [ ] deploy static contents
+- [ ] domain
+- [ ] test lambda code
+- [ ] modeling lambda codes
+- [ ] storybook
+- [ ] create aggregation function
 
 ##### refactoring
 
-- [ ] test lambda code
 - [ ] make lambda log to json
-- [ ] lambda's code
