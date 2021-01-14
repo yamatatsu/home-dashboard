@@ -6,7 +6,7 @@ import * as logs from "@aws-cdk/aws-logs";
 import * as iam from "@aws-cdk/aws-iam";
 import { LambdaProxyIntegration } from "@aws-cdk/aws-apigatewayv2-integrations";
 
-type WebApiProps = cdk.StackProps & {
+type Props = cdk.StackProps & {
   code: lambda.Code;
   homeAuthTable: dynamodb.ITable;
   homeMainTable: dynamodb.ITable;
@@ -16,7 +16,7 @@ type WebApiProps = cdk.StackProps & {
 };
 
 export class WebApi extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props: WebApiProps) {
+  constructor(scope: cdk.Construct, id: string, props: Props) {
     super(scope, id, props);
 
     const signUpChallenge = new lambda.Function(this, "signUpChallenge", {

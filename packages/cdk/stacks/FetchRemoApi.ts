@@ -10,7 +10,7 @@ import { SqsEventSource } from "@aws-cdk/aws-lambda-event-sources";
 import * as s3 from "@aws-cdk/aws-s3";
 import { addSslOnlyPolicyToBucket } from "./util";
 
-type FetchRemoApiProps = cdk.StackProps & {
+type Props = cdk.StackProps & {
   code: lambda.Code;
   remoToken: string;
   homeMainTable: dynamodb.ITable;
@@ -24,7 +24,7 @@ type FetchRemoApiProps = cdk.StackProps & {
 export class FetchRemoApi extends cdk.Stack {
   public readonly topic: sns.ITopic;
 
-  constructor(scope: cdk.Construct, id: string, props: FetchRemoApiProps) {
+  constructor(scope: cdk.Construct, id: string, props: Props) {
     super(scope, id, props);
 
     const topic = new sns.Topic(this, "Topic");
