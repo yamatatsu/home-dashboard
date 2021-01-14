@@ -10615,10 +10615,10 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^3.0.0"
     inherits "^2.0.1"
 
-rocon@1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/rocon/-/rocon-1.2.0.tgz#33ab0d15809ca18a70b972235ba22b4c85089146"
-  integrity sha512-NEU8bnECuJauWo4+6oL7zbtPSG6s+XZrTHTalPHHzBGZiSHBX+MxSOs9Elzukm1GJ5No+spCvnGbMEHyuG1BpA==
+rocon@1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/rocon/-/rocon-1.2.1.tgz#b7b66952d00f30f425f2ba289ab33a527707758b"
+  integrity sha512-CF3+iB1dKmJLGDDdCfnvv9Boxq1UKp81YkY2Loi9WYlkpd/JhXW1hkcSLTg74jBxJXUJSJcbWxu30P9mEb+bXg==
   dependencies:
     "@babel/runtime" "^7.11.2"
 
