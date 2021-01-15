@@ -14,7 +14,7 @@
     "@types/jest": "26.0.20",
     "@types/jwk-to-pem": "2.0.0",
     "@types/node": "14.14.20",
-    "@types/node-fetch": "2.5.7",
+    "@types/node-fetch": "2.5.8",
     "@types/uuid": "8.3.0",
     "@vercel/ncc": "0.27.0",
     "jest": "26.6.3",
