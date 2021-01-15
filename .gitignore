@@ -6,5 +6,8 @@ node_modules
 cdk.out
 *.log
 dist
-.env
 .cache
+
+.env
+.env.*
+!.env.example

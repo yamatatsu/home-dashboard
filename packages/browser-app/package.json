@@ -8,7 +8,7 @@
   "scripts": {
     "start": "parcel index.html",
     "prebuild": "rm -rf ./dist",
-    "build": "parcel build index.html",
+    "build": "parcel build index.html --no-source-maps",
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {

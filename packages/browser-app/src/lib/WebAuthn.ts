@@ -18,7 +18,7 @@ export async function createCredentials(
       userVerification: "preferred",
     },
     rp: {
-      id: DEV ? "localhost" : "home.yamatatsu.dev",
+      id: DEV ? "localhost" : "dy65mdxy9uupg.cloudfront.net", // "home.yamatatsu.dev",
       name: "Home Dashboard",
     },
     user: {

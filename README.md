@@ -13,8 +13,9 @@
 - [x] refactor frontend
 - [x] visualize remoEvents
 - [x] divide dev and prod
-- [ ] deploy static contents
+- [x] deploy static contents
 - [ ] domain
+- [ ] husky
 - [ ] test lambda code
 - [ ] modeling lambda codes
 - [ ] storybook

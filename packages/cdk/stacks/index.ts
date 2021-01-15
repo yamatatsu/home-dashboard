@@ -2,9 +2,11 @@ import "source-map-support/register";
 import * as dotenv from "dotenv";
 import * as cdk from "@aws-cdk/core";
 import * as lambda from "@aws-cdk/aws-lambda";
+import * as s3Deployment from "@aws-cdk/aws-s3-deployment";
 import { DynamodbStack } from "./Dynamodb";
 import { FetchRemoApi } from "./FetchRemoApi";
 import { WebApi } from "./WebApi";
+import { WebFront } from "./WebFront";
 
 dotenv.config();
 
@@ -38,11 +40,14 @@ const fetchRemoApi = new FetchRemoApi(app, "FetchRemoApi", {
   remoToken: REMO_TOKEN,
   homeMainTable: dynamodb.homeMainTable,
 });
-// new WebApi(app, "WebApi", {
-//   code: getCode(),
-//   homeAuthTable: dynamodbDev.homeAuthTable,
-//   homeMainTable: dynamodbDev.homeMainTable,
-//   allowOrigins: ["http://localhost:1234"],
-//   rpId: "localhost",
-//   dev: false,
-// });
+new WebApi(app, "WebApi", {
+  code: getCode(),
+  homeAuthTable: dynamodb.homeAuthTable,
+  homeMainTable: dynamodb.homeMainTable,
+  allowOrigins: ["https://dy65mdxy9uupg.cloudfront.net"],
+  rpId: "dy65mdxy9uupg.cloudfront.net", // "home.yamatatsu.dev",
+  dev: false,
+});
+new WebFront(app, "WebFront", {
+  source: s3Deployment.Source.asset(`${__dirname}/../../browser-app/dist`),
+});
