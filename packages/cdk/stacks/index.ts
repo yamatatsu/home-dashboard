@@ -45,7 +45,7 @@ new WebApi(app, "WebApi", {
   homeAuthTable: dynamodb.homeAuthTable,
   homeMainTable: dynamodb.homeMainTable,
   allowOrigins: ["https://home.yamatatsu.dev"],
-  rpId: "dy65mdxy9uupg.cloudfront.net", // "home.yamatatsu.dev",
+  rpId: "home.yamatatsu.dev",
   dev: false,
 });
 new WebFront(app, "WebFront", {
