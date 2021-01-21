@@ -14,12 +14,12 @@
 - [x] visualize remoEvents
 - [x] divide dev and prod
 - [x] deploy static contents
-- [ ] domain
+- [x] domain
+- [ ] create aggregation function
 - [ ] husky
 - [ ] test lambda code
 - [ ] modeling lambda codes
 - [ ] storybook
-- [ ] create aggregation function
 
 ##### refactoring
 
