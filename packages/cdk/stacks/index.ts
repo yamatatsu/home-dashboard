@@ -26,7 +26,7 @@ new WebApi(app, "WebApi-dev", {
   code: getCode(),
   homeAuthTable: dynamodbDev.homeAuthTable,
   homeMainTable: dynamodbDev.homeMainTable,
-  allowOrigins: ["http://localhost:1234"],
+  allowOrigins: ["http://localhost:3000"],
   rpId: "localhost",
   dev: true,
 });
