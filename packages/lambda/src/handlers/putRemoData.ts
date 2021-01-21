@@ -5,7 +5,6 @@ import {
   remoEventSchema,
   createWriteRemoEventRequest,
   RemoEvent,
-  RemoEventRecord,
 } from "../models/remoEvent";
 
 type RemoData = {
