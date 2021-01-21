@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build:browser-app": "cd ../browser-app; yarn build",
     "build:lambda": "cd ../lambda; yarn build",
     "predeploy": "run-p build:*",
     "deploy": "cdk deploy --progress=events",
@@ -33,7 +32,6 @@
     "@aws-cdk/aws-lambda-event-sources": "1.84.0",
     "@aws-cdk/aws-logs": "1.84.0",
     "@aws-cdk/aws-s3": "1.84.0",
-    "@aws-cdk/aws-s3-deployment": "1.84.0",
     "@aws-cdk/aws-sns": "1.84.0",
     "@aws-cdk/aws-sns-subscriptions": "1.84.0",
     "@aws-cdk/aws-sqs": "1.84.0",

@@ -3,8 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "generate": "rediagramc",
-    "type-check": "tsc --noEmit"
+    "generate": "rediagramc"
   },
   "dependencies": {
     "@rediagram/aws": "0.4.1",
