@@ -1,10 +1,9 @@
 {
-  "name": "home-dashboard-lambda",
+  "name": "home-dashboard-tools",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "transport-main-from-prod-to-dev": "ts-node tools/transport-main-from-prod-to-dev.ts",
-    "test": "jest",
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
