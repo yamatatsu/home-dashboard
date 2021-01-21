@@ -24,7 +24,7 @@
   "dependencies": {
     "aws-sdk": "2.829.0",
     "base64url": "3.0.1",
-    "cbor": "5.2.0",
+    "cbor": "6.0.1",
     "cookie": "0.4.1",
     "jwk-to-pem": "2.0.4",
     "node-fetch": "2.6.1",
