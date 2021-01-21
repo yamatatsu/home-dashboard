@@ -1,6 +1,21 @@
+import React from "react";
+import { NextPage } from "next";
 import Head from "next/head";
+import { useGoToLogin } from "../lib/routes";
 
-export default function Home() {
+import { useRecoilState } from "recoil";
+import { sessionIdAtom } from "../lib/recoil";
+
+const Page: NextPage = () => {
+  const [sessionId] = useRecoilState(sessionIdAtom);
+  const goToLogin = useGoToLogin();
+
+  React.useEffect(() => {
+    if (!sessionId) {
+      goToLogin();
+    }
+  }, [sessionId]);
+
   return (
     <div className="container">
       <Head>
@@ -206,4 +221,5 @@ export default function Home() {
       `}</style>
     </div>
   );
-}
+};
+export default Page;
