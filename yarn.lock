@@ -3681,10 +3681,10 @@ caseless@~0.12.0:
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
   integrity sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=
 
-cbor@5.2.0:
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/cbor/-/cbor-5.2.0.tgz#4cca67783ccd6de7b50ab4ed62636712f287a67c"
-  integrity sha512-5IMhi9e1QU76ppa5/ajP1BmMWZ2FHkhAhjeVKQ/EFCgYSEaeVaoGtL7cxJskf9oCCk+XjzaIdc3IuU/dbA/o2A==
+cbor@6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/cbor/-/cbor-6.0.1.tgz#f559abb1b986f54fb9cb1a6855085847bcc1cd61"
+  integrity sha512-gVJ2e/DFInWOriOUqNyrZe5xN8RSK49X7G+pLalz32GwKs1xHNXtrkcbV5K4+Z2X7qJiv6f700PnUEaJoIEPGQ==
   dependencies:
     bignumber.js "^9.0.1"
     nofilter "^1.0.4"
