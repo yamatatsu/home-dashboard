@@ -91,29 +91,13 @@ Object {
             Array [
               "integrations/",
               Object {
-                "Ref": "HttpApiGETremoEventsGETremoEventsIntegration3B174E92",
+                "Ref": "HttpApiHttpIntegration607f25689baba27e7e238ddc9f4f17ac88A97CE5",
               },
             ],
           ],
         },
       },
       "Type": "AWS::ApiGatewayV2::Route",
-    },
-    "HttpApiGETremoEventsGETremoEventsIntegration3B174E92": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "HttpApiF5A9A8A7",
-        },
-        "IntegrationType": "AWS_PROXY",
-        "IntegrationUri": Object {
-          "Fn::GetAtt": Array [
-            "getRemoEventsE86B84DD",
-            "Arn",
-          ],
-        },
-        "PayloadFormatVersion": "2.0",
-      },
-      "Type": "AWS::ApiGatewayV2::Integration",
     },
     "HttpApiGETremoEventsTargetHttpApiGETremoEvents6458946CPermission193774D6": Object {
       "Properties": Object {
@@ -152,6 +136,86 @@ Object {
       },
       "Type": "AWS::Lambda::Permission",
     },
+    "HttpApiHttpIntegration05e1322c401f71f4afdc454de660e6aa41A135EB": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "HttpApiF5A9A8A7",
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": Object {
+          "Fn::GetAtt": Array [
+            "signInFB14E69C",
+            "Arn",
+          ],
+        },
+        "PayloadFormatVersion": "2.0",
+      },
+      "Type": "AWS::ApiGatewayV2::Integration",
+    },
+    "HttpApiHttpIntegration607f25689baba27e7e238ddc9f4f17ac88A97CE5": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "HttpApiF5A9A8A7",
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": Object {
+          "Fn::GetAtt": Array [
+            "getRemoEventsE86B84DD",
+            "Arn",
+          ],
+        },
+        "PayloadFormatVersion": "2.0",
+      },
+      "Type": "AWS::ApiGatewayV2::Integration",
+    },
+    "HttpApiHttpIntegration7733a4384cb25ebc1b95a2cb23b8f2dc43C37B8A": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "HttpApiF5A9A8A7",
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": Object {
+          "Fn::GetAtt": Array [
+            "signInChallenge928536FE",
+            "Arn",
+          ],
+        },
+        "PayloadFormatVersion": "2.0",
+      },
+      "Type": "AWS::ApiGatewayV2::Integration",
+    },
+    "HttpApiHttpIntegrationb2bc74e3d5092a3debac4b0785151b03D1185E30": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "HttpApiF5A9A8A7",
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": Object {
+          "Fn::GetAtt": Array [
+            "signUp5E93447F",
+            "Arn",
+          ],
+        },
+        "PayloadFormatVersion": "2.0",
+      },
+      "Type": "AWS::ApiGatewayV2::Integration",
+    },
+    "HttpApiHttpIntegrationf6ed881ace26906eaa52a3da143f5e2e8D757EC8": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "HttpApiF5A9A8A7",
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": Object {
+          "Fn::GetAtt": Array [
+            "signUpChallengeE4AB8E64",
+            "Arn",
+          ],
+        },
+        "PayloadFormatVersion": "2.0",
+      },
+      "Type": "AWS::ApiGatewayV2::Integration",
+    },
     "HttpApiPOSTauthsignIn1C78838F": Object {
       "Properties": Object {
         "ApiId": Object {
@@ -164,7 +228,7 @@ Object {
             Array [
               "integrations/",
               Object {
-                "Ref": "HttpApiPOSTauthsignInPOSTauthsignInIntegration92E7A2D7",
+                "Ref": "HttpApiHttpIntegration05e1322c401f71f4afdc454de660e6aa41A135EB",
               },
             ],
           ],
@@ -184,29 +248,13 @@ Object {
             Array [
               "integrations/",
               Object {
-                "Ref": "HttpApiPOSTauthsignInChallengePOSTauthsignInChallengeIntegrationCB941692",
+                "Ref": "HttpApiHttpIntegration7733a4384cb25ebc1b95a2cb23b8f2dc43C37B8A",
               },
             ],
           ],
         },
       },
       "Type": "AWS::ApiGatewayV2::Route",
-    },
-    "HttpApiPOSTauthsignInChallengePOSTauthsignInChallengeIntegrationCB941692": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "HttpApiF5A9A8A7",
-        },
-        "IntegrationType": "AWS_PROXY",
-        "IntegrationUri": Object {
-          "Fn::GetAtt": Array [
-            "signInChallenge928536FE",
-            "Arn",
-          ],
-        },
-        "PayloadFormatVersion": "2.0",
-      },
-      "Type": "AWS::ApiGatewayV2::Integration",
     },
     "HttpApiPOSTauthsignInChallengeTargetHttpApiPOSTauthsignInChallengeF386A038Permission7F2D1FB3": Object {
       "Properties": Object {
@@ -244,22 +292,6 @@ Object {
         },
       },
       "Type": "AWS::Lambda::Permission",
-    },
-    "HttpApiPOSTauthsignInPOSTauthsignInIntegration92E7A2D7": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "HttpApiF5A9A8A7",
-        },
-        "IntegrationType": "AWS_PROXY",
-        "IntegrationUri": Object {
-          "Fn::GetAtt": Array [
-            "signInFB14E69C",
-            "Arn",
-          ],
-        },
-        "PayloadFormatVersion": "2.0",
-      },
-      "Type": "AWS::ApiGatewayV2::Integration",
     },
     "HttpApiPOSTauthsignInTargetHttpApiPOSTauthsignIn59380A31Permission1B78D519": Object {
       "Properties": Object {
@@ -310,7 +342,7 @@ Object {
             Array [
               "integrations/",
               Object {
-                "Ref": "HttpApiPOSTauthsignUpPOSTauthsignUpIntegration1BD19CA0",
+                "Ref": "HttpApiHttpIntegrationb2bc74e3d5092a3debac4b0785151b03D1185E30",
               },
             ],
           ],
@@ -330,29 +362,13 @@ Object {
             Array [
               "integrations/",
               Object {
-                "Ref": "HttpApiPOSTauthsignUpChallengePOSTauthsignUpChallengeIntegrationACC93027",
+                "Ref": "HttpApiHttpIntegrationf6ed881ace26906eaa52a3da143f5e2e8D757EC8",
               },
             ],
           ],
         },
       },
       "Type": "AWS::ApiGatewayV2::Route",
-    },
-    "HttpApiPOSTauthsignUpChallengePOSTauthsignUpChallengeIntegrationACC93027": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "HttpApiF5A9A8A7",
-        },
-        "IntegrationType": "AWS_PROXY",
-        "IntegrationUri": Object {
-          "Fn::GetAtt": Array [
-            "signUpChallengeE4AB8E64",
-            "Arn",
-          ],
-        },
-        "PayloadFormatVersion": "2.0",
-      },
-      "Type": "AWS::ApiGatewayV2::Integration",
     },
     "HttpApiPOSTauthsignUpChallengeTargetHttpApiPOSTauthsignUpChallengeFFBEDB3EPermission32C7F8EF": Object {
       "Properties": Object {
@@ -390,22 +406,6 @@ Object {
         },
       },
       "Type": "AWS::Lambda::Permission",
-    },
-    "HttpApiPOSTauthsignUpPOSTauthsignUpIntegration1BD19CA0": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "HttpApiF5A9A8A7",
-        },
-        "IntegrationType": "AWS_PROXY",
-        "IntegrationUri": Object {
-          "Fn::GetAtt": Array [
-            "signUp5E93447F",
-            "Arn",
-          ],
-        },
-        "PayloadFormatVersion": "2.0",
-      },
-      "Type": "AWS::ApiGatewayV2::Integration",
     },
     "HttpApiPOSTauthsignUpTargetHttpApiPOSTauthsignUp53F86822Permission212DB179": Object {
       "Properties": Object {
