@@ -3,9 +3,9 @@ import {
   APIGatewayProxyEventV2,
 } from "aws-lambda";
 import * as z from "zod";
-import { getPutSignInChallengeInput } from "../models/challenge";
-import { getQueryCredentialsInput } from "../models/credential";
-import { AuthTableClient } from "../lib/awsSdk";
+import { createChallenge as createChallengeModel } from "../models/challenge";
+import { putSignInChallenge } from "../models/challengeRepository";
+import { queryCredentials } from "../models/credentialRepository";
 import { createChallenge } from "../lib/webAuthn";
 
 type Event = Pick<APIGatewayProxyEventV2, "body">;
@@ -35,19 +35,15 @@ export default async function signInChallenge(
     };
   }
 
-  const credentials = await AuthTableClient.query(
-    getQueryCredentialsInput(username)
-  );
-  if (!credentials.Items) {
+  const credentials = await queryCredentials(username);
+  if (credentials.length === 0) {
     return { statusCode: 400, body: "No credential is found." };
   }
-  const credentialIds = credentials.Items.map((c) => c.credentialId);
+  const credentialIds = credentials.map((c) => c.credentialId);
 
   const challenge = createChallenge();
 
-  await AuthTableClient.put(
-    getPutSignInChallengeInput(username, challenge, now)
-  );
+  await putSignInChallenge(createChallengeModel(username, challenge, now));
 
   return {
     statusCode: 201,

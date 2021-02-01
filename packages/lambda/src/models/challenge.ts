@@ -1,80 +1,38 @@
-import * as AWS from "aws-sdk";
+import * as z from "zod";
 import { getTtl } from "./util";
 
-type GetItemInput = AWS.DynamoDB.DocumentClient.GetItemInput;
-type PutItemInput = AWS.DynamoDB.DocumentClient.PutItemInput;
-
-export type Challenge = {
-  partitionKey: string;
-  sortKey: string;
+export type PreChallenge = {
   username: string;
   challenge: string;
   createdAt: string;
   ttl: number;
 };
 
-export function getGetSignUpChallengeInput(
-  username: string,
-  challenge: string
-): Omit<GetItemInput, "TableName"> {
-  return {
-    Key: {
-      partitionKey: getPKey(username),
-      sortKey: getSignUpChallengeSKey(challenge),
-    },
-  };
-}
+export type Challenge = {
+  __verified__: "Model:Challenge";
+} & PreChallenge;
 
-export function getPutSignUpChallengeInput(
+const schema = z.object({
+  username: z.string(),
+  challenge: z.string(),
+  createdAt: z.string(),
+  ttl: z.number(),
+});
+
+export function createChallenge(
   username: string,
   challenge: string,
   createdAt: Date
-): Omit<PutItemInput, "TableName"> {
-  const item: Challenge = {
-    partitionKey: getPKey(username),
-    sortKey: getSignUpChallengeSKey(challenge),
+): Challenge {
+  return verifyChallenge({
     username,
     challenge: challenge,
     createdAt: createdAt.toISOString(),
     ttl: getTtl(createdAt, 1),
-  };
-  return { Item: item };
+  });
 }
 
-export function getGetSignInChallengeInput(
-  username: string,
-  challenge: string
-): Omit<GetItemInput, "TableName"> {
-  return {
-    Key: {
-      partitionKey: getPKey(username),
-      sortKey: getSignInChallengeSKey(challenge),
-    },
-  };
-}
-
-export function getPutSignInChallengeInput(
-  username: string,
-  challenge: string,
-  createdAt: Date
-): Omit<PutItemInput, "TableName"> {
-  const item: Challenge = {
-    partitionKey: getPKey(username),
-    sortKey: getSignInChallengeSKey(challenge),
-    username,
-    challenge: challenge,
-    createdAt: createdAt.toISOString(),
-    ttl: getTtl(createdAt, 1),
-  };
-  return { Item: item };
-}
-
-function getPKey(username: string) {
-  return `user:${username}`;
-}
-function getSignUpChallengeSKey(challenge: string) {
-  return `signUpChallenge:${challenge}`;
-}
-function getSignInChallengeSKey(challenge: string) {
-  return `signInChallenge:${challenge}`;
+export function verifyChallenge(challenge: PreChallenge): Challenge {
+  const item: PreChallenge = schema.parse(challenge);
+  return item as Challenge;
 }

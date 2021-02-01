@@ -5,9 +5,9 @@ import {
 import base64url from "base64url";
 import * as z from "zod";
 import * as cbor from "cbor";
-import { getGetSignUpChallengeInput } from "../models/challenge";
-import { getPutCredentialInput } from "../models/credential";
-import { AuthTableClient } from "../lib/awsSdk";
+import { createCredential } from "../models/credential";
+import { putCredential } from "../models/credentialRepository";
+import * as AuthService from "../models/authService";
 import {
   getClientAuth,
   verifyOrigin,
@@ -78,7 +78,7 @@ export default async function signUp(
     // Step.7 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
     verifyType(clientData.type);
     // Step.8 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
-    await verifyChallenge(username, clientData.challenge);
+    await AuthService.verifySignUpChallenge(username, clientData.challenge);
     // Step.9 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
     verifyOrigin(ALLOW_ORIGINS, clientData);
 
@@ -142,8 +142,8 @@ export default async function signUp(
   // やるならcredentialのdynamodbへの登録のkeyをpもsも `credential:${credential.id}` にする。userのcredential一覧はGSIからとる。
 
   // Step.23 of https://www.w3.org/TR/webauthn/#sctn-registering-a-new-credential
-  await AuthTableClient.put(
-    getPutCredentialInput(
+  await putCredential(
+    createCredential(
       username,
       credential.id,
       publicKeyJwk,
@@ -166,20 +166,6 @@ async function validateEvent(event: any) {
     return validatedEvent;
   }
   return bodySchema.safeParse(JSON.parse(validatedEvent.data.body));
-}
-
-async function verifyChallenge(
-  username: string,
-  challenge: string
-): Promise<void> {
-  const result = await AuthTableClient.get(
-    getGetSignUpChallengeInput(username, challenge)
-  );
-  if (!result.Item) {
-    throw new Error(
-      `No challenge has found. username: ${username} challenge: ${challenge}`
-    );
-  }
 }
 
 export function verifyType(type: string): void {

@@ -1,13 +1,7 @@
-import * as AWS from "aws-sdk";
+import * as z from "zod";
+import { JWK } from "jwk-to-pem";
 
-type GetItemInput = AWS.DynamoDB.DocumentClient.GetItemInput;
-type PutItemInput = AWS.DynamoDB.DocumentClient.PutItemInput;
-type QueryInput = AWS.DynamoDB.DocumentClient.QueryInput;
-
-export type JWK = { kty: "EC"; crv: string; x: string; y: string };
-export type Credential = {
-  partitionKey: string;
-  sortKey: string;
+export type PreCredential = {
   username: string;
   credentialId: string;
   jwk: JWK;
@@ -15,62 +9,43 @@ export type Credential = {
   createdAt: string;
   approved: boolean;
 };
+export type Credential = {
+  __verified__: "Model:Credential";
+} & PreCredential;
 
-export function getGetCredentialInput(
-  username: string,
-  credentialId: string
-): Omit<GetItemInput, "TableName"> {
-  return {
-    Key: {
-      partitionKey: getPKey(username),
-      sortKey: getSKey(credentialId),
-    },
-  };
-}
+const schema = z.object({
+  username: z.string(),
+  credentialId: z.string(),
+  jwk: z.object({
+    kty: z.enum(["EC"]),
+    crv: z.string(),
+    x: z.string(),
+    y: z.string(),
+  }),
+  signCount: z.number(),
+  createdAt: z.string(),
+  approved: z.boolean(),
+});
 
-export function getQueryCredentialsInput(
-  username: string
-): Omit<QueryInput, "TableName"> {
-  return {
-    KeyConditionExpression: "#pKey = :pKey and begins_with(#sKey, :sKey)",
-    ExpressionAttributeNames: {
-      "#pKey": "partitionKey",
-      "#sKey": "sortKey",
-    },
-    ExpressionAttributeValues: {
-      ":pKey": getPKey(username),
-      ":sKey": getSKey(),
-    },
-  };
-}
-
-export function getPutCredentialInput(
+export function createCredential(
   username: string,
   credentialId: string,
   jwk: JWK,
   signCount: number,
   createdAt: Date,
   approved: boolean = false
-): Omit<PutItemInput, "TableName"> {
-  const item: Credential = {
-    partitionKey: getPKey(username),
-    sortKey: getSKey(credentialId),
+): Credential {
+  return verifyCredential({
     username,
     credentialId,
     jwk,
     signCount: signCount,
     createdAt: createdAt.toISOString(),
     approved,
-  };
-  return { Item: item };
+  });
 }
 
-function getPKey(username: string) {
-  return `user:${username}`;
-}
-function getSKey(credentialId?: string) {
-  if (!credentialId) {
-    return "credential:";
-  }
-  return `credential:${credentialId}`;
+export function verifyCredential(credential: PreCredential): Credential {
+  const item: PreCredential = schema.parse(credential);
+  return item as Credential;
 }

@@ -3,8 +3,8 @@ import {
   APIGatewayProxyEventV2,
 } from "aws-lambda";
 import * as z from "zod";
-import { getPutSignUpChallengeInput } from "../models/challenge";
-import { AuthTableClient } from "../lib/awsSdk";
+import { createChallenge as createChallengeModel } from "../models/challenge";
+import { putSignUpChallenge } from "../models/challengeRepository";
 import { createChallenge } from "../lib/webAuthn";
 
 type Event = Pick<APIGatewayProxyEventV2, "body">;
@@ -24,20 +24,22 @@ export default async function signUpChallenge(
   event: Event,
   now: Date
 ): Promise<APIGatewayProxyStructuredResultV2> {
-  let username: string;
-  try {
-    const validEvent = eventSchema.parse(event);
-    const validBody = bodySchema.parse(JSON.parse(validEvent.body));
-    username = validBody.username;
-  } catch (err) {
-    return { statusCode: 400, body: err.message };
+  const result = varifyEvent(event);
+  if (!result.success) {
+    return { statusCode: 400, body: result.error.message };
   }
-
+  const username: string = result.data.username;
   const challenge = createChallenge();
 
-  await AuthTableClient.put(
-    getPutSignUpChallengeInput(username, challenge, now)
-  );
+  await putSignUpChallenge(createChallengeModel(username, challenge, now));
 
   return { statusCode: 201, body: JSON.stringify({ challenge }) };
 }
+
+const varifyEvent = (event: Event) => {
+  const resultEvent = eventSchema.safeParse(event);
+  if (!resultEvent.success) {
+    return resultEvent;
+  }
+  return bodySchema.safeParse(JSON.parse(resultEvent.data.body));
+};

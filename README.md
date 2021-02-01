@@ -16,6 +16,10 @@
 - [x] deploy static contents
 - [x] domain
 - [ ] create aggregation function
+  - [ ] count mo
+  - [ ] median il
+  - [ ] median hu
+  - [ ] median te
 - [ ] husky
 - [ ] test lambda code
 - [ ] modeling lambda codes

@@ -16,7 +16,7 @@ afterEach(() => {
 // TODO: Happy path only...
 
 test("Success pattern", async () => {
-  process.env = { ...process.env, MAIN_TABLE_NAME: "test-MAIN_TABLE_NAME" };
+  process.env = { ...process.env, AUTH_TABLE_NAME: "test-AUTH_TABLE_NAME" };
 
   const mockGet = AuthTableClient.get as jest.Mock<any, any>;
   mockGet.mockReturnValueOnce({
