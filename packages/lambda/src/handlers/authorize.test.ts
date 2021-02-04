@@ -1,7 +1,7 @@
 jest.mock("../lib/awsSdk");
 
 import authorize from "./authorize";
-import { AuthTableClient } from "../lib/awsSdk";
+import { DocumentClient } from "../lib/awsSdk";
 
 const date = new Date("2020-12-23 00:00:00Z");
 
@@ -10,7 +10,7 @@ beforeEach(() => {
 });
 afterEach(() => {
   // @ts-expect-error
-  AuthTableClient.get.mockClear();
+  DocumentClient.get.mockClear();
 });
 
 // TODO: Happy path only...
@@ -18,7 +18,7 @@ afterEach(() => {
 test("Success pattern", async () => {
   process.env = { ...process.env, AUTH_TABLE_NAME: "test-AUTH_TABLE_NAME" };
 
-  const mockGet = AuthTableClient.get as jest.Mock<any, any>;
+  const mockGet = DocumentClient.get as jest.Mock<any, any>;
   mockGet.mockReturnValueOnce({
     Item: {
       partitionKey: "session:test-sessionId",
@@ -36,6 +36,7 @@ test("Success pattern", async () => {
 
   expect(mockGet).toHaveBeenCalledTimes(1);
   expect(mockGet).toHaveBeenNthCalledWith(1, {
+    TableName: "test-AUTH_TABLE_NAME",
     Key: {
       partitionKey: "session:test-sessionId",
       sortKey: "session:test-sessionId",

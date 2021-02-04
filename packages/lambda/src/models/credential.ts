@@ -13,19 +13,21 @@ export type Credential = {
   __verified__: "Model:Credential";
 } & PreCredential;
 
-const schema = z.object({
-  username: z.string(),
-  credentialId: z.string(),
-  jwk: z.object({
-    kty: z.enum(["EC"]),
-    crv: z.string(),
-    x: z.string(),
-    y: z.string(),
-  }),
-  signCount: z.number(),
-  createdAt: z.string(),
-  approved: z.boolean(),
-});
+const schema = z
+  .object({
+    username: z.string(),
+    credentialId: z.string(),
+    jwk: z.object({
+      kty: z.enum(["EC"]),
+      crv: z.string(),
+      x: z.string(),
+      y: z.string(),
+    }),
+    signCount: z.number(),
+    createdAt: z.string(),
+    approved: z.boolean(),
+  })
+  .nonstrict();
 
 export function createCredential(
   username: string,

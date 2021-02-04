@@ -14,14 +14,16 @@ export type RemoEvent = {
   ttl: number;
 } & PreRemoEvent;
 
-export const schema = z.object({
-  deviceId: z.string(),
-  deviceName: z.string(),
-  eventType: z.string(),
-  createdAt: z.string(),
-  value: z.number(),
-  ttl: z.number(),
-});
+export const schema = z
+  .object({
+    deviceId: z.string(),
+    deviceName: z.string(),
+    eventType: z.string(),
+    createdAt: z.string(),
+    value: z.number(),
+    ttl: z.number(),
+  })
+  .nonstrict();
 
 export function createRemoEvent(remoEvent: PreRemoEvent, now: Date): RemoEvent {
   return verifyRemoEvent({

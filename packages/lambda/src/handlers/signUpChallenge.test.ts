@@ -1,7 +1,7 @@
 jest.mock("../lib/awsSdk");
 
 import signUpChallenge from "./signUpChallenge";
-import { AuthTableClient } from "../lib/awsSdk";
+import { DocumentClient } from "../lib/awsSdk";
 
 const date = new Date("2020-12-23 00:00:00Z");
 
@@ -10,7 +10,7 @@ beforeEach(() => {
 });
 afterEach(() => {
   // @ts-expect-error
-  AuthTableClient.put.mockClear();
+  DocumentClient.put.mockClear();
 });
 
 test("thrown if no body", async () => {
@@ -89,9 +89,17 @@ test("Success pattern", async () => {
     { body: JSON.stringify({ username: "test-username" }) },
     date
   );
+  expect(result).toStrictEqual({
+    statusCode: 201,
+    body: expect.any(String),
+  });
+  expect(JSON.parse(result.body ?? "")).toStrictEqual({
+    challenge: expect.any(String),
+  });
 
-  expect(AuthTableClient.put).toHaveBeenCalledTimes(1);
-  expect(AuthTableClient.put).toHaveBeenCalledWith({
+  expect(DocumentClient.put).toHaveBeenCalledTimes(1);
+  expect(DocumentClient.put).toHaveBeenCalledWith({
+    TableName: "test-AUTH_TABLE_NAME",
     Item: {
       partitionKey: "user:test-username",
       sortKey: expect.stringMatching(/^signUpChallenge\:/),
@@ -100,13 +108,5 @@ test("Success pattern", async () => {
       createdAt: "2020-12-23T00:00:00.000Z",
       ttl: 1608685200,
     },
-  });
-
-  expect(result).toStrictEqual({
-    statusCode: 201,
-    body: expect.any(String),
-  });
-  expect(JSON.parse(result.body ?? "")).toStrictEqual({
-    challenge: expect.any(String),
   });
 });

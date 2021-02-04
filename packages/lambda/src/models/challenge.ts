@@ -12,12 +12,14 @@ export type Challenge = {
   __verified__: "Model:Challenge";
 } & PreChallenge;
 
-const schema = z.object({
-  username: z.string(),
-  challenge: z.string(),
-  createdAt: z.string(),
-  ttl: z.number(),
-});
+const schema = z
+  .object({
+    username: z.string(),
+    challenge: z.string(),
+    createdAt: z.string(),
+    ttl: z.number(),
+  })
+  .nonstrict();
 
 export function createChallenge(
   username: string,

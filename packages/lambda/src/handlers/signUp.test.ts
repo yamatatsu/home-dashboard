@@ -1,7 +1,7 @@
 jest.mock("../lib/awsSdk");
 
 import signUp from "./signUp";
-import { AuthTableClient } from "../lib/awsSdk";
+import { DocumentClient } from "../lib/awsSdk";
 
 const date = new Date("2020-12-23 00:00:00Z");
 
@@ -10,9 +10,9 @@ beforeEach(() => {
 });
 afterEach(() => {
   // @ts-expect-error
-  AuthTableClient.get.mockClear();
+  DocumentClient.get.mockClear();
   // @ts-expect-error
-  AuthTableClient.put.mockClear();
+  DocumentClient.put.mockClear();
 });
 
 // TODO: Happy path only...
@@ -25,7 +25,16 @@ test("Success pattern", async () => {
     RP_ID: "localhost",
   };
 
-  (AuthTableClient.get as jest.Mock<any, any>).mockReturnValue({ Item: {} }); // not undefined
+  (DocumentClient.get as jest.Mock<any, any>).mockReturnValue({
+    Item: {
+      partitionKey: "user:aaa",
+      sortKey: "signUpChallenge:test_challenge",
+      username: "test_username",
+      challenge: "test_challenge",
+      createdAt: "test_createdAt",
+      ttl: 1000,
+    },
+  });
 
   const result = await signUp(
     {
@@ -44,16 +53,23 @@ test("Success pattern", async () => {
     },
     date
   );
+  expect(result).toStrictEqual({
+    statusCode: 201,
+    body: expect.any(String),
+  });
+  expect(JSON.parse(result.body ?? "")).toStrictEqual({});
 
-  expect(AuthTableClient.get).toHaveBeenCalledTimes(1);
-  expect(AuthTableClient.get).toHaveBeenCalledWith({
+  expect(DocumentClient.get).toHaveBeenCalledTimes(1);
+  expect(DocumentClient.get).toHaveBeenCalledWith({
+    TableName: "test-AUTH_TABLE_NAME",
     Key: {
       partitionKey: "user:test-username",
       sortKey: expect.stringMatching(/^signUpChallenge\:/),
     },
   });
-  expect(AuthTableClient.put).toHaveBeenCalledTimes(1);
-  expect(AuthTableClient.put).toHaveBeenCalledWith({
+  expect(DocumentClient.put).toHaveBeenCalledTimes(1);
+  expect(DocumentClient.put).toHaveBeenCalledWith({
+    TableName: "test-AUTH_TABLE_NAME",
     Item: {
       partitionKey: "user:test-username",
       sortKey: "credential:test-credentialId",
@@ -70,10 +86,4 @@ test("Success pattern", async () => {
       approved: false,
     },
   });
-
-  expect(result).toStrictEqual({
-    statusCode: 201,
-    body: expect.any(String),
-  });
-  expect(JSON.parse(result.body ?? "")).toStrictEqual({});
 });

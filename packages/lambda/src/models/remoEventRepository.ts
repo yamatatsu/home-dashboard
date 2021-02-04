@@ -1,4 +1,4 @@
-import { MainTableClient } from "../lib/awsSdk";
+import { MainTableClient } from "./_repositoryBase";
 import { RemoEvent, verifyRemoEvent } from "./remoEvent";
 
 export async function queryRemoEvents(deviceId: string): Promise<RemoEvent[]> {

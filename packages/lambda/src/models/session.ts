@@ -9,12 +9,14 @@ export type PreSession = {
 };
 export type Session = { __verified__: "Model:Session" } & PreSession;
 
-const schema = z.object({
-  sessionId: z.string(),
-  username: z.string(),
-  ttl: z.number(),
-  createdAt: z.string(),
-});
+const schema = z
+  .object({
+    sessionId: z.string(),
+    username: z.string(),
+    ttl: z.number(),
+    createdAt: z.string(),
+  })
+  .nonstrict();
 
 export function createSession(
   sessionId: string,
