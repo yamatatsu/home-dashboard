@@ -1,7 +1,7 @@
 jest.mock("../lib/awsSdk");
 
 import signIn from "./signIn";
-import { AuthTableClient } from "../lib/awsSdk";
+import { DocumentClient } from "../lib/awsSdk";
 
 const date = new Date("2020-12-23 00:00:00Z");
 
@@ -10,9 +10,9 @@ beforeEach(() => {
 });
 afterEach(() => {
   // @ts-expect-error
-  AuthTableClient.get.mockClear();
+  DocumentClient.get.mockClear();
   // @ts-expect-error
-  AuthTableClient.put.mockClear();
+  DocumentClient.put.mockClear();
 });
 
 // TODO: Happy path only...
@@ -25,9 +25,18 @@ test("Success pattern", async () => {
     RP_ID: "localhost",
   };
 
-  const getMock = AuthTableClient.get as jest.Mock<any, any>;
-  const putMock = AuthTableClient.put as jest.Mock<any, any>;
-  getMock.mockReturnValueOnce({ Item: {} });
+  const getMock = DocumentClient.get as jest.Mock<any, any>;
+  const putMock = DocumentClient.put as jest.Mock<any, any>;
+  getMock.mockReturnValueOnce({
+    Item: {
+      partitionKey: "user:aaa",
+      sortKey: "signInChallenge:test_challenge",
+      username: "test_username",
+      challenge: "test_challenge",
+      createdAt: "test_createdAt",
+      ttl: 1000,
+    },
+  });
   getMock.mockReturnValueOnce({
     Item: {
       partitionKey: "user:aaa",
@@ -41,7 +50,7 @@ test("Success pattern", async () => {
         x: "TwjbjplwEwfDDPFDSCuenj1WO2aXJth8syaZ5n5fRhE",
         y: "9CVJGAS0RrLkd5vlDwzCU2D4l_oUSEUiDQPPC3_xego",
       },
-      signCount: "1609289710",
+      signCount: 1609289710,
       createdAt: "2020-12-30T00:55:13.045Z",
       approved: true,
     },
@@ -68,14 +77,29 @@ test("Success pattern", async () => {
     date
   );
 
+  expect(result).toStrictEqual({
+    statusCode: 201,
+    body: expect.any(String),
+    cookies: [
+      expect.stringMatching(
+        /^sessionId\=.+\; Max\-Age\=43200\; HttpOnly\; Secure\; SameSite\=None$/
+      ),
+    ],
+  });
+  expect(JSON.parse(result.body ?? "")).toStrictEqual({
+    sessionId: expect.any(String),
+  });
+
   expect(getMock).toHaveBeenCalledTimes(2);
   expect(getMock).toHaveBeenNthCalledWith(1, {
+    TableName: "test-AUTH_TABLE_NAME",
     Key: {
       partitionKey: "user:test-username",
       sortKey: expect.stringMatching(/^signInChallenge\:/),
     },
   });
   expect(getMock).toHaveBeenNthCalledWith(2, {
+    TableName: "test-AUTH_TABLE_NAME",
     Key: {
       partitionKey: "user:test-username",
       sortKey: "credential:test-credentialId",
@@ -83,6 +107,7 @@ test("Success pattern", async () => {
   });
   expect(putMock).toHaveBeenCalledTimes(2);
   expect(putMock).toHaveBeenNthCalledWith(1, {
+    TableName: "test-AUTH_TABLE_NAME",
     Item: {
       partitionKey: "user:test-username",
       sortKey: "credential:test-credentialId",
@@ -100,6 +125,7 @@ test("Success pattern", async () => {
     },
   });
   expect(putMock).toHaveBeenNthCalledWith(2, {
+    TableName: "test-AUTH_TABLE_NAME",
     Item: {
       partitionKey: expect.stringMatching(/^session\:/),
       sortKey: expect.stringMatching(/^session\:/),
@@ -108,18 +134,5 @@ test("Success pattern", async () => {
       createdAt: "2020-12-23T00:00:00.000Z",
       ttl: 1608724800,
     },
-  });
-
-  expect(result).toStrictEqual({
-    statusCode: 201,
-    body: expect.any(String),
-    cookies: [
-      expect.stringMatching(
-        /^sessionId\=.+\; Max\-Age\=43200\; HttpOnly\; Secure\; SameSite\=None$/
-      ),
-    ],
-  });
-  expect(JSON.parse(result.body ?? "")).toStrictEqual({
-    sessionId: expect.any(String),
   });
 });

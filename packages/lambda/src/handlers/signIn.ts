@@ -5,14 +5,8 @@ import {
 import base64url from "base64url";
 import * as z from "zod";
 import * as cookie from "cookie";
-import { v4 as uuid } from "uuid";
-import { getGetSignInChallengeInput } from "../models/challenge";
-import {
-  getGetCredentialInput,
-  getPutCredentialInput,
-} from "../models/credential";
-import { getPutSessionInput } from "../models/session";
-import { AuthTableClient } from "../lib/awsSdk";
+import { getCredential } from "../models/credentialRepository";
+import * as AuthService from "../models/authService";
 import {
   getClientAuth,
   verifyOrigin,
@@ -87,7 +81,7 @@ export default async function signIn(
     // Step.11 of https://www.w3.org/TR/webauthn/#sctn-verifying-assertion
     verifyType(clientData.type);
     // Step.12 of https://www.w3.org/TR/webauthn/#sctn-verifying-assertion
-    await verifyChallenge(username, clientData.challenge);
+    await AuthService.verifySignInChallenge(username, clientData.challenge);
     // Step.13 of https://www.w3.org/TR/webauthn/#sctn-verifying-assertion
     verifyOrigin(ALLOW_ORIGINS, clientData);
 
@@ -101,17 +95,15 @@ export default async function signIn(
   const authDataStruct = parseAuthData(authData);
   console.info({ authDataStruct });
 
-  const registeredCredential = await AuthTableClient.get(
-    getGetCredentialInput(username, credential.id)
-  );
-  if (!registeredCredential.Item) {
+  const registeredCredential = await getCredential(username, credential.id);
+  if (!registeredCredential) {
     throw new Error("No credential is found.");
   }
-  if (!registeredCredential.Item.approved) {
+  if (!registeredCredential.approved) {
     console.info("This device is not approved yet. %o", registeredCredential);
     return { statusCode: 401, body: "Your device is not approved yet." };
   }
-  const { jwk, signCount } = registeredCredential.Item;
+  const { jwk, signCount } = registeredCredential;
 
   try {
     // Step.15 of https://www.w3.org/TR/webauthn/#sctn-verifying-assertion
@@ -138,19 +130,13 @@ export default async function signIn(
   }
 
   // Step.21 of https://www.w3.org/TR/webauthn/#sctn-verifying-assertion
-  await AuthTableClient.put(
-    getPutCredentialInput(
-      username,
-      credential.id,
-      jwk,
-      authDataStruct.signCount,
-      now,
-      true
-    )
+  const sessionId = await AuthService.signIn(
+    username,
+    credential.id,
+    jwk,
+    authDataStruct.signCount,
+    now
   );
-
-  const sessionId = uuid();
-  await AuthTableClient.put(getPutSessionInput(sessionId, username, now));
 
   const dev = ALLOW_ORIGINS.split(",").some((s) =>
     s.startsWith("http://localhost")
@@ -175,20 +161,6 @@ function validateEvent(event: any) {
     return validatedEvent;
   }
   return bodySchema.safeParse(JSON.parse(validatedEvent.data.body));
-}
-
-async function verifyChallenge(
-  username: string,
-  challenge: string
-): Promise<void> {
-  const result = await AuthTableClient.get(
-    getGetSignInChallengeInput(username, challenge)
-  );
-  if (!result.Item) {
-    throw new Error(
-      `No challenge has found. username: ${username} challenge: ${challenge}`
-    );
-  }
 }
 
 export function verifyType(type: string): void {

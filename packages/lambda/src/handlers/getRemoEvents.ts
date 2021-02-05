@@ -2,8 +2,7 @@ import {
   APIGatewayProxyStructuredResultV2,
   APIGatewayProxyEventV2,
 } from "aws-lambda";
-import { createQueryRemoEventInput } from "../models/remoEvent";
-import { DocumentClient } from "../lib/awsSdk";
+import { queryRemoEvents } from "../models/remoEventRepository";
 
 type Event = Pick<APIGatewayProxyEventV2, "body">;
 
@@ -15,16 +14,9 @@ const deviceIds = [
 export default async function getRemoEvents(
   event: Event
 ): Promise<APIGatewayProxyStructuredResultV2> {
-  const { MAIN_TABLE_NAME } = process.env;
-  if (!MAIN_TABLE_NAME)
-    throw new Error("Enviroment variable `MAIN_TABLE_NAME` is required.");
-
-  const results = await Promise.all(
-    deviceIds.map((id) =>
-      DocumentClient.query(createQueryRemoEventInput(MAIN_TABLE_NAME, id))
-    )
-  );
-  const remoEvents = results.map((r) => r.Items).flat();
+  const remoEvents = (
+    await Promise.all(deviceIds.map((id) => queryRemoEvents(id)))
+  ).flat();
 
   return { statusCode: 200, body: JSON.stringify({ remoEvents }) };
 }

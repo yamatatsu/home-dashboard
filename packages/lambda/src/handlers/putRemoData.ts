@@ -1,48 +1,37 @@
-import * as AWS from "aws-sdk";
 import { sqsMessageSchema, remoDataSchema } from "../schema";
-import { DocumentClient } from "../lib/awsSdk";
-import {
-  remoEventSchema,
-  createWriteRemoEventRequest,
-  RemoEvent,
-} from "../models/remoEvent";
+import { createRemoEvent, PreRemoEvent } from "../models/remoEvent";
+import { batchWriteRemoEvents } from "../models/remoEventRepository";
 
-type RemoData = {
-  name: string;
-  id: string;
-  newest_events: { [key: string]: { val: number; created_at: string } };
-};
+type NewestEvents = { [key: string]: { val: number; created_at: string } };
+type RemoData = { name: string; id: string; newest_events: NewestEvents };
 
 export default async function putRemoData(
   messageBody: string,
   date: Date
 ): Promise<void> {
-  // jest でのテストしやすさの為に関数内で環境変数を展開する
-  const { MAIN_TABLE_NAME } = process.env;
-  if (!MAIN_TABLE_NAME)
-    throw new Error("Enviroment variable `MAIN_TABLE_NAME` is required.");
-
   console.info("messageBody: %s", messageBody);
 
-  const sqsMessage = sqsMessageSchema.parse(JSON.parse(messageBody));
-  const remoDataList = remoDataSchema.parse(JSON.parse(sqsMessage.Message));
+  const remoDataList = verifyMessage(messageBody);
   if (remoDataList.length === 0) {
     console.warn("SQS Message is empty array.");
     return;
   }
 
-  const writeRequests = remoDataList
+  const remoEvents = remoDataList
     .map((remoData) => remoDataToRemoEvents(remoData))
     .flat()
-    .map((a) => remoEventSchema.parse(a))
-    .map((validated) => createWriteRemoEventRequest(validated, date));
+    .map((a) => createRemoEvent(a, date));
 
-  await DocumentClient.batchWrite({
-    RequestItems: { [MAIN_TABLE_NAME]: writeRequests },
-  });
+  await batchWriteRemoEvents(remoEvents);
 }
 
-const remoDataToRemoEvents = (data: RemoData): RemoEvent[] => {
+const verifyMessage = (messageBody: string) => {
+  const sqsMessage = sqsMessageSchema.parse(JSON.parse(messageBody));
+  const remoDataList = remoDataSchema.parse(JSON.parse(sqsMessage.Message));
+  return remoDataList;
+};
+
+const remoDataToRemoEvents = (data: RemoData): PreRemoEvent[] => {
   const { id, name, newest_events } = data;
   return Object.entries(newest_events).map(([key, event]) => {
     return {

@@ -1,6 +1,5 @@
-import * as cookie from "cookie";
-import { getGetSessionInput } from "../models/session";
-import { AuthTableClient } from "../lib/awsSdk";
+// import * as cookie from "cookie";
+import { getSession } from "../models/sessionRepository";
 
 /**
  * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-lambda-authorizer.html#http-api-lambda-authorizer.payload-format
@@ -28,11 +27,12 @@ export default async function authorize(event: Event): Promise<Result> {
     console.info("sessionId is empty.");
     return { isAuthorized: false, context: {} };
   }
-  const session = await AuthTableClient.get(getGetSessionInput(sessionId));
-  if (!session.Item) {
+
+  const session = await getSession(sessionId);
+  if (!session) {
     console.info("No session has found.");
     return { isAuthorized: false, context: {} };
   }
 
-  return { isAuthorized: true, context: { username: session.Item.username } };
+  return { isAuthorized: true, context: { username: session.username } };
 }

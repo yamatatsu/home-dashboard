@@ -1,45 +1,37 @@
-import * as AWS from "aws-sdk";
+import * as z from "zod";
 import { getTtl } from "./util";
 
-type GetItemInput = AWS.DynamoDB.DocumentClient.GetItemInput;
-type PutItemInput = AWS.DynamoDB.DocumentClient.PutItemInput;
-
-export type Session = {
-  partitionKey: string;
-  sortKey: string;
+export type PreSession = {
   sessionId: string;
   username: string;
   ttl: number;
   createdAt: string;
 };
+export type Session = { __verified__: "Model:Session" } & PreSession;
 
-export function getGetSessionInput(
-  sessionId: string
-): Omit<GetItemInput, "TableName"> {
-  return {
-    Key: {
-      partitionKey: getKey(sessionId),
-      sortKey: getKey(sessionId),
-    },
-  };
-}
+const schema = z
+  .object({
+    sessionId: z.string(),
+    username: z.string(),
+    ttl: z.number(),
+    createdAt: z.string(),
+  })
+  .nonstrict();
 
-export function getPutSessionInput(
+export function createSession(
   sessionId: string,
   username: string,
   createdAt: Date
-): Omit<PutItemInput, "TableName"> {
-  const item: Session = {
-    partitionKey: getKey(sessionId),
-    sortKey: getKey(sessionId),
+): Session {
+  return verifySession({
     sessionId,
     username,
     ttl: getTtl(createdAt, 12),
     createdAt: createdAt.toISOString(),
-  };
-  return { Item: item };
+  });
 }
 
-function getKey(sessionId: string) {
-  return `session:${sessionId}`;
+export function verifySession(session: PreSession): Session {
+  const item: PreSession = schema.parse(session);
+  return item as Session;
 }
