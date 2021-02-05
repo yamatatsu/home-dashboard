@@ -2,11 +2,8 @@ import { sqsMessageSchema, remoDataSchema } from "../schema";
 import { createRemoEvent, PreRemoEvent } from "../models/remoEvent";
 import { batchWriteRemoEvents } from "../models/remoEventRepository";
 
-type RemoData = {
-  name: string;
-  id: string;
-  newest_events: { [key: string]: { val: number; created_at: string } };
-};
+type NewestEvents = { [key: string]: { val: number; created_at: string } };
+type RemoData = { name: string; id: string; newest_events: NewestEvents };
 
 export default async function putRemoData(
   messageBody: string,
@@ -14,8 +11,7 @@ export default async function putRemoData(
 ): Promise<void> {
   console.info("messageBody: %s", messageBody);
 
-  const sqsMessage = sqsMessageSchema.parse(JSON.parse(messageBody));
-  const remoDataList = remoDataSchema.parse(JSON.parse(sqsMessage.Message));
+  const remoDataList = verifyMessage(messageBody);
   if (remoDataList.length === 0) {
     console.warn("SQS Message is empty array.");
     return;
@@ -28,6 +24,12 @@ export default async function putRemoData(
 
   await batchWriteRemoEvents(remoEvents);
 }
+
+const verifyMessage = (messageBody: string) => {
+  const sqsMessage = sqsMessageSchema.parse(JSON.parse(messageBody));
+  const remoDataList = remoDataSchema.parse(JSON.parse(sqsMessage.Message));
+  return remoDataList;
+};
 
 const remoDataToRemoEvents = (data: RemoData): PreRemoEvent[] => {
   const { id, name, newest_events } = data;

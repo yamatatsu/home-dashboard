@@ -1,13 +1,11 @@
 import { v4 as uuid } from "uuid";
 import { JWK } from "jwk-to-pem";
-import { Session } from "./session";
-import { getSession } from "./sessionRepository";
 import { getSignUpChallenge, getSignInChallenge } from "./challengeRepository";
 import {
   getCredential as _getCredential,
   putCredential,
 } from "./credentialRepository";
-import { createCredential, Credential } from "./credential";
+import { createCredential } from "./credential";
 import { createSession } from "./session";
 import { putSession } from "./sessionRepository";
 
@@ -50,21 +48,4 @@ export async function signIn(
   await putSession(createSession(sessionId, username, now));
 
   return sessionId;
-}
-
-export async function authorize(
-  sessionId: string | undefined
-): Promise<Session | null> {
-  console.info("sessionId: ", sessionId);
-
-  if (!sessionId) {
-    console.info("sessionId is empty.");
-    return null;
-  }
-  const session = await getSession(sessionId);
-  if (!session) {
-    console.info("No session has found.");
-    return null;
-  }
-  return session;
 }

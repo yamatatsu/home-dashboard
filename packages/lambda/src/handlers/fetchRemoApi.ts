@@ -10,12 +10,7 @@ export default async function fetchRemoApi(): Promise<void> {
     throw new Error("Enviroment variable `TOPIC_ARN` is required.");
 
   console.time("fetching-remo-api");
-  const result = await fetch("https://api.nature.global/1/devices", {
-    headers: {
-      accept: "application/json",
-      Authorization: `Bearer ${REMO_TOKEN}`,
-    },
-  });
+  const result = await fetchRemo(REMO_TOKEN);
   console.timeEnd("fetching-remo-api");
 
   const jsonAsText = await result.text();
@@ -24,3 +19,11 @@ export default async function fetchRemoApi(): Promise<void> {
 
   await SNS.publish({ TopicArn: TOPIC_ARN, Message: jsonAsText });
 }
+
+const fetchRemo = (remoToken: string) =>
+  fetch("https://api.nature.global/1/devices", {
+    headers: {
+      accept: "application/json",
+      Authorization: `Bearer ${remoToken}`,
+    },
+  });
