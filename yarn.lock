@@ -2942,10 +2942,10 @@ aws-cdk@1.88.0:
     wrap-ansi "^7.0.0"
     yargs "^16.2.0"
 
-aws-sdk@2.836.0:
-  version "2.836.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.836.0.tgz#69a26db1beb3c139d67833bd3adc082f9e148777"
-  integrity sha512-lVOT5/yr9ONfbn6UXYYIdFlVIFmSoX0CnjAQzXkfcYg+k7CZklbqqVIdgdLoiQYwQGLceoWghSevPGe7fjFg9Q==
+aws-sdk@2.843.0:
+  version "2.843.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.843.0.tgz#3e274214565597de6ccfbfaf6727a47f42b3774d"
+  integrity sha512-wTHKHDzblaNjWsdCuKTnfAr2zSLgN+Nc2yGpqPxnr7emEQG4V3B0gYEfV9rvv9dVq5Jw8Y1q6VNWS6k8oclnSw==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
