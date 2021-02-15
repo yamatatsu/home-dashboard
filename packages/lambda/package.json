@@ -9,7 +9,6 @@
   },
   "devDependencies": {
     "@types/aws-lambda": "8.10.71",
-    "@types/cbor": "5.0.1",
     "@types/cookie": "0.4.0",
     "@types/jest": "26.0.20",
     "@types/jwk-to-pem": "2.0.0",
