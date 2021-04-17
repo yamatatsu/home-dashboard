@@ -19,7 +19,9 @@ const app = new cdk.App();
 // =========================
 // for development
 
-const dynamodbDev = new DynamodbStack(app, "DynamodbStack-dev", { dev: true });
+const dynamodbDev = new DynamodbStack(app, "home-dashboard-DynamodbStack-dev", {
+  dev: true,
+});
 new WebApi(app, "WebApi-dev", {
   code: getCode(),
   homeAuthTable: dynamodbDev.homeAuthTable,
@@ -32,13 +34,15 @@ new WebApi(app, "WebApi-dev", {
 // =========================
 // for production
 
-const dynamodb = new DynamodbStack(app, "DynamodbStack", { dev: false });
-const fetchRemoApi = new FetchRemoApi(app, "FetchRemoApi", {
+const dynamodb = new DynamodbStack(app, "home-dashboard-DynamodbStack", {
+  dev: false,
+});
+const fetchRemoApi = new FetchRemoApi(app, "home-dashboard-FetchRemoApi", {
   code: getCode(),
   remoToken: REMO_TOKEN,
   homeMainTable: dynamodb.homeMainTable,
 });
-new WebApi(app, "WebApi", {
+new WebApi(app, "home-dashboard-WebApi", {
   code: getCode(),
   homeAuthTable: dynamodb.homeAuthTable,
   homeMainTable: dynamodb.homeMainTable,
