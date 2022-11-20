@@ -21,7 +21,7 @@
     "typescript": "4.1.5"
   },
   "dependencies": {
-    "aws-sdk": "2.843.0",
+    "aws-sdk": "2.1258.0",
     "base64url": "3.0.1",
     "bignumber.js": "9.0.1",
     "cbor": "7.0.0",
